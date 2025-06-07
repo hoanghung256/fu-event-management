@@ -45,8 +45,6 @@ public partial class Event
 
     public DateOnly? CollaboratorRegisterDeadline { get; set; }
 
-    public SoftDeleteEntity SoftDeleteEntity { get; set; }
-
     public virtual Category? Category { get; set; }
 
     public virtual ICollection<EventCollaborator> EventCollaborators { get; set; } = new List<EventCollaborator>();

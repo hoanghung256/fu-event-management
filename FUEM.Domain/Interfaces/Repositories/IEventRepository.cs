@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace FUEM.Domain.Interfaces.Repositories
 {
-    internal interface IEventRepository : IRepository<Event>
+    public interface IEventRepository : IRepository<Event>
     {
+        Task<IEnumerable<Event>> GetEventForGuestAsync();
     }
 }

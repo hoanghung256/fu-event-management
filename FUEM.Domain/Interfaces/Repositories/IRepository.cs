@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace FUEM.Domain.Interfaces.Repositories
 {
     // Basic CRUD actions of an entity
-    internal interface IRepository<T> where T : class
+    public interface IRepository<T> where T : class
     {
         Task AddAsync(T entity);
         Task RemoveAsync(T entity);

@@ -43,7 +43,7 @@ public partial class FUEMDbContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Name=Default");
+            optionsBuilder.UseSqlServer("Server=localhost;Database=EventManagement;Trusted_Connection=True;TrustServerCertificate=True");
         }
     }
 

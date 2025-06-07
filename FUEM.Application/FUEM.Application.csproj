@@ -10,4 +10,9 @@
     <Folder Include="Interfaces\User\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FUEM.Domain\FUEM.Domain.csproj" />
+    <ProjectReference Include="..\FUEM.Infrastructure\FUEM.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

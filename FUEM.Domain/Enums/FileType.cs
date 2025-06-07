@@ -20,5 +20,4 @@ namespace FUEM.Domain.Enums
                 _ => throw new ArgumentException($"Unknown FileType: {name}")
             };
     }
-
 }

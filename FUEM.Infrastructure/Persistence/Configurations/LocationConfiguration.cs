@@ -1,5 +1,4 @@
-﻿using FUEM.Domain.E;
-using FUEM.Domain.Entities;
+﻿using FUEM.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;

@@ -1,4 +1,5 @@
 ﻿using FUEM.Domain.Entities;
+using FUEM.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -46,7 +47,7 @@ namespace FUEM.Infrastructure.Persistence.Configurations
             builder.Property(e => e.Status)
                 .HasConversion<string>()
                 .HasMaxLength(15)
-                .HasDefaultValue("PENDING")
+                .HasDefaultValue(EventStatus.Pending)
                 .HasColumnName("status");
 
             builder.HasOne(d => d.Category).WithMany(p => p.Events)

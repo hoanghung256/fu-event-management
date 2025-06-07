@@ -10,7 +10,7 @@ public partial class File
 
     public int? SubmitterId { get; set; }
 
-    public FileType FileType { get; set; }
+    public string? FileType { get; set; }
 
     public string? DisplayName { get; set; }
 

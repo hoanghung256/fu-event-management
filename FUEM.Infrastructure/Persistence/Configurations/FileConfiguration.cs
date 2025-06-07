@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FUEM.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ namespace FUEM.Infrastructure.Persistence.Configurations
             builder.Property(e => e.Id).HasColumnName("id");
             builder.Property(e => e.DisplayName).HasColumnName("displayName");
             builder.Property(e => e.FileType)
-                .HasConversion<string>()
                 .HasMaxLength(30)
                 .HasColumnName("fileType");
             builder.Property(e => e.Path).HasColumnName("path");
@@ -35,7 +35,7 @@ namespace FUEM.Infrastructure.Persistence.Configurations
                 .HasConversion<string>()
                 .HasMaxLength(15)
                 .IsUnicode(false)
-                .HasDefaultValue("PENDING")
+                .HasDefaultValue(FileStatus.Pending)
                 .HasColumnName("status");
             builder.Property(e => e.SubmitterId).HasColumnName("submitterId");
 

@@ -1,4 +1,8 @@
+using FUEM.Application.Interfaces.EventUseCases;
+using FUEM.Application.UseCases.Event;
+using FUEM.Domain.Interfaces.Repositories;
 using FUEM.Infrastructure.Persistence;
+using FUEM.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace FUEM.Web
@@ -9,22 +13,27 @@ namespace FUEM.Web
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Register controllers and views
+            // Register controllers and views  
             builder.Services.AddControllersWithViews();
 
-            // Get connection string
-            var connectionString = builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Default connection string not found");
+            // Get connection string  
+            var connectionString = builder.Configuration.GetConnectionString("Default") 
+                                            ?? throw new InvalidOperationException("Default connection string not found");
 
-            // Register DbContext
+            // Register DbContext  
             builder.Services.AddDbContext<FUEMDbContext>(options => options.UseSqlServer(connectionString));
+
+            registerRepositories(builder.Services);
+
+            registerUseCases(builder.Services);
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline.  
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.  
                 app.UseHsts();
             }
 
@@ -40,6 +49,16 @@ namespace FUEM.Web
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
+        }
+
+        private static void registerUseCases(IServiceCollection services)
+        {
+            services.AddTransient<IGetEventForGuest, GetEventForGuest>();
+        }
+
+        private static void registerRepositories(IServiceCollection services)
+        {
+            services.AddScoped<IEventRepository, EventRepository>();
         }
     }
 }

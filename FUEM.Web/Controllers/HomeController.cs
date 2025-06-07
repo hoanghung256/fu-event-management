@@ -1,4 +1,5 @@
-using FUEM.Web.Models;
+using FUEM.Application.Interfaces.EventUseCases;
+using FUEM.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,20 +8,19 @@ namespace FUEM.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IGetEventForGuest _getEventForGuestUseCase;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IGetEventForGuest getEventForGuestUseCase)
         {
             _logger = logger;
+            _getEventForGuestUseCase = getEventForGuestUseCase;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
+            var events = await _getEventForGuestUseCase.GetEventForGuestAsync();
+            return View(new EventListViewModel() { Items = events });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
