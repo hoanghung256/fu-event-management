@@ -9,13 +9,8 @@ namespace FUEM.Domain.Enums
 {
     public enum Role
     {
-        [EnumMember(Value = "ADMIN")]
         Admin,
-
-        [EnumMember(Value = "STUDENT")]
         Student,
-
-        [EnumMember(Value = "Club")]
         Club
     }
 }

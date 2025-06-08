@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FUEM.Application.Interfaces.RegistrationUseCases
 {
-    internal interface ICancelOutEvent
+    public interface ICancelOutEvent
     {
     }
 }

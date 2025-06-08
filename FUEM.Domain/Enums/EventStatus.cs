@@ -9,22 +9,11 @@ namespace FUEM.Domain.Enums
 {
     public enum EventStatus
     {
-        [EnumMember(Value = "PENDING")]
-        Pending,
-
-        [EnumMember(Value = "APPROVED")]
-        Approved,
-
-        [EnumMember(Value = "REJECTED")]
-        Rejected,
-
-        [EnumMember(Value = "ON_GOING")]
-        OnGoing,
-
-        [EnumMember(Value = "CANCEL")]
-        Cancel,
-
-        [EnumMember(Value = "END")]
-        End,
+        PENDING,
+        APPROVED,
+        REJECTED,
+        ON_GOING,
+        CANCEL,
+        END,
     }
 }

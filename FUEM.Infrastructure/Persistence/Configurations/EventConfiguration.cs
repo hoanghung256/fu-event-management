@@ -47,7 +47,7 @@ namespace FUEM.Infrastructure.Persistence.Configurations
             builder.Property(e => e.Status)
                 .HasConversion<string>()
                 .HasMaxLength(15)
-                .HasDefaultValue(EventStatus.Pending)
+                .HasDefaultValue(EventStatus.PENDING)
                 .HasColumnName("status");
 
             builder.HasOne(d => d.Category).WithMany(p => p.Events)

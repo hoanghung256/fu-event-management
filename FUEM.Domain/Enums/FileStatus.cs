@@ -9,16 +9,9 @@ namespace FUEM.Domain.Enums
 {
     public enum FileStatus
     {
-        [EnumMember(Value = "PENDING")]
-        Pending,
-
-        [EnumMember(Value = "REVIEWING")]
-        Reviewing,
-
-        [EnumMember(Value = "APPROVED")]
-        Approved,
-
-        [EnumMember(Value = "REQUEST_CHANGE")]
-        RequestChange
+        PENDING,
+        REVIEWING,
+        APPROVED,
+        REQUEST_CHANGE
     }
 }

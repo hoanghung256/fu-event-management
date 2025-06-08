@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace FUEM.Domain.Enums
 {
+    /*
+     * Usage:
+     * FileType.Image.Name => "IMAGE"
+     * FileType.Image.Location => "/assets/upload/images"
+     */
     public sealed record FileType(string Name, string Location)
     {
         public static readonly FileType Image = new("IMAGE", "/assets/upload/images");

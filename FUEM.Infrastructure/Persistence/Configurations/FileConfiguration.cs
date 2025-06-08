@@ -35,7 +35,7 @@ namespace FUEM.Infrastructure.Persistence.Configurations
                 .HasConversion<string>()
                 .HasMaxLength(15)
                 .IsUnicode(false)
-                .HasDefaultValue(FileStatus.Pending)
+                .HasDefaultValue(FileStatus.PENDING)
                 .HasColumnName("status");
             builder.Property(e => e.SubmitterId).HasColumnName("submitterId");
 
