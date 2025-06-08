@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/theme/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FUEM.Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
 </head>
 <body>
     <header>
@@ -44,6 +45,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/theme/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_ToastSetUp")
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

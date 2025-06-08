@@ -1,8 +1,3 @@
-using FUEM.Application.Interfaces.EventUseCases;
-using FUEM.Web.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-
 namespace FUEM.Web.Controllers
 {
     public class HomeController : Controller
@@ -20,6 +15,7 @@ namespace FUEM.Web.Controllers
         public async Task<IActionResult> Index()
         {
             var events = await _getEventForGuestUseCase.GetEventForGuestAsync();
+            TempData[ToastType.InfoMessage.ToString()] = "Welcome to FUEM!";
             return View(new EventListViewModel() { Items = events });
         }
 

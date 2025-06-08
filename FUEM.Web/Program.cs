@@ -58,7 +58,7 @@ namespace FUEM.Web
 
         private static void registerRepositories(IServiceCollection services)
         {
-            services.AddScoped<IEventRepository, EventRepository>();
+            services.AddTransient<IEventRepository, EventRepository>();
         }
     }
 }

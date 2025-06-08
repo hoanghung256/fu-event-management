@@ -1,0 +1,34 @@
+﻿<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "timeOut": "3000"
+    };
+    $(function () {
+    @* Success *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <text>toastr.success('@TempData["SuccessMessage"]');</text>
+    }
+
+    @* Error *@
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <text>toastr.error('@TempData["ErrorMessage"]');</text>
+    }
+
+    @* Info *@
+    @if (TempData["InfoMessage"] != null)
+    {
+        <text>toastr.info('@TempData["InfoMessage"]');</text>
+    }
+
+    @* Warning *@
+    @if (TempData["WarningMessage"] != null)
+    {
+        <text>toastr.warning('@TempData["WarningMessage"]');</text>
+    }
+    });
+</script>
