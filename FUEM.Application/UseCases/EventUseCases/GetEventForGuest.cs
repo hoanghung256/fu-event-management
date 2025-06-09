@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FUEM.Application.UseCases.Event
+namespace FUEM.Application.UseCases.EventUseCases
 {
     public class GetEventForGuest : IGetEventForGuest
     {

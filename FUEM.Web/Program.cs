@@ -1,8 +1,5 @@
-using FUEM.Application.Interfaces.EventUseCases;
-using FUEM.Application.UseCases.Event;
-using FUEM.Domain.Interfaces.Repositories;
+using FUEM.Application;
 using FUEM.Infrastructure.Persistence;
-using FUEM.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace FUEM.Web
@@ -21,11 +18,11 @@ namespace FUEM.Web
                                             ?? throw new InvalidOperationException("Default connection string not found");
 
             // Register DbContext  
-            builder.Services.AddDbContext<FUEMDbContext>(options => options.UseSqlServer(connectionString));
+            builder.Services.AddDbContextPool<FUEMDbContext>(options => options.UseSqlServer(connectionString));
 
-            registerRepositories(builder.Services);
+            builder.AddRepositories();
 
-            registerUseCases(builder.Services);
+            builder.AddUseCases();
 
             var app = builder.Build();
 
@@ -49,16 +46,6 @@ namespace FUEM.Web
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
-        }
-
-        private static void registerUseCases(IServiceCollection services)
-        {
-            services.AddTransient<IGetEventForGuest, GetEventForGuest>();
-        }
-
-        private static void registerRepositories(IServiceCollection services)
-        {
-            services.AddTransient<IEventRepository, EventRepository>();
         }
     }
 }
