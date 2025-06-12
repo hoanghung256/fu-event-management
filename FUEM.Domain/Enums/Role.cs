@@ -11,6 +11,7 @@ namespace FUEM.Domain.Enums
     {
         Admin,
         Student,
+        Organizer,
         Club
     }
 }

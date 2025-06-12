@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    var error = TempData["Error"] as string;
+    Layout = "";
+}
+
+<link rel="stylesheet" href="~/css/login.css"/>
+<link rel="stylesheet" href="~/css/flaticon_expovent.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" />
+<script src="/_framework/aspnetcore-browser-refresh.js"></script>
+
+    <div class="login-container">
+    <div class="login-left">
+        <div class="logo">
+            <img src="./img/logo/logo-fpt.png" alt="FPT Logo" />
+        </div>
+        <h1 class="title">
+            <span class="flip-letter">F</span>
+            <span class="flip-letter">P</span>
+            <span class="flip-letter">T</span> EVENT MANAGEMENT
+        </h1>
+        <p class="subtitle">Experience to success.</p>
+
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <div class="error-message">@error</div>
+        }
+
+        <form asp-action="Login" method="post">
+            <div class="input-group">
+                <span class="input-icon"><i class="flaticon-user-2"></i></span>
+                <input type="email" name="email" placeholder="Email" required />
+            </div>
+
+            <div class="input-group">
+                <span class="input-icon"><i class="flaticon-password"></i></span>
+                <input type="password" name="password" placeholder="Password" required />
+            </div>
+
+            <div class="form-extra">
+                <label><input type="checkbox" name="isOrganizer" /> Is Organizer</label>
+                <a href="#" style="text-decoration:none; color:#000">Forget Password?</a>
+            </div>
+            <button type="submit" class="sign-in-btn">Sign in</button>
+            <button type="button" class="google-btn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" />
+                Sign in With Google
+            </button>
+        </form>
+
+        <p class="signup-text">Don't Have An Account? <a href="#">Sign up now</a></p>
+    </div>
+
+    <div class="login-right">
+        <img src="~/img/decorate/sign-in.jpg" alt="Login Image" />
+    </div>
+</div>

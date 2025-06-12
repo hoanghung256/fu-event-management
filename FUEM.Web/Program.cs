@@ -1,5 +1,10 @@
 using FUEM.Application;
+using FUEM.Application.Interfaces.UserUseCases;
+using FUEM.Application.UseCases.UserUseCases;
+using FUEM.Domain.Entities;
+using FUEM.Domain.Interfaces.Repositories;
 using FUEM.Infrastructure.Persistence;
+using FUEM.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace FUEM.Web
@@ -12,6 +17,13 @@ namespace FUEM.Web
 
             // Register controllers and views  
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(1); 
+                options.Cookie.HttpOnly = true; 
+                options.Cookie.IsEssential = true; 
+            });
 
             // Get connection string  
             var connectionString = builder.Configuration.GetConnectionString("Default") 
@@ -39,11 +51,13 @@ namespace FUEM.Web
 
             app.UseRouting();
 
+            app.UseSession();
+
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Authen}/{action=Login}/{id?}");
 
             app.Run();
         }
