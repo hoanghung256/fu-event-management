@@ -15,6 +15,8 @@ namespace FUEM.Infrastructure.Persistence
         public static IHostApplicationBuilder AddRepositories(this IHostApplicationBuilder builder)
         {
             builder.Services.AddTransient<IEventRepository, EventRepository>();
+            builder.Services.AddTransient<IStudentRepository, StudentRepository>();
+            builder.Services.AddTransient<IOrganizerRepository, OrganizerRepository>();
 
             return builder;
         }
