@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Login";
-    var error = TempData["Error"] as string;
+    var error = TempData[ToastType.ErrorMessage.ToString()] as string;
     Layout = "";
 }
 
@@ -43,7 +43,7 @@
             </div>
             <button type="submit" class="sign-in-btn">Sign in</button>
             <button type="button" class="google-btn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" />
+                <a href="https://accounts.google.com/o/oauth2/auth?scope=email&redirect_uri=https://fuem.azurewebsites.net/login-google&response_type=code&client_id=89142229238-cu1tiul7dl16gs4qigcjsgd0emkk3j0d.apps.googleusercontent.com&approval_prompt=force" />
                 Sign in With Google
             </button>
         </form>

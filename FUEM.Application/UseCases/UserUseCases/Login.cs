@@ -31,8 +31,6 @@ namespace FUEM.Application.UseCases.UserUseCases
             {
                 if (stu.Password.Equals(password))
                     return stu;
-                else
-                    throw new UnauthorizedAccessException("Invalid credentials.");
             }
 
             var org = await _organizerRepository.GetOrganizerByEmailAsync(email);
@@ -40,11 +38,9 @@ namespace FUEM.Application.UseCases.UserUseCases
             {
                 if (org.Password.Equals(password))
                     return org;
-                else
-                    throw new UnauthorizedAccessException("Invalid credentials.");
             }
 
-            throw new UnauthorizedAccessException("Email not found.");
+            return null;
         }
     }
 }

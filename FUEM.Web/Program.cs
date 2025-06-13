@@ -57,7 +57,7 @@ namespace FUEM.Web
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Authen}/{action=Login}/{id?}");
+                pattern: "{controller=Authentication}/{action=Login}/{id?}");
 
             app.Run();
         }

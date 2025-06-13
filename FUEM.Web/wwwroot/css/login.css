@@ -197,7 +197,7 @@ form {
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
 
-    .google-btn img {
+    .google-btn a{
         width: 18px;
     }
 
@@ -231,6 +231,6 @@ form {
     padding: 10px 15px;
     margin-bottom: 20px;
     border-radius: 8px;
-    width: 70%;
+    width: 85%;
     align-self: center;
 }

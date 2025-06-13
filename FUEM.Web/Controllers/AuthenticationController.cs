@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FUEM.Web.Controllers
 {
-    public class AuthenController : Controller
+    public class AuthenticationController : Controller
     {
         private readonly ILogin _loginUseCase;
 
-        public AuthenController(ILogin loginUseCase)
+        public AuthenticationController(ILogin loginUseCase)
         {
             _loginUseCase = loginUseCase;
         }
@@ -42,15 +42,15 @@ namespace FUEM.Web.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                TempData["Error"] = "Login failed.";
+                TempData[ToastType.ErrorMessage.ToString()] = "Login failed.";
                 return View();
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                TempData[ToastType.ErrorMessage.ToString()] = ex.Message;
                 return View(); 
             }
         }
-
+        
     }
 }
