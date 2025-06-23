@@ -1,3 +1,6 @@
+using FUEM.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
+
 namespace FUEM.Web.Controllers
 {
     public class HomeController : Controller
@@ -12,6 +15,7 @@ namespace FUEM.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var events = await _getEventForGuestUseCase.GetEventForGuestAsync();
@@ -19,10 +23,11 @@ namespace FUEM.Web.Controllers
             return View(new EventListViewModel() { Items = events });
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public IActionResult AdminDashboard()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
     }
 }
