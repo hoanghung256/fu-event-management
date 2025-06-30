@@ -5,6 +5,7 @@ using FUEM.Domain.Entities;
 using FUEM.Domain.Interfaces.Repositories;
 using FUEM.Infrastructure.Persistence;
 using FUEM.Infrastructure.Persistence.Repositories;
+using FUEM.Web.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace FUEM.Web
@@ -47,6 +48,13 @@ namespace FUEM.Web
                 });
 
             builder.Services.AddAuthorization();
+
+            builder.Services.AddScoped<InsertSignedFirebaseUrl>();
+
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add<InsertSignedFirebaseUrl>();
+            });
 
             var app = builder.Build();
 

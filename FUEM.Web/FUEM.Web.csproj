@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FUEM.Application\FUEM.Application.csproj" />
+    <ProjectReference Include="..\FUEM.Infrastructure\FUEM.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Filters\" />
     <Folder Include="wwwroot\font\" />
   </ItemGroup>
 

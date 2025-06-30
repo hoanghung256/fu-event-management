@@ -10,12 +10,12 @@ namespace FUEM.Domain.Enums
     /*
      * Usage:
      * FileType.Image.Name => "IMAGE"
-     * FileType.Image.Location => "/assets/upload/images"
+     * FileType.Image.Location => "image"
      */
     public sealed record FileType(string Name, string Location)
     {
-        public static readonly FileType Image = new("IMAGE", "/assets/upload/images");
-        public static readonly FileType Document = new("DOCUMENT", "/assets/upload/documents");
+        public static readonly FileType Image = new("IMAGE", "image");
+        public static readonly FileType Document = new("DOCUMENT", "document");
 
         public static FileType FromName(string name) =>
             name.ToUpper() switch
