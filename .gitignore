@@ -5,6 +5,9 @@
 
 # Secret files
 fu-event-management-firebase-admin-service-account.json
+appsettings.Development.json
+appsettings.json
+
 
 # User-specific files
 *.rsuser
