@@ -16,9 +16,14 @@ namespace FUEM.Application
     {
         public static IHostApplicationBuilder AddUseCases(this IHostApplicationBuilder builder)
         {
+            // Authentication
+            builder.Services.AddTransient<ILogin, Login>();
+            builder.Services.AddTransient<ISignUp, SignUp>();
+
+            // Event
             builder.Services.AddTransient<ICreateEvent, CreateEvent>();
             builder.Services.AddTransient<IGetEventForGuest, GetEventForGuest>();
-            builder.Services.AddTransient<ILogin, Login>();
+            
             return builder;
         }
     }

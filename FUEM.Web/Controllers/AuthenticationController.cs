@@ -14,10 +14,12 @@ namespace FUEM.Web.Controllers
     public class AuthenticationController : Controller
     {
         private readonly ILogin _loginUseCase;
+        private readonly ISignUp _signUpUseCase;
 
-        public AuthenticationController(ILogin loginUseCase)
+        public AuthenticationController(ILogin loginUseCase, ISignUp signUpUseCase)
         {
             _loginUseCase = loginUseCase;
+            _signUpUseCase = signUpUseCase;
         }
 
         [HttpGet]
@@ -74,6 +76,29 @@ namespace FUEM.Web.Controllers
                 return View(); 
             }
         }
-        
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult SignUp()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> SignUp([FromForm]Student student)
+        {
+            try
+            {
+                await _signUpUseCase.ExecuteAsync(student);
+                TempData[ToastType.SuccessMessage.ToString()] = "Sign up successful. You can now log in.";
+                return View("Login");
+            }
+            catch (ArgumentException ex)
+            {
+                TempData[ToastType.ErrorMessage.ToString()] = ex.Message;
+                return View();
+            }
+        }
     }
 }

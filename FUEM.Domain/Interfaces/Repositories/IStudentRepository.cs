@@ -9,6 +9,8 @@ namespace FUEM.Domain.Interfaces.Repositories
 {
     public interface IStudentRepository
     {
-        Task<Student> GetStudentByEmailAsync(string email);
+        Task<Student?> GetStudentByEmailAsync(string email);
+
+        Task AddAsync(Student s);
     }
 }

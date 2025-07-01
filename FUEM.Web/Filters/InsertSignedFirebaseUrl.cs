@@ -14,7 +14,6 @@ namespace FUEM.Web.Filters
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            Console.WriteLine(123);
             if (context.Result is ObjectResult result && result.Value != null)
             {
                ProcessObject(result.Value);
