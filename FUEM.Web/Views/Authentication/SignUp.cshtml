@@ -1,0 +1,54 @@
+﻿@model Student
+
+<h2 class="text-center">Create An Account</h2>
+<p class="text-center text-muted">The faster you fill up, the faster you go to event</p>
+
+<form asp-action="SignUp" method="post" class="w-50 mx-auto">
+    <div class="form-group mb-3">
+        <input asp-for="Fullname" class="form-control" placeholder="Full Name" />
+        <span asp-validation-for="Fullname" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <input asp-for="StudentId" class="form-control" placeholder="Student ID" />
+        <span asp-validation-for="StudentId" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <input asp-for="Email" class="form-control" placeholder="Email Address" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <input id="password" asp-for="Password" type="password" class="form-control" placeholder="Enter Password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <select asp-for="Gender" class="form-control">
+            <option value="">Select Gender</option>
+            <option value="0">Male</option>
+            <option value="1">Female</option>
+            <option value="2">Other</option>
+        </select>
+        <span asp-validation-for="Gender" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-4">
+        <input id="confirm-password" type="password" class="form-control" placeholder="Confirm Password" />
+    </div>
+    <button type="submit" class="btn btn-block text-white" style="background: linear-gradient(to right, #ee0979, #ff6a00);">
+        Sign up
+    </button>
+</form>
+
+<script>
+	document.querySelector('form').addEventListener('submit', function (e) {
+		e.preventDefault();
+        const password = document.getElementById('password').value;
+		const confirmPassword = document.getElementById('confirm-password').value;
+		if (password !== confirmPassword) {
+            toastr.error("Confirm password does not match");
+			return;
+		}
+		this.submit();
+	});
+</script>
+
+@await Html.PartialAsync("_ToastSetUp")
+@await Html.PartialAsync("_ValidationScriptsPartial")

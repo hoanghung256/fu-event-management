@@ -1,4 +1,6 @@
 ﻿using FUEM.Application.Interfaces.EventUseCases;
+using FUEM.Domain.Common;
+using FUEM.Domain.Entities;
 using FUEM.Domain.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
@@ -16,9 +18,9 @@ namespace FUEM.Application.UseCases.EventUseCases
         {
             _repository = repository;
         }
-        public async Task<IEnumerable<Domain.Entities.Event>> GetEventForGuestAsync()
+        public async Task<Page<Event>> GetEventForGuestAsync(int page = 0, int pageSize = 10)
         {
-            return await _repository.GetEventForGuestAsync();
+            return await _repository.GetEventForGuestAsync(page, pageSize);
         }
     }
 }

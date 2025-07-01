@@ -1,15 +1,14 @@
 ﻿@{
     ViewData["Title"] = "Login";
     var error = TempData[ToastType.ErrorMessage.ToString()] as string;
-    Layout = "";
+    Layout = null;
 }
 
 <link rel="stylesheet" href="~/css/login.css"/>
 <link rel="stylesheet" href="~/css/flaticon_expovent.css" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" />
-<script src="/_framework/aspnetcore-browser-refresh.js"></script>
 
-    <div class="login-container">
+<div class="login-container">
     <div class="login-left">
         <div class="logo">
             <img src="./img/logo/logo-fpt.png" alt="FPT Logo" />
@@ -23,7 +22,7 @@
 
         @if (!string.IsNullOrEmpty(error))
         {
-            <div class="error-message">@error</div>
+             <div class="error-message">@error</div>
         }
 
         <form asp-action="Login" method="post">
@@ -38,7 +37,7 @@
             </div>
 
             <div class="form-extra">
-                <label><input type="checkbox" name="isOrganizer" /> Is Organizer</label>
+                @* <label><input type="checkbox" name="isOrganizer" /> Is Organizer</label> *@
                 <a href="#" style="text-decoration:none; color:#000">Forget Password?</a>
             </div>
             <button type="submit" class="sign-in-btn">Sign in</button>
@@ -48,10 +47,13 @@
             </button>
         </form>
 
-        <p class="signup-text">Don't Have An Account? <a href="#">Sign up now</a></p>
+        <p class="signup-text">Don't Have An Account? <a asp-action="SignUp" asp-controller="Authentication">Sign up now</a></p>
     </div>
 
     <div class="login-right">
         <img src="~/img/decorate/sign-in.jpg" alt="Login Image" />
     </div>
 </div>
+
+@await Html.PartialAsync("_ToastSetUp")
+@await Html.PartialAsync("_ValidationScriptsPartial")

@@ -1,6 +1,7 @@
 ﻿using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
+using FUEM.Infrastructure.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,14 +30,14 @@ namespace FUEM.Application.UseCases.UserUseCases
             var stu = await _studentRepository.GetStudentByEmailAsync(email);
             if (stu != null)
             {
-                if (stu.Password.Equals(password))
+                if (Hasher.Verify(password, stu.Password))
                     return stu;
             }
 
             var org = await _organizerRepository.GetOrganizerByEmailAsync(email);
             if (org != null)
             {
-                if (org.Password.Equals(password))
+                if (Hasher.Verify(password, org.Password))
                     return org;
             }
 

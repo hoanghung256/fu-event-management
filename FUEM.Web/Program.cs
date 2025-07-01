@@ -5,6 +5,7 @@ using FUEM.Domain.Entities;
 using FUEM.Domain.Interfaces.Repositories;
 using FUEM.Infrastructure.Persistence;
 using FUEM.Infrastructure.Persistence.Repositories;
+using FUEM.Web.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace FUEM.Web
@@ -36,12 +37,31 @@ namespace FUEM.Web
 
             builder.AddUseCases();
 
+            builder.Services
+                .AddAuthentication("Cookies")
+                .AddCookie("Cookies", options =>
+                {
+                    options.LoginPath = "/Authentication/Login";
+                    options.AccessDeniedPath = "/Error/403";
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                    options.SlidingExpiration = true;
+                });
+
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddScoped<InsertSignedFirebaseUrl>();
+
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add<InsertSignedFirebaseUrl>();
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.  
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error/Exception");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.  
                 app.UseHsts();
             }
@@ -50,6 +70,8 @@ namespace FUEM.Web
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
             app.UseSession();
 

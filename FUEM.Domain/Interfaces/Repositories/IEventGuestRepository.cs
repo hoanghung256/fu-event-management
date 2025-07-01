@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 
 namespace FUEM.Domain.Interfaces.Repositories
 {
-    public interface IStudentRepository
+    public interface IEventGuestRepository
     {
-        Task<Student?> GetStudentByEmailAsync(string email);
-
-        Task AddAsync(Student s);
     }
 }

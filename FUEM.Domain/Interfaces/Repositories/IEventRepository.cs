@@ -1,4 +1,5 @@
-﻿using FUEM.Domain.Entities;
+﻿using FUEM.Domain.Common;
+using FUEM.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace FUEM.Domain.Interfaces.Repositories
 {
     public interface IEventRepository : IRepository<Event>
     {
-        Task<IEnumerable<Event>> GetEventForGuestAsync();
+        Task<Page<Event>> GetEventForGuestAsync(int page, int pageSize);
     }
 }

@@ -4,10 +4,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FUEM.Web</title>
-    <link rel="stylesheet" href="~/theme/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/FUEM.Web.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"/>
+    <link rel="stylesheet" href="~/theme/css/bootstrap.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/meanmenu.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/animate.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/metisMenu.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/swiper-bundle.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/slick.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/backtotop.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/magnific-popup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/flaticon_expovent.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/fontawesome-pro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/spacing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/theme/css/main.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
 </head>
 <body>
     <header>
@@ -42,9 +51,25 @@
             &copy; 2025 - FUEM.Web
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
     <script src="~/theme/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/theme/js/jquery-3.6.0.min.js" asp-append-version="true"></script>
+    <script src="~/theme/js/waypoints.min.js" asp-append-version="true"></script>
+    <script src="~/theme/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/theme/js/apexcharts.min.js" asp-append-version="true"></script>
+    <script src="~/theme/js/metisMenu.min.js" asp-append-version="true"></script>
+    <script src="~/theme/js/meanmenu.min.js" asp-append-version="true"></script>
+    <script src="~/theme/js/swiper-bundle.min.js" asp-append-version="true"></script>
+    <script src="~/theme/js/slick.min.js" asp-append-version="true"></script>
+    <script src="~/theme/js/magnific-popup.min.js" asp-append-version="true"></script>
+    <script src="~/theme/js/backtotop.js" asp-append-version="true"></script>
+    <script src="~/theme/js/counterup.js" asp-append-version="true"></script>
+    <script src="~/theme/js/wow.min.js" asp-append-version="true"></script>
+    <script src="~/theme/js/countdown.js" asp-append-version="true"></script>
+    <script src="~/theme/js/smooth-scrollbar.js" asp-append-version="true"></script>
+    <script src="~/theme/js/ajax-form.js" asp-append-version="true"></script>
+    <script src="~/theme/js/custom.js" asp-append-version="true"></script>
+    <script src="~/theme/js/main.js" asp-append-version="true"></script>
     @await Html.PartialAsync("_ToastSetUp")
     @await RenderSectionAsync("Scripts", required: false)
 </body>

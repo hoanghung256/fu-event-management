@@ -1,4 +1,4 @@
-﻿@model EventListViewModel
+﻿@model Page<Event>
 
 @{
     Layout = "_GuestLayout";
@@ -14,3 +14,5 @@
         }
     </ul>
 </div>
+
+@await Html.PartialAsync("_PaginationControl")

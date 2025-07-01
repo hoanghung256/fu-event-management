@@ -18,8 +18,13 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<Student> GetStudentByEmailAsync(string email)
+        public async Task AddAsync(Student s)
+        {
+            await _context.Students.AddAsync(s);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Student?> GetStudentByEmailAsync(string email)
             => await _context.Students.FirstOrDefaultAsync(s => s.Email == email);
-        
     }
 }
