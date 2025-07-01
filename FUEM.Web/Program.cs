@@ -27,8 +27,8 @@ namespace FUEM.Web
             });
 
             // Get connection string  
-            var connectionString = builder.Configuration.GetConnectionString("Default") 
-                                            ?? throw new InvalidOperationException("Default connection string not found");
+            var connectionString = GetConnectionString(builder);
+            //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
 
             // Register DbContext  
             builder.Services.AddDbContextPool<FUEMDbContext>(options => options.UseSqlServer(connectionString));
@@ -82,6 +82,16 @@ namespace FUEM.Web
                 pattern: "{controller=Authentication}/{action=Login}/{id?}");
 
             app.Run();
+        }
+
+        private static string GetConnectionString(WebApplicationBuilder builder)
+        {
+            string server = builder.Configuration.GetConnectionString("Server");
+            string database = builder.Configuration.GetConnectionString("Database");
+            string username = builder.Configuration.GetConnectionString("UserId");
+            string password = builder.Configuration.GetConnectionString("Password");
+
+            return $"Server={server};Database={database};User ID={username};Password={password};TrustServerCertificate=True;";
         }
     }
 }
