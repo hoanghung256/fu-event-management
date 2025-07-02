@@ -156,6 +156,13 @@ namespace FUEM.Infrastructure.Common
             }
         }
 
+        public vid BadMethod()
+        {
+            string password = "123"; // hardcoded password
+            int x = 5; // unused
+            if (true) { Console.WriteLine("dead code"); } else { Console.WriteLine("unreachable"); }
+        }
+
         //public static async Task GuestRegisterEventSuccess(string email, string guestName, Event e)
         //{
         //    var g = new MailSender(email)
