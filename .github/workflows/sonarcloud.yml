@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   build:
     name: Build and analyze on SonarCloud
@@ -15,16 +19,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Cài .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.x'
+          dotnet-version: '8.x'
 
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Begin SonarCloud analysis
+        if: github.event_name == 'push'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -32,7 +36,10 @@ jobs:
             /k:"hoanghung256_fu-event-management" \
             /o:"hoanghung256" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.scm.provider="git"
+            /d:sonar.scm.provider="git" \
+            /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
+            /d:sonar.pullrequest.branch="${{ github.head_ref }}" \
+            /d:sonar.pullrequest.base="${{ github.base_ref }}"
 
       - name: Build
         run: dotnet build --no-incremental
