@@ -1,8 +1,6 @@
 name: SonarCloud analysis
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
@@ -27,19 +25,7 @@ jobs:
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
 
-      - name: Begin SonarCloud analysis for push
-        if: github.event_name == 'push'
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          dotnet-sonarscanner begin \
-            /k:"hoanghung256_fu-event-management" \
-            /o:"hoanghung256" \
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.scm.provider="git"
-
       - name: Begin SonarCloud analysis for PR
-        if: github.event_name == 'pull_request'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
