@@ -156,7 +156,7 @@ namespace FUEM.Infrastructure.Common
             }
         }
 
-        public vid BadMethod()
+        public void BadMethod()
         {
             string password = "123"; // hardcoded password
             int x = 5; // unused
