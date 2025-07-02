@@ -6,20 +6,40 @@ using System.Threading.Tasks;
 using MimeKit;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
+using System.ComponentModel;
+using System.Reflection;
 
-namespace FUEM.Infrastructure.Common
+namespace FUEM.Infrastructure.Common.MailSender
 {
+    enum EmailTemplate
+    {
+        SendOTP,
+        EventApprovalResult,   // Send to event's creator the approval result of their event
+        GuestRegisterSuccess,   // Send student when they register event as guest successfully
+        NewPendingEvent,    // Send to admin when a new event is created and waiting for admin's approval
+    }
+
     public class MailSender
     {
-        private readonly string smtpHost = "smtp.MailSender.com";
+        private readonly string smtpHost = "smtp.gmail.com";
         private readonly int smtpPort = 587;
-        private readonly string fromEmail = "fpteventmanagementsystem@MailSender.com";
+        private readonly string fromEmail = "fpteventmanagementsystem@gmail.com";
         private readonly string password = "cwca unvn nsub lujp";
+        //private readonly string fromEmail = "hunghvde180038@fpt.edu.vn";
+        //private readonly string password = "tkrs dyhs edzf ukmu"; // for hunghvde180038@fpt.edu.vn
 
         private readonly string toEmail;
         private string contentType = "text/plain";
         private string subject;
         private string content;
+
+        private static readonly Dictionary<EmailTemplate, string> templatePaths = new Dictionary<EmailTemplate, string>
+        {
+            { EmailTemplate.SendOTP, "send-otp.html" },
+            { EmailTemplate.EventApprovalResult, "event-approval-result.html" },
+            { EmailTemplate.GuestRegisterSuccess, "guest-register-success.html" },
+            { EmailTemplate.NewPendingEvent, "new-pending-event.html" },
+        };
 
         private Dictionary<string, string> macrosMap;
 
@@ -126,34 +146,31 @@ namespace FUEM.Infrastructure.Common
         {
             if (content != null || macrosMap == null) return;
 
-            using var client = new System.Net.Http.HttpClient();
+            using var client = new HttpClient();
             var contentStr = await client.GetStringAsync(fileUrl);
 
             InitContent(InsertMacro(contentStr));
             await SendAsync();
         }
 
-        public static async Task SendWithOTP(string email, string otp)
+        public static async Task SendOTPAsync(string email, string otp)
         {
             var g = new MailSender(email)
                 .SetContentType("text/html; charset=UTF-8")
-                .SetSubject("Verify account")
+                .SetSubject("Verify account!")
                 .InitMacro()
-                .AppendMacro("OTP", otp);
+                .AppendMacro("OTP", "1234");
 
-            await g.SendTemplateAsync(new Uri($"localhost/MailSender-template/send-otp.html"));
+            await g.SendTemplateAsync(GetTemplateActualPath(EmailTemplate.SendOTP));
         }
-        public void DoSomething()
+
+        private static string GetTemplateActualPath(EmailTemplate template)
         {
-            int x = 5;   // Unused variable
-            if (true)
-            {
-                Console.WriteLine("Always true branch");
-            }
-            else
-            {
-                Console.WriteLine("Dead code");
-            }
+            string templateName;
+            templatePaths.TryGetValue(template, out templateName);
+            
+            string assemblyPath = AppDomain.CurrentDomain.BaseDirectory;
+            return Path.Combine(assemblyPath, "Common", "MailSender", "Templates", templateName);
         }
 
         //public static async Task GuestRegisterEventSuccess(string email, string guestName, Event e)

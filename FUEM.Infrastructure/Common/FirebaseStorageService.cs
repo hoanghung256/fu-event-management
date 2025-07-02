@@ -43,7 +43,6 @@ namespace FUEM.Infrastructure.Common
             {
                 FirebaseStorageReference? reference = GetStorageReference(fileName);
                 string signedUrl = await reference.GetDownloadUrlAsync();
-                Console.WriteLine(signedUrl);
                 return signedUrl;
             }
             catch (Exception ex)
