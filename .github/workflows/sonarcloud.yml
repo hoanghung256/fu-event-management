@@ -26,14 +26,14 @@ jobs:
         with:
           fetch-depth: 0
       - name: Cache SonarQube packages
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~\.sonar\cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Cache SonarQube scanner
         id: cache-sonar-scanner
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: .\.sonar\scanner
           key: ${{ runner.os }}-sonar-scanner
@@ -47,7 +47,6 @@ jobs:
       - name: Build and analyze
         shell: powershell
         env:
-          # Đảm bảo SONAR_TOKEN được truyền qua biến môi trường để an toàn
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin `
