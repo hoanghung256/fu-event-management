@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="FirebaseAdmin" Version="3.2.0" />
     <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
+    <PackageReference Include="MailKit" Version="4.13.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
       <PrivateAssets>all</PrivateAssets>
@@ -17,6 +18,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.5" />
+    <PackageReference Include="MimeKit" Version="4.13.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +26,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Common\MailSender\Templates\event-approval-result.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Common\MailSender\Templates\example.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Common\MailSender\Templates\example2.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Common\MailSender\Templates\guest-register-success.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Common\MailSender\Templates\new-pending-event.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Common\MailSender\Templates\send-otp.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="fu-event-management-firebase-admin-service-account.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -3,8 +3,10 @@ using FUEM.Domain.Common;
 using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using FUEM.Infrastructure.Common;
+using FUEM.Infrastructure.Common.MailSender;
 using FUEM.Web.Filters;
 using Microsoft.AspNetCore.Authorization;
+//using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace FUEM.Web.Controllers
@@ -67,5 +69,24 @@ namespace FUEM.Web.Controllers
             }
             return RedirectToAction("Test");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SendMail()
+        {
+            try
+            {
+                //await MailSender.SendOTPAsync("hoanghung250604@gmail.com", "1234");
+                await MailSender.SendOTPAsync("khiem30042004@gmail.com", "1234");
+                TempData[ToastType.SuccessMessage.ToString()] = "Send mail success";
+            }
+            catch (Exception ex)
+            {
+                TempData[ToastType.ErrorMessage.ToString()] = ex.Message;
+                Console.WriteLine(ex.Message);
+            }
+
+            return RedirectToAction(nameof(Test));
+        }
+
     }
 }
