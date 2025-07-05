@@ -56,6 +56,8 @@ namespace FUEM.Web
                 options.Filters.Add<InsertSignedFirebaseUrl>();
             });
 
+            builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.  
@@ -75,6 +77,7 @@ namespace FUEM.Web
 
             app.UseSession();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
