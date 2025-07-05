@@ -3,6 +3,7 @@ using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using FUEM.Domain.Enums;
 using Google.Apis.Auth.OAuth2;
+using Microsoft.Extensions.Hosting;
 
 namespace FUEM.Infrastructure.Common
 {
@@ -18,9 +19,9 @@ namespace FUEM.Infrastructure.Common
         //private readonly UrlSigner _urlSigner;
         private readonly FirebaseAuth _auth;
 
-        public FirebaseStorageService()
+        public FirebaseStorageService(IHostEnvironment env)
         {
-            string serviceAccountPath = Path.Combine(AppContext.BaseDirectory, "fu-event-management-firebase-admin-service-account.json");
+            string serviceAccountPath = Path.Combine(AppContext.BaseDirectory, $"fu-event-management-firebase-admin-service-account.{env.EnvironmentName}.json");
 
             if (FirebaseApp.DefaultInstance == null)
             {
