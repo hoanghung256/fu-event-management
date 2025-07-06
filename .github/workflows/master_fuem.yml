@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-      - name: Insert secrets
+      - name: Prepare appsettings.Production.json
         shell: pwsh
         run: |
           $json = Get-Content 'FUEM.Web/appsettings.Production.json' | ConvertFrom-Json
@@ -31,12 +31,10 @@ jobs:
           $json.ConnectionStrings.Password = "${{ secrets.DB_PASSWORD }}"
           $json.ConnectionStrings.Database = "${{ secrets.DB_NAME }}"
           $json | ConvertTo-Json -Depth 10 | Set-Content 'FUEM.Web/appsettings.Production.json'
-          
-          $raw = @'
-${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-'@
-          $fixed = $raw -replace "\\n", "`n"
-          $fixed | Out-File 'FUEM.Infrastructure/fu-event-management-firebase-admin-service-account.Production.json' -Encoding utf8
+
+      - name: Prepare Firebase Service Account file
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > FUEM.Infrastructure/fu-event-management-firebase-admin-service-account.Production.json
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
