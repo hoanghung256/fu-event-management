@@ -32,11 +32,11 @@ jobs:
           $json.ConnectionStrings.Database = "${{ secrets.DB_NAME }}"
           $json | ConvertTo-Json -Depth 10 | Set-Content 'FUEM.Web/appsettings.Production.json'
           
-          $base64 = "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-          [IO.File]::WriteAllBytes(
-            'FUEM.Infrastructure/fu-event-management-firebase-admin-service-account.Production.json',
-            [Convert]::FromBase64String($base64)
-          )
+          $raw = @'
+${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+'@
+          $fixed = $raw -replace "\\n", "`n"
+          $fixed | Out-File 'FUEM.Infrastructure/fu-event-management-firebase-admin-service-account.Production.json' -Encoding utf8
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
