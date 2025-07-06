@@ -49,7 +49,7 @@ namespace FUEM.Web
 
             builder.Services.AddAuthorization();
 
-            builder.Services.AddScoped<InsertSignedFirebaseUrl>();
+            //builder.Services.AddScoped<InsertSignedFirebaseUrl>();
 
             builder.Services.AddControllers(options =>
             {
@@ -73,7 +73,7 @@ namespace FUEM.Web
 
             app.UseRouting();
 
-            app.UseStatusCodePagesWithReExecute("/Error/{0}");
+            //app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
             app.UseSession();
 
