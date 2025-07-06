@@ -6,6 +6,8 @@ using FUEM.Infrastructure.Common;
 using FUEM.Infrastructure.Common.MailSender;
 using FUEM.Web.Filters;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Client.Extensions.Msal;
+
 //using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -15,11 +17,13 @@ namespace FUEM.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IGetEventForGuest _getEventForGuestUseCase;
+        private readonly FirebaseStorageService _storage;
 
-        public HomeController(ILogger<HomeController> logger, IGetEventForGuest getEventForGuestUseCase)
+        public HomeController(ILogger<HomeController> logger, IGetEventForGuest getEventForGuestUseCase, FirebaseStorageService storage)
         {
             _logger = logger;
             _getEventForGuestUseCase = getEventForGuestUseCase;
+            _storage = storage;
         }
 
         [HttpGet]
@@ -35,9 +39,8 @@ namespace FUEM.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Test()
         {
-            var firebase = new FirebaseStorageService();
             string fileName = "image/app/decorate/check-in-page.jpg";
-            var url = await firebase.GetSignedFileUrlAsync(fileName);
+            var url = await _storage.GetSignedFileUrlAsync(fileName);
             ViewBag.FileUrl = url;
             return View();
         }
@@ -52,8 +55,7 @@ namespace FUEM.Web.Controllers
                 {
                     using (var stream = uploadedFile.OpenReadStream())
                     {
-                        FirebaseStorageService firebase = new();
-                        await firebase.UploadFileAsync(FileType.Image, stream, uploadedFile.Name);
+                        await _storage.UploadFileAsync(FileType.Image, stream, uploadedFile.Name);
                     }
 
                     TempData[ToastType.SuccessMessage.ToString()] = "File uploaded successfully!";

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using FUEM.Infrastructure.Common;
 
 namespace FUEM.Infrastructure.Persistence
 {
@@ -17,6 +18,8 @@ namespace FUEM.Infrastructure.Persistence
             builder.Services.AddTransient<IEventRepository, EventRepository>();
             builder.Services.AddTransient<IStudentRepository, StudentRepository>();
             builder.Services.AddTransient<IOrganizerRepository, OrganizerRepository>();
+
+            builder.Services.AddTransient<FirebaseStorageService>();
 
             return builder;
         }
