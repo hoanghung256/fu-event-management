@@ -1,4 +1,4 @@
-using FUEM.Application;
+﻿using FUEM.Application;
 using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Application.UseCases.UserUseCases;
 using FUEM.Domain.Entities;
@@ -19,11 +19,13 @@ namespace FUEM.Web
             // Register controllers and views  
             builder.Services.AddControllersWithViews();
 
+       
+
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromHours(1); 
-                options.Cookie.HttpOnly = true; 
-                options.Cookie.IsEssential = true; 
+                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
 
             // Get connection string  
