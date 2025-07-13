@@ -23,6 +23,7 @@ namespace FUEM.Application
             // Authentication
             builder.Services.AddTransient<ILogin, Login>();
             builder.Services.AddTransient<ISignUp, SignUp>();
+            builder.Services.AddTransient<IForgotPassword, ForgotPassword>();
 
             // Event
             builder.Services.AddTransient<ICreateEvent, CreateEvent>();

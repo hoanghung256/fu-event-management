@@ -12,5 +12,7 @@ namespace FUEM.Domain.Interfaces.Repositories
         Task<Student?> GetStudentByEmailAsync(string email);
 
         Task AddAsync(Student s);
+        Task UpdatePasswordHashAsync(int studentId, string newPasswordHash);
+        Task<string?> GetPasswordHashAsync(int studentId);
     }
 }

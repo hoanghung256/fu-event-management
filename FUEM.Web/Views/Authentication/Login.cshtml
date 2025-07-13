@@ -40,8 +40,8 @@
             </div>
 
             <div class="form-extra">
-                <label><input type="checkbox" name="isOrganizer" /> Is Organizer</label>
-                <a href="#" style="text-decoration:none; color:#000">Forget Password?</a>
+                @* <label><input type="checkbox" name="isOrganizer" /> Is Organizer</label> *@
+                <a asp-action="ForgotPassword" asp-controller="Authentication" style="text-decoration:none; color:#000">Forgot your Password?</a>
             </div>
             <button type="submit" class="sign-in-btn">Sign in</button>
             <button class="google-btn" type="button" onclick="window.location.href='https://accounts.google.com/o/oauth2/auth?scope=email&redirect_uri=https://fuem.azurewebsites.net/login-google&response_type=code&client_id=89142229238-cu1tiul7dl16gs4qigcjsgd0emkk3j0d.apps.googleusercontent.com&approval_prompt=force'">
