@@ -235,6 +235,7 @@ namespace FUEM.Web.Controllers
                 TempData[ToastType.ErrorMessage.ToString()] = ex.Message;
                 return View(model);
             }
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
