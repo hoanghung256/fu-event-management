@@ -18,9 +18,11 @@ namespace FUEM.Application.UseCases.EventUseCases
         {
             _repository = repository;
         }
-        public async Task<Page<Event>> GetEventForGuestAsync(int page = 0, int pageSize = 10)
-        {
-            return await _repository.GetEventForGuestAsync(page, pageSize);
-        }
+
+        public async Task<Page<Event>> GetEventForGuestAsync(int page = 1, int pageSize = 10)
+            => await _repository.GetEventForGuestAsync(page, pageSize);
+
+        public async Task<Page<Event>> SearchEventAsync(SearchEventCriteria criteria, int page = 1, int pageSize = 10)
+            => await _repository.SearchEventAsync(criteria, page, pageSize);
     }
 }

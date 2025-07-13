@@ -1,6 +1,10 @@
-﻿using FUEM.Application.Interfaces.EventUseCases;
+﻿using FUEM.Application.Interfaces.CategoryUseCases;
+using FUEM.Application.Interfaces.EventUseCases;
+using FUEM.Application.Interfaces.OrganizerUseCases;
 using FUEM.Application.Interfaces.UserUseCases;
+using FUEM.Application.UseCases.CategoryUseCases;
 using FUEM.Application.UseCases.EventUseCases;
+using FUEM.Application.UseCases.OrganizerUseCases;
 using FUEM.Application.UseCases.UserUseCases;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,7 +28,13 @@ namespace FUEM.Application
             // Event
             builder.Services.AddTransient<ICreateEvent, CreateEvent>();
             builder.Services.AddTransient<IGetEventForGuest, GetEventForGuest>();
-            
+
+            //Category
+            builder.Services.AddTransient<IGetAllCategories, GetAllCategories>();
+
+            //Organizer
+            builder.Services.AddTransient<IGetAllOrganizers, GetAllOrganizers>();
+
             return builder;
         }
     }
