@@ -18,6 +18,7 @@ namespace FUEM.Infrastructure.Persistence
             builder.Services.AddTransient<IEventRepository, EventRepository>();
             builder.Services.AddTransient<IStudentRepository, StudentRepository>();
             builder.Services.AddTransient<IOrganizerRepository, OrganizerRepository>();
+            builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 
             builder.Services.AddTransient<FirebaseStorageService>();
 

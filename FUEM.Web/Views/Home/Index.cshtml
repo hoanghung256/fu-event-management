@@ -1,18 +1,144 @@
-﻿@model Page<Event>
+﻿@model FUEM.Web.ViewModels.EventListViewModel
 
 @{
     Layout = "_GuestLayout";
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
+
+    var fromDateStr = Model.SearchCriteria?.FromDate?.ToString("yyyy-MM-dd");
+    var toDateStr = Model.SearchCriteria?.ToDate?.ToString("yyyy-MM-dd");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <ul class="list-unstyled">
-        @foreach (var e in Model.Items)
-        {
-            <li>@e.Fullname</li>
-        }
-    </ul>
-</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link href="~/theme/css/home.css" rel="stylesheet" />
 
-@await Html.PartialAsync("_PaginationControl")
+
+<section class="container event-section">
+    <form method="get" class="search-bar d-flex align-items-center gap-2" style="padding-bottom:10px; width:90%; justify-self:center;">
+        <input type="hidden" name="isFind" value="true" />
+
+        <input type="text" name="Name" class="form-control search-input" placeholder="Search event name..." value="@Model.SearchCriteria?.Name" />
+
+        <select name="CategoryId" class="form-select search-input">
+            <option value="">Select Category</option>
+            @foreach (var c in (IEnumerable<FUEM.Domain.Entities.Category>)ViewData["Categories"])
+            {
+                var isSelected = c.Id == Model.SearchCriteria?.CategoryId;
+                <option value="@c.Id" selected="@(isSelected ? "selected" : null)">@c.CategoryName</option>
+            }
+        </select>
+
+        <select name="OrganizerId" class="form-select search-input">
+            <option value="">Select Organizer</option>
+            @foreach (var o in (IEnumerable<FUEM.Domain.Entities.Organizer>)ViewData["Organizers"])
+            {
+                var isSelected = o.Id == Model.SearchCriteria?.OrganizerId;
+                <option value="@o.Id" selected="@(isSelected ? "selected" : null)">@o.Fullname</option>
+            }
+        </select>
+
+        <input type="date" name="FromDate" class="form-control search-input" value="@fromDateStr" placeholder="From" />
+        <input type="date" name="ToDate" class="form-control search-input" value="@toDateStr" placeholder="To" />
+
+        <button type="submit" class="btn btn-outline-warning search-btn">Find</button>
+    </form>
+    <hr class="search-underline" />
+
+    <section class="container mt-4 event-section">
+        @if (Model.Items == null || !Model.Items.Any())
+        {
+            <div class="text-center mt-5 mb-5" style="font-size: 18px; color: #555;">
+                No events found. Try changing your filters 🧐
+            </div>
+
+        }
+        else
+        {
+            @foreach (var e in Model.Items)
+            {
+                <div class="event-card">
+                    <div class="event-image-container">
+                        @* <img src="@(string.IsNullOrEmpty(e.EventImages?.FirstOrDefault()?.Path) ? "https://placehold.co/400x250?text=FUEM" : e.EventImages.First().Path)" alt="@e.Fullname" /> *@
+                        <img src="https://placehold.co/400x250?text=FUEM" alt="@e.Fullname" />
+                        <div class="post-date">
+                            <div class="date">@e.DateOfEvent?.ToString("dd")</div> <span>/</span>
+                            <div class="month">@e.DateOfEvent?.ToString("MM")</div> <span>/</span>
+                            <div class="year">@e.DateOfEvent?.ToString("yyyy")</div>
+                        </div>
+                    </div>
+                    <div class="event-content">
+                        <div class="event-header">
+                            <div class="event-title">
+                                <h3><strong>@e.Fullname</strong></h3>
+                            </div>
+                            <div class="organizer-info">
+                                <small>Organizer:</small>
+                                <span>@e.Organizer?.Fullname</span>
+                            </div>
+                        </div>
+
+                        <div class="register-deadline mb-2">
+                            <div class="deadline-item">
+                                <div>
+                                    <small>Register Deadline:</small>
+                                    <span>@(e.GuestRegisterDeadline?.ToString("dd/MM/yyyy") ?? "TBA")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="event-description">@e.Description?.Substring(0, Math.Min(200, e.Description.Length))...</p>
+
+                        <div class="event-footer">
+                            <div class="event-type-badge @(e.Category?.CategoryName?.ToLower().Replace(" ", ""))">
+                                @{
+                                    var categoryIcon = "fa-solid fa-calendar-days";
+                                    var categoryText = e.Category?.CategoryName?.ToUpper() ?? "EVENT";
+                                    switch (e.Category?.CategoryName?.ToLower())
+                                    {
+                                        case "workshop": categoryIcon = "fa-solid fa-calendar-days"; break;
+                                        case "competition": categoryIcon = "fa-solid fa-trophy"; break;
+                                        case "conference": categoryIcon = "fa-solid fa-users"; break;
+                                        case "seminar": categoryIcon = "fa-solid fa-lightbulb"; break;
+                                        case "cultural event": categoryIcon = "fa-solid fa-music"; break;
+                                        default: categoryIcon = "fa-solid fa-bars"; break;
+                                    }
+                                }
+                                <i class="@categoryIcon"></i> @categoryText
+                            </div>
+                            <div class="location-info">
+                                <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
+                                @* <span>@e.Location?.LocationName</span> *@
+                                <span>@e.Location?.LocationName</span>
+                            </div>
+                            <div class="registration-info">
+                                <div class="icon"><i class="fa-solid fa-users"></i></div>
+                                <span>@e.GuestRegisterCount / @e.GuestRegisterLimit registered</span>
+                            </div>
+                            <a href="@Url.Action("Detail", "Event", new { id = e.Id })" class="btn btn-outline-warning tickets-details-btn">Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </section>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="d-flex justify-content-center">
+            <ul class="pagination">
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.CurrentPage - 1, pageSize = 10, Name = Model.SearchCriteria?.Name, CategoryId = Model.SearchCriteria?.CategoryId, OrganizerId = Model.SearchCriteria?.OrganizerId, FromDate = fromDateStr, ToDate = toDateStr, isFind = true })">Previous</a>
+                </li>
+                <li class="page-item">
+                    <span class="page-link">Page @Model.CurrentPage of @Model.TotalPages</span>
+                </li>
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.CurrentPage + 1, pageSize = 10, Name = Model.SearchCriteria?.Name, CategoryId = Model.SearchCriteria?.CategoryId, OrganizerId = Model.SearchCriteria?.OrganizerId, FromDate = fromDateStr, ToDate = toDateStr, isFind = true })">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+}

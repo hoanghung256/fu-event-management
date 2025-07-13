@@ -1,216 +1,334 @@
-/*
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
-*/
-/* 
-    Created on : Sep 27, 2024, 8:33:17 AM
-    Author     : This PC
-*/
+.event-section {
+    font-family: 'Segoe UI', sans-serif;
+    padding: 20px 0;
+}
 
-.event-section .search-result-form {
-    position: relative;
-    margin-bottom: 30px;
-    padding-right: 100px;
+/* Search */
+.search-bar {
+    margin-bottom: 20px;
+    gap: 10px;
 }
-.event-section .search-result-form ul {
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-    display: table;
-}
-.event-section .search-result-form ul li {
-    float: left;
-    min-width: 100px;
-    list-style: none;
-    margin-right: 30px;
-    display: inline-block;
-}
-.event-section .search-result-form ul li:last-child {
-    margin-right: 0px;
-}
-.event-section .search-result-form ul li .result-text {
-    font-weight: 600;
-    color: #878787;
-    font-size: 16px;
-}
-.event-section .search-result-form ul li #year-select,
-.event-section .search-result-form ul li #munth-select {
-    margin: 0px;
+
+    .search-bar .search-input {
+        min-width: 160px;
+        height: 38px;
+        font-size: 14px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 0 12px;
+        background-color: #fff;
+        box-shadow: none;
+    }
+
+    .search-bar select.search-input {
+        padding-right: 30px;
+    }
+
+    .search-bar input[type="date"]::-webkit-calendar-picker-indicator {
+        color: transparent;
+        opacity: 1;
+        background: url('/images/calendar-icon.svg') no-repeat center;
+        background-size: 16px;
+    }
+
+    .search-bar .search-btn {
+        height: 38px;
+        font-size: 14px;
+        padding: 0 16px;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+        .search-bar .search-btn:hover {
+            height: 38px;
+            font-size: 14px;
+            padding: 0 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            background-color: #ffc008;
+            color: white;
+        }
+
+.search-underline {
     border: none;
-    padding: 0px;
-    position: relative;
-    padding-right: 20px;
-    display: inline-block;
-    -webkit-appearance: none;
-    background: transparent url(../images/2.down-arrow.png) no-repeat right 0px center;
-}
-.event-section .search-result-form ul li label {
-    float: left;
-    margin: 0px;
-    margin-right: 5px;
-}
-.event-section .search-result-form .event-layout-btngroup {
-    right: 0;
-    bottom: 0;
-    width: auto;
-    display: table;
-    position: absolute;
-}
-.event-section .search-result-form .event-layout-btngroup li {
-    width: auto;
-    min-width: auto;
-    line-height: 0px;
-    margin-right: 10px;
-}
-.event-section .search-result-form .event-layout-btngroup li:last-child {
-    margin-right: 0px;
-}
-.event-section .search-result-form .event-layout-btngroup li a {
-    line-height: 0px;
-    color: #878787;
-    font-size: 24px;
-}
-.event-section .search-result-form .event-layout-btngroup li > .active {
-    color: #333333;
+    border-top: 2px solid #ddd;
+    width: 100%;
+    margin: 0 auto 30px auto;
 }
 
-.event-section .event-list-item {
-    padding: 15px;
-    margin-bottom: 15px;
-    background-color: #ffffff;
-    -webkit-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
-    border: 1px solid #f0f0f0;
+
+/* Event List */
+.event-card {
+    display: flex;
+    gap: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    padding: 20px;
+    align-items: flex-start;
 }
-.event-section .event-list-item .event-image {
-    float: left;
-    width: 250px;
+
+.event-image-container {
+    position: relative;
+    width: 400px;
     height: 250px;
-    overflow: hidden;
-    position: relative;
-    margin-right: 30px;
+    flex-shrink: 0;
 }
-.event-section .event-list-item .event-image img {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-.event-section .event-list-item .event-image .post-date {
-    top: 0px;
-    left: 0px;
-    z-index: 1;
-    width: 70px;
-    height: 70px;
-    padding: 10px;
-    text-align: center;
+
+    .event-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+.post-date {
+    display: flex;
     position: absolute;
-    color: #ffffff;
-    background: -webkit-gradient(linear, left top, right bottom, from(#ff3e00), to(#ffbe30));
-    background: -webkit-linear-gradient(top left, #ff3e00, #ffbe30);
-    background: -o-linear-gradient(top left, #ff3e00, #ffbe30);
-    background: linear-gradient(to bottom right, #ff3e00, #ffbe30);
-}
-.event-section .event-list-item .event-image .post-date .date {
-    font-weight: 900;
-    font-size: 24px;
-    font-family: "Roboto", sans-serif;
-}
-.event-section .event-list-item .event-image .post-date .month {
-    font-size: 16px;
-    text-transform: uppercase;
-}
-.event-section .event-list-item .event-content {
-    display: table;
-    padding: 10px 0px;
-}
-.event-section .event-list-item .event-content .event-title {
-    position: relative;
-}
-.event-section .event-list-item .event-content .event-title:after {
-    top: 0;
-    width: 6px;
-    left: -33px;
-    bottom: 0px;
-    content: '';
-    height: 100%;
-    position: absolute;
-    background-color: #ffbe30;
-}
-.event-section .event-list-item .event-content .event-title .title {
-    margin: 0px;
-    font-weight: 400;
-    color: #333333;
-    font-size: 24px;
-}
-.event-section .event-list-item .event-content .event-title .title strong {
-    font-weight: 900;
-}
-.event-section .event-list-item .event-content .event-info-list ul li {
-    margin-right: 10px;
-}
-.event-section .event-list-item .event-content .event-info-list ul li:last-child {
-    margin-right: 0px;
-}
-.event-section .event-list-item .event-content .event-info-list ul li .icon {
-    float: left;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
+    top: 10px;
+    left: 10px;
+    background-color: #f55b36;
+    color: #fff;
     text-align: center;
-    margin-right: 10px;
-    color: #ffffff;
-    border-radius: 100%;
-    background-color: #ffbe30;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
 }
-.event-section .event-list-item .event-content .event-info-list ul li .info-content {
-    display: table;
+
+    .post-date .date .month .year{
+        font-size: 16px;
+    }
+
+.event-content {
+    flex: 1;
+    display: flex;
+    height: 250px;
+    flex-direction: column;
+    justify-content: space-between;
 }
-.event-section .event-list-item .event-content .event-info-list ul li .info-content small {
-    font-weight: 700;
-    font-size: 14px;
+
+.event-title h3 {
+    font-size: 20px;
+    margin-bottom: 5px;
 }
-.event-section .event-list-item .event-content .event-info-list ul li .info-content h3 {
-    font-weight: 900;
-    font-size: 18px;
+
+.deadline-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
-.event-section .event-list-item .event-content .tickets-details-btn {
-    z-index: 1;
+
+.event-description {
+    color: #666;
+    margin-bottom: 11px;
+}
+
+.event-footer {
+    display: flex;
+    gap: 100px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.event-type-badge {
     font-weight: 600;
-    overflow: hidden;
-    padding: 15px 45px;
-    position: relative;
-    border-radius: 30px;
-    color: #878787;
-    font-size: 14px;
-    text-transform: uppercase;
-    background: #f7f7f7;
+    color: #f55b36;
 }
-.event-section .event-list-item .event-content .tickets-details-btn:before {
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
-    z-index: -1;
-    content: '';
-    position: absolute;
-    border-radius: 30px;
-    background: -webkit-gradient(linear, left top, right bottom, from(#ff3e00), to(#ffbe30));
-    background: -webkit-linear-gradient(top left, #ff3e00, #ffbe30);
-    background: -o-linear-gradient(top left, #ff3e00, #ffbe30);
-    background: linear-gradient(to bottom right, #ff3e00, #ffbe30);
-    -webkit-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
+
+    .event-type-badge i {
+        margin-right: 6px;
+    }
+
+.location-info,
+.registration-info{
+    display: flex;
+    gap: 10px;
 }
-.event-section .event-list-item .event-content .tickets-details-btn:hover {
-    color: #ffffff;
-    background: #ffbe30;
+
+.location-info .icon,
+.registration-info .icon,
+.deadline-item .icon {
+    color: #f55b36 !important;
+    display: flex;
+    align-items: center;
 }
-.event-section .event-list-item .event-content .tickets-details-btn:hover:before {
-    opacity: 1;
+
+.organizer-info small,
+.register-deadline small {
+    color: #666;
+    font-weight: 600;
+    font-size: 16px;
 }
-.event-section .event-list-item:hover {
-    border-color: #ffbe30;
+
+.organizer-info span,
+.register-deadline span {
+    color: #888;
+}
+.tickets-details-btn {
+    margin-left: auto;
+    white-space: nowrap;
+    padding: 10px 20px;
+}
+
+    .tickets-details-btn:hover {
+        background-color: #ffc008;
+        color: white;
+    }
+
+/* Paging */
+.pagination {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+    .pagination .page-item {
+        list-style: none;
+    }
+
+    .pagination .page-link {
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        color: #444;
+        background-color: #fff;
+        transition: 0.3s;
+        font-weight: 600;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #ccc;
+        pointer-events: none;
+        background: #f9f9f9;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #ffc107;
+        color: #fff;
+        border-color: #ffc107;
+    }
+
+@media (max-width: 1200px) {
+    .event-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .event-image-container {
+        width: 100%;
+        height: auto;
+    }
+
+        .event-image-container img {
+            height: auto;
+        }
+
+    .tickets-details-btn {
+        margin-left: 0;
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 992px) {
+    .event-card {
+        padding: 15px;
+    }
+
+    .event-title h3 {
+        font-size: 18px;
+    }
+
+    .event-description {
+        font-size: 14px;
+    }
+
+    .event-type-badge,
+    .location-info,
+    .registration-info {
+        font-size: 14px;
+    }
+
+    .event-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .tickets-details-btn {
+        align-self: flex-end;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .search-bar .search-input,
+        .search-bar .search-btn {
+            width: 100%;
+        }
+
+    .event-title h3 {
+        font-size: 17px;
+    }
+
+    .event-description {
+        font-size: 13px;
+    }
+
+    .event-type-badge,
+    .location-info,
+    .registration-info {
+        font-size: 13px;
+    }
+
+    .tickets-details-btn {
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .event-card {
+        padding: 12px;
+    }
+
+    .event-title h3 {
+        font-size: 16px;
+    }
+
+    .organizer-info small,
+    .register-deadline small,
+    .register-deadline span {
+        font-size: 13px;
+    }
+
+    .event-description {
+        font-size: 12px;
+    }
+
+    .event-type-badge i {
+        font-size: 13px;
+    }
+
+    .location-info span,
+    .registration-info span {
+        font-size: 13px;
+    }
+
+    .tickets-details-btn {
+        font-size: 12px;
+    }
+
+    .post-date .date {
+        font-size: 18px;
+    }
+
+    .post-date .month {
+        font-size: 11px;
+    }
 }
