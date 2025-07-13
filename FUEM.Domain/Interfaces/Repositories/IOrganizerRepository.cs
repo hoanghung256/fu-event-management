@@ -10,5 +10,6 @@ namespace FUEM.Domain.Interfaces.Repositories
     public interface IOrganizerRepository
     {
         Task<Organizer> GetOrganizerByEmailAsync(string email);
+        Task UpdatePasswordHashAsync(int id, string newPasswordHash);
     }
 }
