@@ -3,6 +3,7 @@ using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
@@ -67,7 +68,7 @@ namespace FUEM.Web.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                TempData[ToastType.ErrorMessage.ToString()] = "Login failed.";
+                TempData[ToastType.InfoMessage.ToString()] = $"Login Successfully";
                 return View();
             }
             catch (Exception ex)
@@ -99,6 +100,14 @@ namespace FUEM.Web.Controllers
                 TempData[ToastType.ErrorMessage.ToString()] = ex.Message;
                 return View();
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login");
         }
     }
 }
