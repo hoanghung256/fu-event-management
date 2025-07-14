@@ -41,19 +41,19 @@ namespace FUEM.Web.Controllers
                 if (user != null)
                 {
                     int userId = 0;
-                    Role role = user is Student ? Role.Student : Role.Organizer;
+                    Role? role = Role.Student;
                     HttpContext.Session.SetString("Email", email);
                     if (user is Student)
                     {
                         userId = ((Student)user).Id;
-                        HttpContext.Session.SetString("Role", Role.Student.ToString());
+                        //HttpContext.Session.SetString("Role", Role.Student.ToString()); 
                     }
                     else if (user is Organizer)
                     {
                         userId = ((Organizer)user).Id;
                         bool isAdmin = ((Organizer)user).IsAdmin ?? false;
-                        role = isAdmin ? Role.Admin : Role.Organizer;
-                        HttpContext.Session.SetString("Role", Role.Organizer.ToString());
+                        role = isAdmin ? Role.Admin : Role.Club;
+                        //HttpContext.Session.SetString("Role", role.ToString());
                     }
 
                     var claims = new List<Claim>

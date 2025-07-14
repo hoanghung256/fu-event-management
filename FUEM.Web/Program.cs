@@ -19,7 +19,7 @@ namespace FUEM.Web
             // Register controllers and views  
             builder.Services.AddControllersWithViews();
 
-       
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddSession(options =>
             {
@@ -58,7 +58,7 @@ namespace FUEM.Web
                 options.Filters.Add<InsertSignedFirebaseUrl>();
             });
 
-            builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+            //builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true && options.AppendTrailingSlash);
 
             var app = builder.Build();
 
