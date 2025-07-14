@@ -159,7 +159,7 @@ namespace FUEM.Infrastructure.Common.MailSender
                 .SetContentType("text/html; charset=UTF-8")
                 .SetSubject("Verify account!")
                 .InitMacro()
-                .AppendMacro("OTP", "1234");
+                .AppendMacro("OTP", otp);
 
             await g.SendTemplateAsync(GetTemplateActualPath(EmailTemplate.SendOTP));
         }
