@@ -1,76 +1,83 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
+<html class="no-js" lang="en" style="--clr-theme-1: #ff6f00 !important;">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - FUEM.Web</title>
-    <link rel="stylesheet" href="~/theme/css/bootstrap.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/meanmenu.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/animate.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/metisMenu.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/swiper-bundle.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/slick.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/backtotop.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/magnific-popup.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/flaticon_expovent.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/fontawesome-pro.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/spacing.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/theme/css/main.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>FUEM - Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-style-mode" content="1" />
+    <link rel="shortcut icon" type="image/x-icon" href="@Url.Content("~/img/logo/logo-fpt-small.svg")" />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="@Url.Content("~/theme/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/theme/css/meanmenu.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/theme/css/animate.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/theme/css/metisMenu.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/theme/css/fontawesome-pro.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/theme/css/main.css")" />
+
+    <style>
+        .expovent__sidebar a, .expovent__sidebar li {
+            color: white !important;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FUEM.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+<body class="body-area">
+    <!-- Sidebar -->
+    <div class="expovent__sidebar" style="background-color: #000;">
+        <div class="logo-details">
+            <a href="@Url.Action("Dashboard", "Admin")">
+                <img class="logo__white" src="@Url.Content("~/img/logo/logo-fpt-small.svg")" alt="logo" />
+            </a>
+        </div>
+        <ul class="metismenu" id="menu">
+            <li><a href="@Url.Action("Dashboard", "Admin")"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="@Url.Action("RegisterEvent", "Admin")"><i class="fa-solid fa-square-plus"></i> Create Event</a></li>
+            <li><a href="@Url.Action("OrganizedEvent", "Admin")"><i class="fa-solid fa-calendar-check"></i> Organized Events</a></li>
+            <li><a href="@Url.Action("ApprovalEvents", "Admin", new { action = "show" })"><i class="fa-solid fa-hourglass-end"></i> Pending Events</a></li>
+            <li><a href="@Url.Action("File", "Admin")"><i class="fa-solid fa-file"></i> Review Files</a></li>
+            <li>
+                <a href="#"><i class="fa-solid fa-user"></i> User Management</a>
+                <ul>
+                    <li><a href="@Url.Action("ManageStudent", "Admin")">Student Accounts</a></li>
+                    <li><a href="@Url.Action("ManageClubs", "Admin")">Club Accounts</a></li>
+                </ul>
+            </li>
+            <li><a href="@Url.Action("SignOut", "Authentication")"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        </ul>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - FUEM.Web
+    <!-- Header -->
+    <div class="app__header__area">
+        <div class="app__header-inner">
+            <div class="user__portfolio">
+                <div class="user__portfolio-thumb">
+                    <img src="@Url.Content(HttpContextAccessor.HttpContext.Session.GetString("avatarPath") ?? "~/img/logo/logo-fpt.png")"
+                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                </div>
+                <div class="user__content">
+                    <span>@(HttpContextAccessor.HttpContext.Session.GetString("fullname") ?? "Guest")</span>
+                </div>
+            </div>
         </div>
-    </footer>
-    @* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
-    <script src="~/theme/js/bootstrap.bundle.min.js"></script>
-    <script src="~/theme/js/jquery-3.6.0.min.js" asp-append-version="true"></script>
-    <script src="~/theme/js/waypoints.min.js" asp-append-version="true"></script>
-    <script src="~/theme/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
-    <script src="~/theme/js/apexcharts.min.js" asp-append-version="true"></script>
-    <script src="~/theme/js/metisMenu.min.js" asp-append-version="true"></script>
-    <script src="~/theme/js/meanmenu.min.js" asp-append-version="true"></script>
-    <script src="~/theme/js/swiper-bundle.min.js" asp-append-version="true"></script>
-    <script src="~/theme/js/slick.min.js" asp-append-version="true"></script>
-    <script src="~/theme/js/magnific-popup.min.js" asp-append-version="true"></script>
-    <script src="~/theme/js/backtotop.js" asp-append-version="true"></script>
-    <script src="~/theme/js/counterup.js" asp-append-version="true"></script>
-    <script src="~/theme/js/wow.min.js" asp-append-version="true"></script>
-    <script src="~/theme/js/countdown.js" asp-append-version="true"></script>
-    <script src="~/theme/js/smooth-scrollbar.js" asp-append-version="true"></script>
-    <script src="~/theme/js/ajax-form.js" asp-append-version="true"></script>
-    <script src="~/theme/js/custom.js" asp-append-version="true"></script>
-    <script src="~/theme/js/main.js" asp-append-version="true"></script>
-    @await Html.PartialAsync("_ToastSetUp")
-    @await RenderSectionAsync("Scripts", required: false)
+    </div>
+
+    <!-- Main Content -->
+    <div class="page__body-wrapper" style="padding: 2rem;">
+        @RenderBody()
+    </div>
+
+    <!-- Scripts -->
+    <script src="@Url.Content("~/theme/js/jquery-3.6.0.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/bootstrap.bundle.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/metisMenu.min.js")"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#menu').metisMenu();
+        });
+    </script>
 </body>
 </html>
