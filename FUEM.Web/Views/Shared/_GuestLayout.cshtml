@@ -28,7 +28,7 @@
             min-height: 100vh; /* Đảm bảo body chiếm toàn bộ chiều cao viewport */
             margin: 0;
             flex-direction: row; /* Sidebar và nội dung chính nằm cạnh nhau */
-            overflow: hidden; /* Ngăn thanh cuộn ngang không mong muốn */
+          
         }
 
         .expovent__sidebar .logo-details {
@@ -43,104 +43,104 @@
             padding-bottom: 5px; /* Điều chỉnh để đẩy lên một chút nếu cần */
         }
 
-        /* Đảm bảo logo nhỏ và logo chữ được căn giữa theo chiều dọc trong .logo-details */
-        .expovent__sidebar .logo-details .logo__white,
-        .expovent__sidebar .logo-details .log__smnall {
-            vertical-align: middle; /* Đảm bảo căn giữa theo chiều dọc nếu không phải flex */
-            /* Nếu vẫn lệch, có thể dùng margin-top/bottom hoặc transform */
-        }
+            /* Đảm bảo logo nhỏ và logo chữ được căn giữa theo chiều dọc trong .logo-details */
+            .expovent__sidebar .logo-details .logo__white,
+            .expovent__sidebar .logo-details .log__smnall {
+                vertical-align: middle; /* Đảm bảo căn giữa theo chiều dọc nếu không phải flex */
+                /* Nếu vẫn lệch, có thể dùng margin-top/bottom hoặc transform */
+            }
 
-        /* Điều chỉnh margin cho logo__white để nó không bị lệch so với logo chữ */
-        .expovent__sidebar .logo-details .logo__white {
-            max-width: 60px; /* Kích thước cho logo nhỏ (fpt icon) */
-            height: auto;
-            transition: opacity 0.3s ease, margin-right 0.3s ease;
-            /* Thêm hoặc điều chỉnh margin-right nếu cần một khoảng cách nhỏ giữa 2 logo */
-            margin-right: 5px; /* Khoảng cách nhỏ giữa icon FPT và chữ FPT University */
+            /* Điều chỉnh margin cho logo__white để nó không bị lệch so với logo chữ */
+            .expovent__sidebar .logo-details .logo__white {
+                max-width: 60px; /* Kích thước cho logo nhỏ (fpt icon) */
+                height: auto;
+                transition: opacity 0.3s ease, margin-right 0.3s ease;
+                /* Thêm hoặc điều chỉnh margin-right nếu cần một khoảng cách nhỏ giữa 2 logo */
+                margin-right: 5px; /* Khoảng cách nhỏ giữa icon FPT và chữ FPT University */
+            }
+
+        .expovent__sidebar.collapsed .logo-details .logo__white {
+            margin-right: 0; /* Loại bỏ margin khi thu gọn để icon nằm giữa */
         }
 
         .expovent__sidebar.collapsed .logo-details .logo__white {
             margin-right: 0; /* Loại bỏ margin khi thu gọn để icon nằm giữa */
         }
 
-            .expovent__sidebar.collapsed .logo-details .logo__white {
-                margin-right: 0; /* Loại bỏ margin khi thu gọn để icon nằm giữa */
+
+        .expovent__sidebar .logo-details .log__smnall { /* Logo chữ "FPT UNIVERSITY" */
+            max-width: 140px; /* Chiều rộng gốc */
+            margin-left: 1rem;
+            transition: opacity 0.3s ease, width 0.3s ease, margin-left 0.3s ease;
+        }
+
+        .expovent__sidebar.collapsed .logo-details .log__smnall {
+            opacity: 0; /* Ẩn logo chữ */
+            width: 0; /* Co lại chiều rộng */
+            margin-left: 0; /* Bỏ margin */
+        }
+
+        .expovent__sidebar .sidebar__inner {
+            flex-grow: 1; /* Cho phép menu chiếm hết không gian còn lại */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .expovent__sidebar ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            flex-grow: 1; /* Cho phép menu đẩy copyright xuống dưới */
+        }
+
+            .expovent__sidebar ul li {
+                margin-bottom: 12px;
             }
 
-
-            .expovent__sidebar .logo-details .log__smnall { /* Logo chữ "FPT UNIVERSITY" */
-                max-width: 140px; /* Chiều rộng gốc */
-                margin-left: 1rem;
-                transition: opacity 0.3s ease, width 0.3s ease, margin-left 0.3s ease;
-            }
-
-            .expovent__sidebar.collapsed .logo-details .log__smnall {
-                opacity: 0; /* Ẩn logo chữ */
-                width: 0; /* Co lại chiều rộng */
-                margin-left: 0; /* Bỏ margin */
-            }
-
-            .expovent__sidebar .sidebar__inner {
-                flex-grow: 1; /* Cho phép menu chiếm hết không gian còn lại */
-                display: flex;
-                flex-direction: column;
-            }
-
-            .expovent__sidebar ul {
-                list-style: none;
-                padding-left: 0;
-                margin: 0;
-                flex-grow: 1; /* Cho phép menu đẩy copyright xuống dưới */
-            }
-
-                .expovent__sidebar ul li {
-                    margin-bottom: 12px;
+                .expovent__sidebar ul li a {
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 14px;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    transition: background-color 0.3s ease, padding 0.3s ease;
+                    white-space: nowrap; /* Ngăn không cho văn bản xuống dòng */
+                    overflow: hidden; /* Ẩn văn bản khi thu gọn */
+                    justify-content: flex-start; /* Mặc định căn trái */
                 }
 
-                    .expovent__sidebar ul li a {
-                        display: flex;
-                        align-items: center;
-                        padding: 10px 14px;
-                        color: white;
-                        text-decoration: none;
-                        border-radius: 8px;
-                        transition: background-color 0.3s ease, padding 0.3s ease;
-                        white-space: nowrap; /* Ngăn không cho văn bản xuống dòng */
-                        overflow: hidden; /* Ẩn văn bản khi thu gọn */
-                        justify-content: flex-start; /* Mặc định căn trái */
-                    }
+        /* Căn giữa icon khi sidebar thu gọn */
+        .expovent__sidebar.collapsed ul li a {
+            justify-content: center; /* Căn giữa icon */
+            padding: 10px 0; /* Điều chỉnh padding ngang khi thu gọn */
+        }
 
-            /* Căn giữa icon khi sidebar thu gọn */
-            .expovent__sidebar.collapsed ul li a {
-                justify-content: center; /* Căn giữa icon */
-                padding: 10px 0; /* Điều chỉnh padding ngang khi thu gọn */
-            }
+        .expovent__sidebar ul li a i {
+            margin-right: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
 
-            .expovent__sidebar ul li a i {
-                margin-right: 10px;
-                min-width: 20px;
-                text-align: center;
-            }
+        .expovent__sidebar.collapsed ul li a i {
+            margin-right: 0; /* Bỏ margin để icon nằm giữa hoàn toàn */
+        }
 
-            .expovent__sidebar.collapsed ul li a i {
-                margin-right: 0; /* Bỏ margin để icon nằm giữa hoàn toàn */
-            }
+        .expovent__sidebar ul li a:hover {
+            background-color: #ff6f00;
+            padding-left: 18px; /* Hiệu ứng padding khi hover */
+        }
 
-            .expovent__sidebar ul li a:hover {
-                background-color: #ff6f00;
-                padding-left: 18px; /* Hiệu ứng padding khi hover */
-            }
-
-            .expovent__sidebar.collapsed ul li a:hover {
-                padding-left: 0; /* Không có padding thêm khi thu gọn và hover */
-            }
+        .expovent__sidebar.collapsed ul li a:hover {
+            padding-left: 0; /* Không có padding thêm khi thu gọn và hover */
+        }
 
 
-            .expovent__sidebar.collapsed .nav-text {
-                opacity: 0;
-                width: 0;
-                display: none; /* Ẩn hoàn toàn văn bản */
-            }
+        .expovent__sidebar.collapsed .nav-text {
+            opacity: 0;
+            width: 0;
+            display: none; /* Ẩn hoàn toàn văn bản */
+        }
 
         /* --- Sửa lỗi căn chỉnh Footer (Copyright) --- */
         .sidebar__copyright {
@@ -166,13 +166,12 @@
 
 
         /* --- Khu vực nội dung chính --- */
-       /* --- Khu vực nội dung chính --- */
+        /* --- Khu vực nội dung chính --- */
         .page__body-wrapper {
-            flex-grow: 1; /* Cho phép nội dung chính chiếm hết không gian còn lại */
+            flex-grow: 1; 
             display: flex;
             flex-direction: column;
-            background-color: #f5f5f5; /* Nền xám nhạt cho nội dung */
-            /* Thêm overflow-x: hidden để ngăn header bị tràn khi kéo giãn sidebar */
+            background-color: #f5f5f5; 
             overflow-x: hidden;
         }
 
@@ -181,12 +180,11 @@
             background: white;
             padding: 10px 20px;
             display: flex;
-            justify-content: space-between; /* Rất quan trọng: đẩy các phần tử con ra hai phía */
+            justify-content: space-between; 
             border-bottom: 1px solid #ddd;
-            align-items: center; /* Căn giữa các mục theo chiều dọc */
-            flex-shrink: 0; /* Ngăn không cho header co lại */
-            /* BỎ width: 100%; ở đây vì nó sẽ được quản lý bởi flex-grow của page__body-wrapper */
-            /* width: 100%; */
+            align-items: center; 
+            flex-shrink: 0; 
+           
         }
 
         .app__header-left {
@@ -195,9 +193,31 @@
         }
 
         .app__header-toggle {
+            background-color: #fff;
+            padding: 12px;
             cursor: pointer;
-            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            width: 40px;
+            transition: background-color 0.2s;
         }
+
+            .app__header-toggle:hover {
+                background-color: #f5f5f5;
+            }
+
+            .app__header-toggle i {
+                font-size: 20px;
+                color: #ff6f00;
+                transition: transform 0.2s ease;
+            }
+
+            .app__header-toggle:hover i {
+                transform: scale(1.1);
+            }
+
 
         .bar-icon-2 span {
             display: block;
@@ -357,15 +377,12 @@
         <div class="app__header__area">
             <div class="app__header-left">
                 <a id="sidebar__active" class="app__header-toggle" href="javascript:void(0)">
-                    <div class="bar-icon-2">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
+                    <i class="fa-solid fa-bars"></i>
                 </a>
             </div>
+
             <div class="app__header-right">
-              
+
                 <div class="nav-item p-relative">
                     <a id="userportfolio" href="#">
                         <div class="user__portfolio">
