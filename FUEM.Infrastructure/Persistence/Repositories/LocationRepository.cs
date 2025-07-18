@@ -1,4 +1,6 @@
-﻿using FUEM.Domain.Interfaces.Repositories;
+﻿using FUEM.Domain.Entities;
+using FUEM.Domain.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,11 @@ namespace FUEM.Infrastructure.Persistence.Repositories
         public LocationRepository(FUEMDbContext context)
         {
             _context = context;
+        }
+
+        public Task<List<Location>> GetAllAsync()
+        {
+            return _context.Locations.ToListAsync();
         }
     }
 }

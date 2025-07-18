@@ -1,4 +1,5 @@
-﻿using FUEM.Domain.Interfaces.Repositories;
+﻿using FUEM.Domain.Entities;
+using FUEM.Domain.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,12 @@ namespace FUEM.Infrastructure.Persistence.Repositories
         public EventImageRepository(FUEMDbContext context)
         {
             _context = context;
+        }
+
+        public async Task AddImagesAsync(List<EventImage> images)
+        {
+            await _context.EventImages.AddRangeAsync(images);
+            await _context.SaveChangesAsync();
         }
     }
 }

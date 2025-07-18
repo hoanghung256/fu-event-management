@@ -1,9 +1,11 @@
 ﻿using FUEM.Application.Interfaces.CategoryUseCases;
 using FUEM.Application.Interfaces.EventUseCases;
+using FUEM.Application.Interfaces.LocationUseCases;
 using FUEM.Application.Interfaces.OrganizerUseCases;
 using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Application.UseCases.CategoryUseCases;
 using FUEM.Application.UseCases.EventUseCases;
+using FUEM.Application.UseCases.LocationUseCases;
 using FUEM.Application.UseCases.OrganizerUseCases;
 using FUEM.Application.UseCases.UserUseCases;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +33,9 @@ namespace FUEM.Application
 
             //Category
             builder.Services.AddTransient<IGetAllCategories, GetAllCategories>();
+
+            // Location
+            builder.Services.AddTransient<IGetAllLocation, GetAllLocation>();
 
             //Organizer
             builder.Services.AddTransient<IGetAllOrganizers, GetAllOrganizers>();

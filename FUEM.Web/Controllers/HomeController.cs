@@ -90,7 +90,7 @@ namespace FUEM.Web.Controllers
                 {
                     using (var stream = uploadedFile.OpenReadStream())
                     {
-                        await _storage.UploadFileAsync(FileType.Image, stream, uploadedFile.Name);
+                        await _storage.UploadFileAsync(FileType.Image, stream, uploadedFile.FileName);
                     }
 
                     TempData[ToastType.SuccessMessage.ToString()] = "File uploaded successfully!";

@@ -1,5 +1,9 @@
 ﻿@model Event
 
+@{
+    Layout = "_StudentLayout";
+}
+
 <style>
     .input__btn w-20 input__btn-fixed{
     padding-right: 50px;
@@ -40,37 +44,43 @@
                                 <h4 class="event__information-title">Event Information</h4>
                             </div>
                         </div>
-                        <form action="register-event" method="POST" enctype="multipart/form-data">
+                        <form method="POST" enctype="multipart/form-data">
                             <div class="create__event-main pt-25">
                                 <div class="event__left-box">
                                     <div class="create__input-wrapper">
                                         <div class="singel__input-field mb-15">
                                             <label class="input__field-text">Event name</label>
-                                            <input type="text" asp-for="@Model.Fullname" required>
+                                            <input type="text" asp-for="Fullname" class="form-control" />
+                                            <span asp-validation-for="Fullname" class="text-danger"></span>
                                         </div>
+
                                         <div class="event__input mb-15">
                                             <label class="input__field-text">Event description</label>
                                         </div>
-                                        <textarea id="editor" asp-for="@Model.Description" required></textarea>
+                                        <textarea id="editor" asp-for="@Model.Description" class="form-control"></textarea>
+                                        <span asp-validation-for="Description" class="text-danger"></span>
                                     </div>
+
                                     <div class="event__update-wrapper">
                                         <br />
                                         <label>Avatar</label>
                                         <div class="event__update-file">
                                             <div class="box__input">
-                                                <input type="file" asp-for="@Model.AvatarPath" id="avatar" class="box__file" required>
+                                                <input name="avatar" type="file" id="avatar" class="box__file" />
                                                 <label class="input__field-text" for="avatar">
                                                     <span><i class="fa-regular fa-plus"></i></span>
                                                     <span>Add Image</span>
                                                 </label>
                                             </div>
+                                            <span asp-validation-for="AvatarPath" class="text-danger"></span>
                                         </div>
+
                                         <div id="avatar-image-wrapper"></div>
 
                                         <label>Additional Images</label>
                                         <div class="event__update-file">
                                             <div class="box__input">
-                                                <input type="file" name="addtitionalImages" id="file" class="box__file" multiple required>
+                                                <input type="file" name="addtitionalImages" id="file" class="box__file" multiple />
                                                 <label class="input__field-text" for="file">
                                                     <span><i class="fa-regular fa-plus"></i></span>
                                                     <span>Add Image</span>
@@ -80,13 +90,14 @@
                                         <div class="event__update-file" id="image-wrapper"></div>
                                     </div>
                                 </div>
+
                                 <div class="event__right-box">
                                     <div class="create__input-wrapper">
                                         <div class="row g-20">
                                             <div class="col-xxl-6 col-xl-6 col-lg-6">
                                                 <label class="input__field-text">Location</label>
                                                 <div class="contact__select">
-                                                    <select asp-for="@Model.LocationId" required>
+                                                    <select asp-for="LocationId" class="form-select">
                                                         @if (ViewData["Locations"] is IEnumerable<FUEM.Domain.Entities.Location> locations)
                                                         {
                                                             foreach (var location in locations)
@@ -99,12 +110,14 @@
                                                             <option disabled>No location available</option>
                                                         }
                                                     </select>
+                                                    <span asp-validation-for="LocationId" class="text-danger"></span>
                                                 </div>
                                             </div>
+
                                             <div class="col-xxl-6 col-xl-6 col-lg-6">
                                                 <label class="input__field-text">Event category</label>
                                                 <div class="contact__select">
-                                                    <select asp-for="@Model.CategoryId" required>
+                                                    <select asp-for="CategoryId" class="form-select">
                                                         @if (ViewData["Categories"] is IEnumerable<FUEM.Domain.Entities.Category> categories)
                                                         {
                                                             foreach (var category in categories)
@@ -117,48 +130,63 @@
                                                             <option disabled>No category available</option>
                                                         }
                                                     </select>
+                                                    <span asp-validation-for="CategoryId" class="text-danger"></span>
                                                 </div>
                                             </div>
+
                                             <div class="col-xl-12">
                                                 <div class="singel__input-field is-color-change mb-15">
                                                     <label class="input__field-text">Date of event</label>
-                                                    <input type="date" name="dateOfEvent" required>
+                                                    <input type="date" asp-for="DateOfEvent" class="form-control" />
+                                                    <span asp-validation-for="DateOfEvent" class="text-danger"></span>
                                                 </div>
                                             </div>
+
                                             <div class="col-xl-6">
                                                 <div class="singel__input-field is-color-change mb-15">
                                                     <label class="input__field-text">Start time</label>
-                                                    <input type="time" name="startTime" required>
+                                                    <input type="time" asp-for="StartTime" class="form-control" />
+                                                    <span asp-validation-for="StartTime" class="text-danger"></span>
                                                 </div>
                                             </div>
+
                                             <div class="col-xxl-6 col-xl-6 col-lg-6">
                                                 <div class="singel__input-field is-color-change mb-15">
                                                     <label class="input__field-text">End time</label>
-                                                    <input type="time" name="endTime" required>
+                                                    <input type="time" asp-for="EndTime" class="form-control"  />
+                                                    <span asp-validation-for="EndTime" class="text-danger"></span>
                                                 </div>
                                             </div>
+
                                             <div class="col-xxl-6 col-xl-6 col-lg-6">
                                                 <div class="singel__input-field is-color-change mb-15">
                                                     <label class="input__field-text">Guest limit</label>
-                                                    <input type="number" name="guestRegisterLimit" value="0" min="0">
+                                                    <input type="number" asp-for="GuestRegisterLimit" class="form-control" value="0" min="0" />
+                                                    <span asp-validation-for="GuestRegisterLimit" class="text-danger"></span>
                                                 </div>
                                             </div>
+
                                             <div class="col-xxl-6 col-xl-6 col-lg-6">
                                                 <div class="singel__input-field is-color-change mb-15">
                                                     <label class="input__field-text">Guest register deadline</label>
-                                                    <input type="date" name="guestRegisterDeadline">
+                                                    <input type="date" asp-for="GuestRegisterDeadline" class="form-control" />
+                                                    <span asp-validation-for="GuestRegisterDeadline" class="text-danger"></span>
                                                 </div>
                                             </div>
+
                                             <div class="col-xxl-6 col-xl-6 col-lg-6">
                                                 <div class="singel__input-field is-color-change mb-15">
                                                     <label class="input__field-text">Collaborator Limit</label>
-                                                    <input type="text" name="collaboratorRegisterLimit" value="0" min="0">
+                                                    <input type="number" asp-for="CollaboratorRegisterLimit" class="form-control" value="0" min="0" />
+                                                    <span asp-validation-for="CollaboratorRegisterLimit" class="text-danger"></span>
                                                 </div>
                                             </div>
+
                                             <div class="col-xxl-6 col-xl-6 col-lg-6">
                                                 <div class="singel__input-field is-color-change mb-15">
                                                     <label class="input__field-text">Collaborator register deadline</label>
-                                                    <input type="date" name="collaboratorRegisterDeadline">
+                                                    <input type="date" asp-for="CollaboratorRegisterDeadline" class="form-control" />
+                                                    <span asp-validation-for="CollaboratorRegisterDeadline" class="text-danger"></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -183,7 +211,7 @@
     ClassicEditor
         .create(document.getElementById('editor'))
         .then(editor => {
-            editor.ui.view.editable.element.style.height = '30rem'; // ✅ your custom height
+            editor.ui.view.editable.element.style.height = '30rem';
         })
         .catch(error => {
             console.error(error);
