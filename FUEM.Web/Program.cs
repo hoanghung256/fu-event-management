@@ -15,6 +15,7 @@ namespace FUEM.Web
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddHttpContextAccessor(); // ✅ Đăng ký
 
             // Register controllers and views  
             builder.Services.AddControllersWithViews();
@@ -88,6 +89,8 @@ namespace FUEM.Web
 
             app.Run();
         }
+
+
 
         private static string GetConnectionString(WebApplicationBuilder builder)
         {
