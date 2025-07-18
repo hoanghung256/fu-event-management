@@ -1,12 +1,18 @@
 using Firebase.Storage;
+using FUEM.Application.Interfaces.CategoryUseCases;
+using FUEM.Application.Interfaces.OrganizerUseCases;
 using FUEM.Domain.Common;
 using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
+using FUEM.Domain.Interfaces.Repositories;
 using FUEM.Infrastructure.Common;
 using FUEM.Infrastructure.Common.MailSender;
+using FUEM.Infrastructure.Persistence.Repositories;
 using FUEM.Web.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Client.Extensions.Msal;
+using System.Diagnostics.Tracing;
+
 
 //using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -17,23 +23,52 @@ namespace FUEM.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IGetEventForGuest _getEventForGuestUseCase;
+        private readonly IGetAllCategories _getAllCategoriesUseCase;
+        private readonly IGetAllOrganizers _getAllOrganizersUseCase;
         private readonly FirebaseStorageService _storage;
 
-        public HomeController(ILogger<HomeController> logger, IGetEventForGuest getEventForGuestUseCase, FirebaseStorageService storage)
+        public HomeController(ILogger<HomeController> logger, IGetEventForGuest getEventForGuestUseCase, IGetAllCategories getAllCategoriesUseCase, IGetAllOrganizers getAllOrganizersUseCase, FirebaseStorageService storage)
         {
             _logger = logger;
             _getEventForGuestUseCase = getEventForGuestUseCase;
+            _getAllCategoriesUseCase = getAllCategoriesUseCase;
+            _getAllOrganizersUseCase = getAllOrganizersUseCase;
             _storage = storage;
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Index([FromQuery] int pageNumber = 1)
+        public async Task<IActionResult> Index([FromQuery] SearchEventCriteria? criteria, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, bool isFind = false)
         {
-            Page<Event> eventsPage = await _getEventForGuestUseCase.GetEventForGuestAsync(pageNumber, 10);
-            TempData[ToastType.InfoMessage.ToString()] = "Welcome to FUEM!";
-            return View(eventsPage);
+            try
+            {
+                Page<Event> eventsPage = isFind
+                ? await _getEventForGuestUseCase.SearchEventAsync(criteria, pageNumber, pageSize)
+                : await _getEventForGuestUseCase.GetEventForGuestAsync(pageNumber, pageSize);
+
+                var viewModel = new EventListViewModel
+                {
+                    Items = eventsPage.Items,
+                    CurrentPage = eventsPage.PageNumber,
+                    TotalPages = eventsPage.TotalPages,
+                    SearchCriteria = criteria
+                };
+
+                ViewData["Categories"] = await _getAllCategoriesUseCase.GetAllCategoriesAsync();
+                ViewData["Organizers"] = await _getAllOrganizersUseCase.GetAllOrganizersAsync();
+                ViewData["PreviousSearchEventCriteria"] = criteria;
+                ViewData["IsSearch"] = isFind;
+
+                TempData[ToastType.InfoMessage.ToString()] = "Welcome to FUEM!";
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                TempData[ToastType.ErrorMessage.ToString()] = ex.Message;
+                return View();
+            }
         }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -55,7 +90,7 @@ namespace FUEM.Web.Controllers
                 {
                     using (var stream = uploadedFile.OpenReadStream())
                     {
-                        await _storage.UploadFileAsync(FileType.Image, stream, uploadedFile.Name);
+                        await _storage.UploadFileAsync(FileType.Image, stream, uploadedFile.FileName);
                     }
 
                     TempData[ToastType.SuccessMessage.ToString()] = "File uploaded successfully!";

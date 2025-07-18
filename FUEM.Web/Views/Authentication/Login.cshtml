@@ -1,12 +1,15 @@
 ﻿@{
     ViewData["Title"] = "Login";
     var error = TempData[ToastType.ErrorMessage.ToString()] as string;
-    Layout = null;
+    Layout = "";
 }
 
-<link rel="stylesheet" href="~/css/login.css"/>
+<link rel="icon" type="image/svg+xml" href="~/img/logo/logo-fpt.svg" />
+<link rel="stylesheet" href="~/css/login.css" />
 <link rel="stylesheet" href="~/css/flaticon_expovent.css" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" />
+<script src="/_framework/aspnetcore-browser-refresh.js"></script>
+
 
 <div class="login-container">
     <div class="login-left">
@@ -22,7 +25,7 @@
 
         @if (!string.IsNullOrEmpty(error))
         {
-             <div class="error-message">@error</div>
+            <div class="error-message">@error</div>
         }
 
         <form asp-action="Login" method="post">
@@ -38,22 +41,35 @@
 
             <div class="form-extra">
                 @* <label><input type="checkbox" name="isOrganizer" /> Is Organizer</label> *@
-                <a href="#" style="text-decoration:none; color:#000">Forget Password?</a>
+                <a asp-action="ForgotPassword" asp-controller="Authentication" style="text-decoration:none; color:#000">Forgot your Password?</a>
             </div>
             <button type="submit" class="sign-in-btn">Sign in</button>
-            <button type="button" class="google-btn">
-                <a href="https://accounts.google.com/o/oauth2/auth?scope=email&redirect_uri=https://fuem.azurewebsites.net/login-google&response_type=code&client_id=89142229238-cu1tiul7dl16gs4qigcjsgd0emkk3j0d.apps.googleusercontent.com&approval_prompt=force" />
+            <button class="google-btn" type="button" onclick="window.location.href='https://accounts.google.com/o/oauth2/auth?scope=email&redirect_uri=https://fuem.azurewebsites.net/login-google&response_type=code&client_id=89142229238-cu1tiul7dl16gs4qigcjsgd0emkk3j0d.apps.googleusercontent.com&approval_prompt=force'">
+                <span class="google-icon">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0)">
+                            <path d="M4.432 12.086L3.736 14.685L1.192 14.739C0.431 13.329 0 11.715 0 10C0 8.342 0.403 6.778 1.118 5.401L3.384 5.816L4.376 8.068C4.169 8.674 4.055 9.324 4.055 10C4.055 10.734 4.188 11.437 4.432 12.086Z" fill="#FBBB00" />
+                            <path d="M19.825 8.132C19.94 8.737 20 9.361 20 10C20 10.716 19.925 11.414 19.781 12.088C19.294 14.38 18.022 16.382 16.26 17.798L13.407 17.652L13.003 15.131C14.172 14.446 15.086 13.373 15.567 12.088H10.22V8.132H15.645H19.825Z" fill="#518EF8" />
+                            <path d="M16.26 17.798C14.546 19.176 12.369 20 10 20C6.191 20 2.88 17.871 1.191 14.739L4.432 12.086C5.277 14.34 7.451 15.944 10 15.944C11.095 15.944 12.122 15.648 13.002 15.131L16.26 17.798Z" fill="#28B446" />
+                            <path d="M16.383 2.302L13.143 4.954C12.232 4.385 11.154 4.055 10 4.055C7.393 4.055 5.179 5.733 4.376 8.068L1.119 5.401C2.782 2.192 6.135 0 10 0C12.426 0 14.651 0.864 16.383 2.302Z" fill="#F14336" />
+                        </g>
+                        <defs>
+                            <clipPath id="clip0">
+                                <rect width="20" height="20" />
+                            </clipPath>
+                        </defs>
+                    </svg>
+                </span>
                 Sign in With Google
             </button>
         </form>
 
-        <p class="signup-text">Don't Have An Account? <a asp-action="SignUp" asp-controller="Authentication">Sign up now</a></p>
+        <p class="signup-text">Don't Have An Account? 
+            <a asp-controller="Authentication" asp-action="SignUp">Sign up now</a>
+        </p>
     </div>
 
     <div class="login-right">
         <img src="~/img/decorate/sign-in.jpg" alt="Login Image" />
     </div>
 </div>
-
-@await Html.PartialAsync("_ToastSetUp")
-@await Html.PartialAsync("_ValidationScriptsPartial")

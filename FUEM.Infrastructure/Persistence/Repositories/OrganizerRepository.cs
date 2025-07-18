@@ -18,8 +18,20 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
+        public async Task<List<Organizer>> GetAllOrganizersAsync()
+           => await _context.Organizers.OrderBy(o => o.Fullname).ToListAsync();
+
         public async Task<Organizer> GetOrganizerByEmailAsync(string email)
             => await _context.Organizers.FirstOrDefaultAsync(s => s.Email == email);
 
+        public async Task UpdatePasswordHashAsync(int id, string newPasswordHash)
+        {
+            var o = await _context.Organizers.FindAsync(id);
+            if (o != null)
+            {
+                o.Password = newPasswordHash;
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
