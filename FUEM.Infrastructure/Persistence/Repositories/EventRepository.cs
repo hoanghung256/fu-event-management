@@ -20,14 +20,11 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public Task AddAsync(Event entity)
+        public async Task<Event> AddAsync(Event createEvent)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task RemoveAsync(Event entity)
-        {
-            throw new NotImplementedException();
+            _context.Events.Add(createEvent);
+            await _context.SaveChangesAsync();
+            return createEvent;
         }
 
         public async Task<Page<Event>> GetEventForGuestAsync(int page, int pageSize)
@@ -99,11 +96,6 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageNumber = page,
                 PageSize = pageSize
             };
-        }
-
-        public Task<Event> UpdateAsync(Event entity)
-        {
-            throw new NotImplementedException();
         }
     }
 }

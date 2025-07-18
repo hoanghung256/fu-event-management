@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 
 namespace FUEM.Domain.Interfaces.Repositories
 {
-    public interface IEventRepository : IRepository<Event>
+    public interface IEventRepository
     {
         Task<Page<Event>> GetEventForGuestAsync(int page, int pageSize);
         Task<Page<Event>> SearchEventAsync(SearchEventCriteria criteria, int page, int pageSize);
+
+        Task<Event> AddAsync(Event createEvent);
     }
 
     public class SearchEventCriteria

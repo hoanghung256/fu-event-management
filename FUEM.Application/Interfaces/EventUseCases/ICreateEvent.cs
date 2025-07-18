@@ -1,4 +1,5 @@
 ﻿using FUEM.Domain.Entities;
+using FUEM.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace FUEM.Application.Interfaces.EventUseCases
 {
-    internal interface ICreateEvent
+    public interface ICreateEvent
     {
-        Task<IEnumerable<Event>> CreateEventAsync();
+        Task ExecuteAsync(Event createEvent, Role role, Stream avatar, List<EventImage> additionalImages);
     }
 }

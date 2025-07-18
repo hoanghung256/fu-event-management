@@ -53,14 +53,16 @@ namespace FUEM.Infrastructure.Common
             return "";
         }
 
-        public async Task UploadFileAsync(FileType fileType, Stream fileStream, string originFileName)
+        public async Task<string> UploadFileAsync(FileType fileType, Stream fileStream, string originFileName)
         {
             try
             {
-                var reference = GetStorageReference(fileType, originFileName);
+                var (reference,  uploadFilePath) = GetStorageReference(fileType, originFileName);
 
                 // implement cancellation token after
                 await reference.PutAsync(fileStream);
+                Console.WriteLine($"path 1123: {uploadFilePath}");
+                return uploadFilePath;
             }
             catch (FirebaseStorageException ex)
             {
@@ -85,13 +87,14 @@ namespace FUEM.Infrastructure.Common
         }
 
         // For CREATE
-        private FirebaseStorageReference? GetStorageReference(FileType fileType, string originFileName)
+        private (FirebaseStorageReference? reference, string referencePath) GetStorageReference(FileType fileType, string originFileName)
         {
             FirebaseStorageReference? reference = _storage.Child(fileType.Location);
             string? fileExtension = Path.GetExtension(originFileName);
-            Guid fileName = Guid.NewGuid();
-            reference?.Child($"{fileName.ToString()}{fileExtension}");
-            return reference;
+            Guid id = Guid.NewGuid();
+            string uploadFileName = $"{id.ToString()}_{originFileName}";
+            reference?.Child(uploadFileName);
+            return (reference, $"{fileType.Location}/{uploadFileName}");
         }
 
         // For GET
