@@ -1,4 +1,5 @@
-﻿using FUEM.Domain.Entities;
+﻿using FUEM.Domain.Common;
+using FUEM.Domain.Entities;
 using FUEM.Domain.Interfaces.Repositories;
 
 namespace FUEM.Web.ViewModels
