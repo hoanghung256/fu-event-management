@@ -1,5 +1,6 @@
 ﻿using FUEM.Domain.Common;
 using FUEM.Domain.Entities;
+using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -50,5 +51,48 @@ namespace FUEM.Infrastructure.Persistence.Repositories
         {
             throw new NotImplementedException();
         }
+        public async Task<Page<Event>> GetAllOrganizedEventsAsync(int pageNumber, int pageSize)
+        {
+            int totalItems = await _context.Events
+                .Where(e => e.Status == EventStatus.END)
+                .CountAsync();
+
+            var items = await _context.Events
+                .Where(e => e.Status == EventStatus.END)
+                .OrderByDescending(e => e.DateOfEvent)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new Page<Event>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+        public async Task<Page<Event>> GetOrganizedEventsByOrganizerIdAsync(string organizerId, int pageNumber, int pageSize)
+        {
+            int totalItems = await _context.Events
+                .Where(e => e.OrganizerId.ToString() == organizerId && e.Status == EventStatus.END)
+                .CountAsync();
+
+            var items = await _context.Events
+                .Where(e => e.OrganizerId.ToString() == organizerId && e.Status == EventStatus.END)
+                .OrderByDescending(e => e.DateOfEvent)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new Page<Event>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
     }
 }
