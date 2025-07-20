@@ -1,0 +1,257 @@
+﻿@model FUEM.Domain.Entities.Organizer;
+@using FUEM.Domain.Entities
+@using FUEM.Infrastructure.Common;
+@{
+    var recentEvents = ViewBag.RecentEvents as List<Event>;
+    var isClub = User.IsInRole("Club");
+    var success = TempData[ToastType.SuccessMessage.ToString()] as string;
+    var error = TempData[ToastType.ErrorMessage.ToString()] as string;
+}
+
+<section>
+    <div class="app__slide-wrapper">
+        <form asp-action="EditProfile" asp-controller="Club" method="post" enctype="multipart/form-data">
+                @Html.Hidden("Id", Model.Id)
+        <div class="banner-container mb-15">
+            @if(isClub)
+            {
+                    <div class="banner-container" style="overflow: hidden; height: 300px; object-fit: cover; border-radius: 10px; position: relative;">
+                        <input type="file" class="form-control" id="coverFile" name="coverFile" style="display: none;" accept="image/*">
+                        <img src="@Url.Content(Model.CoverPath)" alt="Banner" style="width: 100%; height: 100%; object-fit: cover;" id="currentBanner">
+                        <img id="newBannerPreview" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none;">
+                        <button type="button" class="cover-edit-btn" onclick="document.getElementById('coverFile').click();">
+                            <i class="flaticon-edit"></i>
+                        </button>
+                    </div>
+            }
+            else
+            {
+                <div style="overflow: hidden; height: 300px; border-radius: 10px;">
+                    <img src="@Url.Content(Model.CoverPath)" alt="Banner" style="width:100%; height:100%; object-fit: cover;" />
+                </div>
+            }
+        </div>
+
+        <div class="profile__area">
+            <div class="body__card-wrapper mb-20">
+                <div class="card__title-inner d-flex justify-content-between">
+                    <h4>Profile Information</h4>
+
+                    @if (User.IsInRole("Student"))
+                    {
+                        <form method="post" action="@Url.Action("ToggleFollow", "Student")">
+                            <input type="hidden" name="organizerId" value="@Model.Id" />
+                            <input type="hidden" name="action" value="@(ViewBag.IsFollowing.Value ? "unfollow" : "follow")" />
+                            <button type="submit" class="btn @(ViewBag.IsFollowing.Value ? "btn-danger" : "btn-primary")">
+                                @(ViewBag.IsFollowing.Value ? "Unfollow" : "Follow")
+                            </button>
+                        </form>
+                    }
+                </div>
+
+                <!-- Tabs -->
+                <ul class="nav nav-tabs mb-10">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#recent">Recently</a>
+                    </li>
+                </ul>
+                    @if (!string.IsNullOrEmpty(success))
+                    {
+                <div class="success-message">@success</div>
+                    }
+                    @if (!string.IsNullOrEmpty(error))
+                    {
+                    <div class="error-message">@error</div>
+                    }
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="about">
+                            <div class="row mt-3">
+                                <div class="col-md-4 text-center">
+                                    @if (isClub)
+                                    {
+                                        <div style="width: 190px; height: 190px; position: relative; border-radius: 50%; margin: 0 auto;">
+                                            <input type="file" class="form-control" id="avatarFile" name="avatarFile" style="display: none;" accept="image/*">
+                                            <img src="@Url.Content(Model.AvatarPath)" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;" id="currentAvatar">
+                                            <img id="newAvatarPreview" style="width: 100%; height: 100%; object-fit: cover; object-position: center; display: none; border-radius: 50%;">
+                                            <button type="button" class="avatar-edit-btn" onclick="document.getElementById('avatarFile').click();">
+                                                <i class="flaticon-edit"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <img src="@Url.Content(Model.AvatarPath)" style="width:190px; height:190px; border-radius:50%; object-fit:cover;" />
+                                    }
+
+                                    <ul class="list-unstyled mt-3">
+                                        <li><strong>Club Name:</strong>
+                                            @if (isClub)
+                                            {
+                                                    <input type="text" name="Fullname" value="@Model.Fullname" class="form-control" />
+                                            }
+                                            else
+                                            {
+                                                @Model.Fullname
+                                            }
+                                        </li>
+                                        <li><strong>Club Acronym:</strong>
+                                            @if (isClub)
+                                            {
+                                                    <input type="text" name="Acronym" value="@Model.Acronym" class="form-control" />
+                                            }
+                                            else
+                                            {
+                                                @Model.Acronym
+                                            }
+                                        </li>
+                                        <li><strong>Club Email:</strong>
+                                            @if (isClub)
+                                            {
+                                                        <input type="text" name="Email" value="@Model.Email" class="form-control" />
+                                            }
+                                            else
+                                            {
+                                                @Model.Email
+                                            }
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>About Us</h4>
+                                    @if (isClub)
+                                    {
+                                            <textarea name="Description" class="form-control" rows="6">@Model.Description</textarea>
+                                    }
+                                    else
+                                    {
+                                            <p>@Model.Description</p>
+                                    }
+
+                                    @if (isClub)
+                                    {
+                                            <div class="text-end">
+                                                <button type="submit" class="btn btn-success mt-3">Save Changes</button>
+                                            </div>
+                                    }
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="recent">
+                        @if (recentEvents != null)
+                        {
+                            foreach (var ev in recentEvents)
+                            {
+                                        <div class="event-list-item d-flex mb-3">
+                                            <div style="width:30%;">
+                                                                <img src="@Url.Content(string.IsNullOrEmpty(ev.AvatarPath) ? "~/images/default-event.jpg" : ev.AvatarPath)" style="width:100%;" />
+                                                @* <div class="post-date position-absolute top-0 start-0 m-2 bg-light p-1"> *@
+                                                @*             <small>@ev.DateOfEvent?.ToString("yyyy-MM-dd")</small> *@
+                                                @* </div> *@
+                                            </div>
+                                            <div style="width:70%; padding-left: 20px;">
+                                                <h5>@ev.Fullname</h5>
+                                                <p><strong>Register deadline:</strong> @ev.GuestRegisterDeadline?.ToShortDateString()</p>
+                                        @{
+                                            var description = ev.Description;
+                                            var maxLength = 500;
+                                            var displayText = description?.Length > maxLength
+                                                ? description.Substring(0, maxLength) + "..."
+                                                : description;
+                                        }
+                                                                <p>@displayText</p>
+                                                <p><i class="fas fa-location-dot"></i> @ev.Location?.LocationName</p>
+                                                <p><i class="fas post-date"></i> @($"{ev.DateOfEvent:yyyy-MM-dd} {ev.StartTime:hh\\:mm}")</p>
+                                                <p><i class="fa-solid fa-user-group"></i> @ev.GuestRegisterCount attended</p>
+                                                <a href="@Url.Action("Detail", "Event", new { eventId = ev.Id })" class="btn btn-warning">Details</a>
+                                            </div>
+                                        </div>
+                            }
+                        }
+                        else
+                        {
+                                <p>No events recently.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts{
+    <script>
+            // preview avatar
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log("DOM fully loaded");
+                const avatarFile = document.getElementById('avatarFile');
+                if (!avatarFile) {
+                    console.log("avatarFile not found");
+                    return;
+                }
+                avatarFile.addEventListener('change', function (event) {
+                     const file = event.target.files[0];
+                     if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                 const currentAvatar = document.getElementById('currentAvatar');
+                                 const newAvatarPreview = document.getElementById('newAvatarPreview');
+
+                                 if (currentAvatar && newAvatarPreview) {
+                                       newAvatarPreview.src = e.target.result;
+                                       newAvatarPreview.style.display = 'block';
+                                       currentAvatar.style.display = 'none';
+                                 }
+                            };
+                            reader.readAsDataURL(file);
+                     }
+                });
+                //preview banner
+                document.getElementById('coverFile').addEventListener('change', function (event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const currentBanner = document.getElementById('currentBanner');
+                            const newBannerPreview = document.getElementById('newBannerPreview');
+                            newBannerPreview.src = e.target.result;
+                            newBannerPreview.style.display = 'block';
+                            newBannerPreview.style.opacity = '0';
+                            currentBanner.style.opacity = '1';
+                            setTimeout(() => {
+                               currentBanner.style.opacity = '0';
+                               newBannerPreview.style.opacity = '1';
+                               currentBanner.style.display = 'none';
+                            }, 100); // Adjust timing for smooth transition
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
+        </script>
+        <script>
+        // document.addEventListener('DOMContentLoaded', function () {
+        
+        
+        // change pass modal
+            // var modal = document.getElementById("changePasswordModal");
+            // var btn = document.getElementById("changePasswordBtn");
+            // var span = document.getElementsByClassName("close")[0];
+            // btn.onclick = function () {
+            //     modal.style.display = "flex";
+            // }
+            // span.onclick = function () {
+            //     modal.style.display = "none";
+            // }
+            // window.onclick = function (event) {
+            //     if (event.target == modal) {
+            //         modal.style.display = "none";
+            //     }
+            // }
+        // });
+    </script>
+}

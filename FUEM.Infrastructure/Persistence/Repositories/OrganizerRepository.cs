@@ -21,8 +21,11 @@ namespace FUEM.Infrastructure.Persistence.Repositories
         public async Task<List<Organizer>> GetAllOrganizersAsync()
            => await _context.Organizers.OrderBy(o => o.Fullname).ToListAsync();
 
+        public async Task<Organizer> GetOrganizerByIdAsync(int id)
+            => await _context.Organizers.FirstOrDefaultAsync(o => o.Id == id);
+
         public async Task<Organizer> GetOrganizerByEmailAsync(string email)
-            => await _context.Organizers.FirstOrDefaultAsync(s => s.Email == email);
+            => await _context.Organizers.Include(e => e.Events).Include(e => e.Category).FirstOrDefaultAsync(s => s.Email == email);
 
         public async Task UpdatePasswordHashAsync(int id, string newPasswordHash)
         {
@@ -32,6 +35,12 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 o.Password = newPasswordHash;
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task EditAsync(Organizer organizer)
+        {
+            _context.Organizers.Update(organizer);
+            await _context.SaveChangesAsync();
         }
     }
 }
