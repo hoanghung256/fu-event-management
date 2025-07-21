@@ -4,7 +4,6 @@ using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using FUEM.Infrastructure.Common;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 
@@ -17,16 +16,14 @@ namespace FUEM.Web.Controllers
         private readonly IFollowUseCase _followUseCase;
         private readonly IGetStudent _getStudentUseCase;
         private readonly IEditOrganizer _editOrganizerUseCase;
-        private readonly FirebaseStorageService _firebase;
 
-        public ClubController(IGetOrganizer getOrganizerUseCase, IGetRecentEvents getRecentEventsUseCase, IFollowUseCase followUseCase, IGetStudent getStudentUseCase, IEditOrganizer editOrganizerUseCase, FirebaseStorageService firebase)
+        public ClubController(IGetOrganizer getOrganizerUseCase, IGetRecentEvents getRecentEventsUseCase, IFollowUseCase followUseCase, IGetStudent getStudentUseCase, IEditOrganizer editOrganizerUseCase)
         {
             _getOrganizerUseCase = getOrganizerUseCase;
             _getRecentEventsUseCase = getRecentEventsUseCase;
             _followUseCase = followUseCase;
             _getStudentUseCase = getStudentUseCase;
             _editOrganizerUseCase = editOrganizerUseCase;
-            _firebase = firebase;
         }
         public IActionResult Index()
         {
@@ -42,8 +39,6 @@ namespace FUEM.Web.Controllers
             {
                 var org = await _getOrganizerUseCase.GetOrganizerByEmailAsync(User.FindFirst(System.Security.Claims.ClaimTypes.Email).Value);
                 ViewBag.RecentEvents = recentEvents;
-                org.AvatarPath = await _firebase.GetSignedFileUrlAsync(org.AvatarPath);
-                org.CoverPath = await _firebase.GetSignedFileUrlAsync(org.CoverPath);
                 return View(org);
             }
             else if (User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value == Role.Student.ToString())
@@ -52,8 +47,6 @@ namespace FUEM.Web.Controllers
                 var stu = await _getStudentUseCase.GetStudentByEmail(User.FindFirst(System.Security.Claims.ClaimTypes.Email).Value);
                 ViewBag.IsFollowing = await _followUseCase.isUserFollowing(org.Id, stu.Id);
                 ViewBag.RecentEvents = recentEvents;
-                org.AvatarPath = await _firebase.GetSignedFileUrlAsync(org.AvatarPath);
-                org.CoverPath = await _firebase.GetSignedFileUrlAsync(org.CoverPath);
                 return View(org);
             }
             else
@@ -107,8 +100,8 @@ namespace FUEM.Web.Controllers
             }
             List<Event> recentEvents = await _getRecentEventsUseCase.GetRecentEventsByOrganizerId(int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value));
             var org = await _getOrganizerUseCase.GetOrganizerByEmailAsync(User.FindFirst(System.Security.Claims.ClaimTypes.Email).Value);
-            org.AvatarPath = await _firebase.GetSignedFileUrlAsync(org.AvatarPath);
-            org.CoverPath = await _firebase.GetSignedFileUrlAsync(org.CoverPath);
+            //org.AvatarPath = await _firebase.GetSignedFileUrlAsync(org.AvatarPath);
+            //org.CoverPath = await _firebase.GetSignedFileUrlAsync(org.CoverPath);
             ViewBag.RecentEvents = recentEvents;
             return RedirectToAction("Profile", org);
         }

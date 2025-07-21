@@ -27,12 +27,12 @@ namespace FUEM.Application.UseCases.OrganizerUseCases
             if (avatarStream != null)
             {
                 string avatarLink = await _firebase.UploadFileAsync(FileType.Image, avatarStream, organizer.AvatarPath);
-                organizer.AvatarPath = avatarLink;
+                organizer.AvatarPath = await _firebase.GetSignedFileUrlAsync(avatarLink);
             }
             if (coverStream != null)
             {
                 string coverLink = await _firebase.UploadFileAsync(FileType.Image, coverStream, organizer.CoverPath);
-                organizer.CoverPath = coverLink;
+                organizer.CoverPath = await _firebase.GetSignedFileUrlAsync(coverLink);
             }
             await _repository.EditAsync(organizer);
         }
