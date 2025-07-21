@@ -47,6 +47,7 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 .Include(e => e.Category)
                 .Include(e => e.Organizer)
                 .Include(e => e.EventImages)
+                .Where(e => e.Status == EventStatus.APPROVED || e.Status == EventStatus.ON_GOING)
                 .OrderByDescending(e => e.DateOfEvent)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
