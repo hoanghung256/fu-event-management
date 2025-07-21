@@ -1,3 +1,18 @@
 ﻿@{
-    Layout = "_GuestLayout";
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "_AdminLayout";
+    }
+    else if (User.IsInRole("Club"))
+    {
+        Layout = "_ClubLayout";
+    }
+    else if (User.IsInRole("Student"))
+    {
+        Layout = "_StudentLayout";
+    } 
+    else
+    {
+        Layout = "_GuestLayout";
+    }
 }

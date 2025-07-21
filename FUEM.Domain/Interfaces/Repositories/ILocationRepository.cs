@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FUEM.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,6 @@ namespace FUEM.Domain.Interfaces.Repositories
 {
     public interface ILocationRepository
     {
+        Task<List<Location>> GetAllAsync();
     }
 }

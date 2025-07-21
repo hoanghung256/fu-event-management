@@ -15,9 +15,19 @@ namespace FUEM.Infrastructure.Persistence
     {
         public static IHostApplicationBuilder AddRepositories(this IHostApplicationBuilder builder)
         {
+            builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddTransient<IEventCollaboratorRepository, EvenCollaboratorRepository>();
+            //builder.Services.AddTransient<IEventGuestRepository, EventGuestRepository>();
+            builder.Services.AddTransient<IEventImageRepository, EventImageRepository>();
             builder.Services.AddTransient<IEventRepository, EventRepository>();
-            builder.Services.AddTransient<IStudentRepository, StudentRepository>();
+            builder.Services.AddTransient<IFeedbackRepository, FeedbackRepository>();
+            builder.Services.AddTransient<IFileRepository, FileRepository>();
+            builder.Services.AddTransient<IFollowRepository, FollowRepository>();
+            builder.Services.AddTransient<ILocationRepository, LocationRepository>();
+            //builder.Services.AddTransient<INotificationReceiverRepository, NoticationReceiverRepository>();
+            //builder.Services.AddTransient<INotificationReceiverRepository, NotificationRepository>();
             builder.Services.AddTransient<IOrganizerRepository, OrganizerRepository>();
+            builder.Services.AddTransient<IStudentRepository, StudentRepository>();
 
             builder.Services.AddTransient<FirebaseStorageService>();
 

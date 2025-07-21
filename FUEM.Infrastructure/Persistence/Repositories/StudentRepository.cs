@@ -24,7 +24,22 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
+
         public async Task<Student?> GetStudentByEmailAsync(string email)
             => await _context.Students.FirstOrDefaultAsync(s => s.Email == email);
+        public async Task<string?> GetPasswordHashAsync(int studentId)
+        {
+            return (await _context.Students.FindAsync(studentId))?.Password;
+        }
+
+        public async Task UpdatePasswordHashAsync(int studentId, string newPasswordHash)
+        {
+            var student = await _context.Students.FindAsync(studentId);
+            if (student != null)
+            {
+                student.Password = newPasswordHash;
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

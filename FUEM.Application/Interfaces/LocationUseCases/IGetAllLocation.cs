@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FUEM.Domain.Interfaces.Repositories
+namespace FUEM.Application.Interfaces.LocationUseCases
 {
-    public interface ICategoryRepository
+    public interface IGetAllLocation
     {
-        Task<List<Category>> GetAllCategoriesAsync();
+        Task<List<Location>> ExecuteAsync();
     }
 }

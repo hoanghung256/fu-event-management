@@ -1,4 +1,5 @@
-﻿using FUEM.Domain.Interfaces.Repositories;
+﻿using FUEM.Domain.Entities;
+using FUEM.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,11 @@ namespace FUEM.Infrastructure.Persistence.Repositories
         public CategoryRepository(FUEMDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<List<Category>> GetAllCategoriesAsync()
+        {
+            return await _context.Categories.OrderBy(c => c.CategoryName).ToListAsync();
         }
     }
 }

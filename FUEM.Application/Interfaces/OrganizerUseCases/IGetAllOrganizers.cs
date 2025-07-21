@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FUEM.Domain.Interfaces.Repositories
+namespace FUEM.Application.Interfaces.OrganizerUseCases
 {
-    public interface ICategoryRepository
+    public interface IGetAllOrganizers
     {
-        Task<List<Category>> GetAllCategoriesAsync();
+        Task<List<Organizer>> GetAllOrganizersAsync();
     }
 }

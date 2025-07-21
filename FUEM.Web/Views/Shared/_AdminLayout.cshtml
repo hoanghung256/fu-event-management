@@ -1,4 +1,5 @@
-﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+﻿@using System.Security.Claims
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 <!DOCTYPE html>
 <html class="no-js" lang="en" style="--clr-theme-1: #ff6f00 !important;">
 <head>
@@ -17,264 +18,167 @@
     <link rel="stylesheet" href="@Url.Content("~/theme/css/main.css")" />
     <style>
         body {
-            display: flex;
-            min-height: 100vh;
+            display: flex; /* Dùng flexbox cho toàn bộ layout */
+            min-height: 100vh; /* Đảm bảo body chiếm toàn bộ chiều cao viewport */
             margin: 0;
-            flex-direction: row;
-            overflow: hidden;
+            flex-direction: row; /* Sidebar và nội dung chính nằm cạnh nhau */
+          
         }
 
-        .expovent__sidebar {
-            width: 280px;
-            background-color: #000;
-            color: white;
-            transition: width 0.3s ease;
-            flex-shrink: 0;
+        .expovent__sidebar .logo-details {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex; /* Đảm bảo là flex container */
+            align-items: center; /* QUAN TRỌNG: Căn giữa theo chiều dọc các item con (logo) */
+            justify-content: center; /* Căn giữa theo chiều ngang các item con */
+            min-height: 50px; /* Đảm bảo có đủ không gian */
+            /* Thêm một số điều chỉnh nhỏ để khắc phục độ lệch */
+            padding-top: 5px; /* Điều chỉnh để đẩy lên một chút nếu cần */
+            padding-bottom: 5px; /* Điều chỉnh để đẩy lên một chút nếu cần */
+        }
+
+            /* Đảm bảo logo nhỏ và logo chữ được căn giữa theo chiều dọc trong .logo-details */
+            .expovent__sidebar .logo-details .logo__white,
+            .expovent__sidebar .logo-details .log__smnall {
+                vertical-align: middle; /* Đảm bảo căn giữa theo chiều dọc nếu không phải flex */
+                /* Nếu vẫn lệch, có thể dùng margin-top/bottom hoặc transform */
+            }
+
+            /* Điều chỉnh margin cho logo__white để nó không bị lệch so với logo chữ */
+            .expovent__sidebar .logo-details .logo__white {
+                max-width: 60px; /* Kích thước cho logo nhỏ (fpt icon) */
+                height: auto;
+                transition: opacity 0.3s ease, margin-right 0.3s ease;
+                /* Thêm hoặc điều chỉnh margin-right nếu cần một khoảng cách nhỏ giữa 2 logo */
+                margin-right: 5px; /* Khoảng cách nhỏ giữa icon FPT và chữ FPT University */
+            }
+
+        .expovent__sidebar.collapsed .logo-details .logo__white {
+            margin-right: 0; /* Loại bỏ margin khi thu gọn để icon nằm giữa */
+        }
+
+        .expovent__sidebar.collapsed .logo-details .logo__white {
+            margin-right: 0; /* Loại bỏ margin khi thu gọn để icon nằm giữa */
+        }
+
+
+        .expovent__sidebar .logo-details .log__smnall { /* Logo chữ "FPT UNIVERSITY" */
+            max-width: 140px; /* Chiều rộng gốc */
+            margin-left: 1rem;
+            transition: opacity 0.3s ease, width 0.3s ease, margin-left 0.3s ease;
+        }
+
+        .expovent__sidebar.collapsed .logo-details .log__smnall {
+            opacity: 0; /* Ẩn logo chữ */
+            width: 0; /* Co lại chiều rộng */
+            margin-left: 0; /* Bỏ margin */
+        }
+
+        .expovent__sidebar .sidebar__inner {
+            flex-grow: 1; /* Cho phép menu chiếm hết không gian còn lại */
             display: flex;
             flex-direction: column;
-            position: relative;
-            z-index: 10;
-            /* Thêm overflow-y: auto để menu có thể cuộn nếu quá dài */
-            overflow-y: auto;
         }
 
-            .expovent__sidebar.collapsed {
-                width: 80px;
-                /* Đảm bảo không có overflow: hidden ở đây nếu nó gây cắt popover */
-                overflow-y: hidden; /* Ẩn thanh cuộn khi thu gọn */
+        .expovent__sidebar ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            flex-grow: 1; /* Cho phép menu đẩy copyright xuống dưới */
+        }
+
+            .expovent__sidebar ul li {
+                margin-bottom: 12px;
             }
 
-            .expovent__sidebar .logo-details {
-                text-align: center;
-                margin-bottom: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 50px;
-                padding: 5px;
-                box-sizing: border-box;
-                background-color: #000;
-            }
-
-                .expovent__sidebar .logo-details .logo__white {
-                    max-width: 60px;
-                    height: auto;
-                    transition: opacity 0.3s ease, margin-right 0.3s ease, max-width 0.3s ease;
-                    margin-right: 5px;
+                .expovent__sidebar ul li a {
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 14px;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    transition: background-color 0.3s ease, padding 0.3s ease;
+                    white-space: nowrap; /* Ngăn không cho văn bản xuống dòng */
+                    overflow: hidden; /* Ẩn văn bản khi thu gọn */
+                    justify-content: flex-start; /* Mặc định căn trái */
                 }
 
-            .expovent__sidebar.collapsed .logo-details .logo__white {
-                margin-right: 0;
-                max-width: 50px;
-            }
+        /* Căn giữa icon khi sidebar thu gọn */
+        .expovent__sidebar.collapsed ul li a {
+            justify-content: center; /* Căn giữa icon */
+            padding: 10px 0; /* Điều chỉnh padding ngang khi thu gọn */
+        }
 
-            .expovent__sidebar .logo-details .log__smnall {
-                max-width: 140px;
-                height: auto;
-                opacity: 1;
-                transition: opacity 0.3s ease, width 0.3s ease, margin-left 0.3s ease;
-                margin-left: 1rem;
-                display: block;
-            }
+        .expovent__sidebar ul li a i {
+            margin-right: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
 
-            .expovent__sidebar.collapsed .logo-details .log__smnall {
-                opacity: 0;
-                width: 0;
-                margin-left: 0;
-                display: none;
-            }
+        .expovent__sidebar.collapsed ul li a i {
+            margin-right: 0; /* Bỏ margin để icon nằm giữa hoàn toàn */
+        }
 
-            .expovent__sidebar .sidebar__inner {
-                flex-grow: 1;
-                display: flex;
-                flex-direction: column;
-                /* Xóa overflow-y: auto ở đây nếu đã thêm vào .expovent__sidebar */
-                padding-bottom: 0;
-            }
+        .expovent__sidebar ul li a:hover {
+            background-color: #ff6f00;
+            padding-left: 18px; /* Hiệu ứng padding khi hover */
+        }
 
-            .expovent__sidebar ul {
-                list-style: none;
-                padding-left: 0;
-                margin: 0;
-                flex-grow: 1;
-                padding: 10px 0;
-            }
-
-                .expovent__sidebar ul li {
-                    margin-bottom: 12px;
-                    position: relative; /* Giữ nguyên để popover hoạt động */
-                }
-
-                    .expovent__sidebar ul li a {
-                        display: flex;
-                        align-items: center;
-                        padding: 10px 14px;
-                        color: white;
-                        text-decoration: none;
-                        border-radius: 8px;
-                        transition: background-color 0.3s ease, padding 0.3s ease, justify-content 0.3s ease;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        justify-content: flex-start;
-                    }
-
-            .expovent__sidebar.collapsed ul li a {
-                justify-content: center;
-                padding: 10px 0;
-            }
-
-            .expovent__sidebar ul li a i {
-                margin-right: 10px;
-                min-width: 20px;
-                text-align: center;
-                transition: margin-right 0.3s ease;
-            }
-
-            .expovent__sidebar.collapsed ul li a i {
-                margin-right: 0;
-            }
-
-            .expovent__sidebar ul li a:hover {
-                background-color: #ff6f00;
-                padding-left: 18px;
-            }
-
-            .expovent__sidebar.collapsed ul li a:hover {
-                padding-left: 0;
-            }
-
-            .expovent__sidebar .nav-text {
-                opacity: 1;
-                width: auto;
-                transition: opacity 0.3s ease, width 0.3s ease;
-            }
-
-            .expovent__sidebar.collapsed .nav-text {
-                opacity: 0;
-                width: 0;
-                display: none;
-            }
-
-            /* **CÁC QUY TẮC CSS CHO SUB-MENU KHI SIDEBAR MỞ RỘNG** */
-            .expovent__sidebar ul ul { /* Targeting direct sub-menus */
-                background-color: #1a1a1a; /* Nền tối hơn một chút cho sub-menu background */
-                padding-top: 5px;
-                padding-bottom: 5px;
-                border-radius: 0 0 8px 8px; /* Bo tròn góc dưới */
-                position: static; /* Quan trọng: Đảm bảo nó nằm trong luồng tài liệu */
-                width: auto; /* Chiều rộng tự động */
-                margin: 0;
-                box-shadow: none;
-                list-style: none; /* Đảm bảo không có dấu chấm đầu dòng */
-                padding-left: 0; /* Loại bỏ padding mặc định */
-                /* MetisMenu sẽ quản lý display và height cho việc đóng/mở */
-                /* Đảm bảo không có display: none; hay height: 0; ở đây */
-            }
-
-                .expovent__sidebar ul ul li a {
-                    padding: 8px 14px 8px 30px; /* Thụt lề cho các mục con */
-                    font-size: 0.95em; /* Font nhỏ hơn cho mục con */
-                    border-radius: 0;
-                }
-
-                .expovent__sidebar ul ul li:last-child a {
-                    border-bottom-left-radius: 8px;
-                    border-bottom-right-radius: 8px;
-                }
-
-            .expovent__sidebar.collapsed ul li ul {
-                position: absolute;
-                left: 100%;
-                top: 0;
-                width: 200px;
-                background-color: #000;
-                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-                border-radius: 8px;
-                z-index: 20;
-                display: none; 
-                overflow: visible; 
-            }
+        .expovent__sidebar.collapsed ul li a:hover {
+            padding-left: 0; /* Không có padding thêm khi thu gọn và hover */
+        }
 
 
+        .expovent__sidebar.collapsed .nav-text {
+            opacity: 0;
+            width: 0;
+            display: none; /* Ẩn hoàn toàn văn bản */
+        }
 
-                .expovent__sidebar.collapsed ul li ul li a {
-                    padding: 10px 15px;
-                    justify-content: flex-start;
-                    white-space: normal;
-                    overflow: visible;
-                }
-
-                    .expovent__sidebar.collapsed ul li ul li a i {
-                        margin-right: 10px;
-                    }
-
-            .expovent__sidebar.collapsed ul li a.has-arrow::after {
-                display: none;
-            }
-
-            
-            .expovent__sidebar ul li a.has-arrow::after {
-                content: "";
-                position: absolute;
-                right: 15px;
-                top: 50%;
-                transform: translateY(-50%) rotate(-45deg);
-                width: 6px;
-                height: 6px;
-                border-right: 1px solid white;
-                border-bottom: 1px solid white;
-                transition: transform 0.3s ease;
-            }
-
-            .expovent__sidebar ul li.mm-active > a.has-arrow::after {
-                transform: translateY(-50%) rotate(45deg); /* Xoay mũi tên khi active */
-            }
-
-        /* --- Footer (Copyright) --- */
+        /* --- Sửa lỗi căn chỉnh Footer (Copyright) --- */
         .sidebar__copyright {
             text-align: center;
-            padding: 15px 5px;
-            font-size: 0.75rem;
+            padding-top: 20px; /* Khoảng cách phía trên copyright */
+            padding-bottom: 10px;
+            font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.7);
-            width: 100%;
-            background-color: #000;
-            box-sizing: border-box;
-            flex-shrink: 0;
-            transition: font-size 0.3s ease, padding 0.3s ease;
+            width: 100%; /* Đảm bảo chiếm hết chiều rộng của sidebar */
+            background-color: #000; /* Đảm bảo nền khớp với sidebar */
+            margin-top: auto; /* Đẩy copyright xuống đáy của flex container (sidebar__inner) */
+            transition: opacity 0.3s ease, height 0.3s ease, padding 0.3s ease; /* Hiệu ứng chuyển động */
+            box-sizing: border-box; /* Đảm bảo padding không làm tràn width */
         }
 
         .expovent__sidebar.collapsed .sidebar__copyright {
-            font-size: 0.65rem;
-            padding: 10px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            opacity: 0; /* Ẩn copyright khi thu gọn */
+            height: 0; /* Thu gọn chiều cao */
+            overflow: hidden; /* Ngăn nội dung bị tràn khi height = 0 */
+            padding-top: 0; /* Bỏ padding khi ẩn */
+            padding-bottom: 0; /* Bỏ padding khi ẩn */
         }
 
-            .expovent__sidebar.collapsed .sidebar__copyright p {
-                margin: 0;
-                line-height: normal;
-            }
 
-
-        /* --- Main Content Area --- */
+        /* --- Khu vực nội dung chính --- */
+        /* --- Khu vực nội dung chính --- */
         .page__body-wrapper {
-            flex-grow: 1;
+            flex-grow: 1; 
             display: flex;
             flex-direction: column;
-            background-color: #f5f5f5;
+            background-color: #f5f5f5; 
             overflow-x: hidden;
         }
 
-        /* --- Header Styling --- */
+        /* --- Định kiểu Header --- */
         .app__header__area {
             background: white;
             padding: 10px 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: space-between; 
             border-bottom: 1px solid #ddd;
-            align-items: center;
-            flex-shrink: 0;
+            align-items: center; 
+            flex-shrink: 0; 
+           
         }
 
         .app__header-left {
@@ -308,6 +212,7 @@
                 transform: scale(1.1);
             }
 
+
         .bar-icon-2 span {
             display: block;
             width: 25px;
@@ -317,9 +222,11 @@
             transition: 0.3s;
         }
 
+        /* --- Căn phải cho profile --- */
         .app__header-right {
-            display: flex;
-            align-items: center;
+            display: flex; /* Đảm bảo nó là một flex container */
+            align-items: center; /* Căn giữa các mục bên trong theo chiều dọc */
+            /* margin-left: auto; */ /* Thường không cần nếu justify-content: space-between hoạt động tốt */
         }
 
         .user__portfolio {
@@ -329,12 +236,13 @@
             padding: 5px 10px;
             border-radius: 5px;
             transition: background-color 0.2s;
-            position: relative;
+            position: relative; /* Quan trọng cho việc định vị dropdown */
         }
 
             .user__portfolio:hover {
                 background-color: #f1f1f1;
             }
+
 
         .user__portfolio-thumb img {
             width: 40px;
@@ -349,11 +257,11 @@
             color: #333;
         }
 
-        /* User Dropdown Styles */
+        /* Định kiểu dropdown menu người dùng */
         .user__dropdown {
             position: absolute;
             top: 100%;
-            right: 0;
+            right: 0; /* Đảm bảo dropdown căn phải theo user__portfolio */
             background-color: white;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -388,10 +296,11 @@
                     margin-right: 8px;
                 }
 
+        /* --- Padding cho nội dung chính --- */
         .main-content {
             padding: 2rem;
-            flex-grow: 1;
-            overflow-y: auto;
+            flex-grow: 1; /* Cho phép nội dung chiếm hết chiều cao còn lại */
+            overflow-y: auto; /* Thêm thanh cuộn nếu nội dung tràn ra */
         }
     </style>
 </head>
@@ -452,11 +361,12 @@
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar has-arrow" href="#" aria-expanded="false" style="text-decoration: none;">
+                        <a class="asidebar" href="#userManagementSubmenu" data-bs-toggle="collapse" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-user"></i>
                             <span class="nav-text">User Management</span>
                         </a>
-                        <ul aria-expanded="false" class="collapse">
+
+                        <ul class="collapse list-unstyled" id="userManagementSubmenu">
                             <li><a href="@Url.Action("ManageStudent", "Admin")">Student Accounts</a></li>
                             <li><a href="@Url.Action("ManageClubs", "Admin")">Club Accounts</a></li>
                         </ul>
@@ -485,8 +395,16 @@
             </div>
             <div class="app__header-right">
                 <div class="nav-item p-relative">
-                    <a id="userportfolio" href="#">
-                        <div class="user__portfolio">
+                    <!-- Wrapper -->
+                    <div class="dropdown">
+                        <!-- Trigger -->
+                        <a id="userportfolio"
+                           href="#"
+                           class="user__portfolio dropdown-toggle"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false"
+                           style="text-decoration: none;">
                             <div class="user__portfolio-thumb">
                                 @{
                                     var avatarPath = HttpContextAccessor.HttpContext.Session.GetString("avatarPath") ?? "~/img/user/default-avatar.jpg";
@@ -494,14 +412,14 @@
                                 <img class="rounded-circle" src="@Url.Content(avatarPath)" alt="Avatar" />
                             </div>
                             <div class="user__content">
-                                <span>@(HttpContextAccessor.HttpContext.Session.GetString("fullname") ?? "Guest")</span>
+                                <span>@User.FindFirst(ClaimTypes.Email)?.Value</span>
                             </div>
-                        </div>
-                    </a>
-                    <div class="user__dropdown">
-                        <ul class="mb-0">
+                        </a>
+
+                        <!-- Dropdown Menu -->
+                        <ul class="dropdown-menu">
                             <li>
-                                <a href="@Url.Action("Profile", "Admin")" style="text-decoration: none;">
+                                <a class="dropdown-item" href="@Url.Action("Profile", "Admin")" style="text-decoration: none;">
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_643_344)">
                                             <path d="M13.6569 10.3431C12.7855 9.47181 11.7484 8.82678 10.6168 8.43631C11.8288 7.60159 12.625 6.20463 12.625 4.625C12.625 2.07478 10.5502 0 8 0C5.44978 0 3.375 2.07478 3.375 4.625C3.375 6.20463 4.17122 7.60159 5.38319 8.43631C4.25162 8.82678 3.2145 9.47181 2.34316 10.3431C0.832156 11.8542 0 13.8631 0 16H1.25C1.25 12.278 4.27803 9.25 8 9.25C11.722 9.25 14.75 12.278 14.75 16H16C16 13.8631 15.1678 11.8542 13.6569 10.3431ZM8 8C6.13903 8 4.625 6.486 4.625 4.625C4.625 2.764 6.13903 1.25 8 1.25C9.86097 1.25 11.375 2.764 11.375 4.625C11.375 6.486 9.86097 8 8 8Z" fill="#7A7A7A" />
@@ -516,7 +434,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="@Url.Action("SignOut", "Authentication")" style="text-decoration: none;">
+                                <a class="dropdown-item" href="@Url.Action("SignOut", "Authentication")" style="text-decoration: none;">
                                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_643_343)">
                                             <path d="M17.4368 8.43771H10.312C10.0015 8.43771 9.74951 8.18572 9.74951 7.87523C9.74951 7.56474 10.0015 7.31274 10.312 7.31274H17.4368C17.7473 7.31274 17.9993 7.56474 17.9993 7.87523C17.9993 8.18572 17.7473 8.43771 17.4368 8.43771Z" fill="#7A7A7A" />
@@ -539,7 +457,7 @@
                 </div>
             </div>
         </div>
-        <div class="main-content">
+        <div class="main-content mt-5 pt-5">
             @RenderBody()
         </div>
     </div>
@@ -554,6 +472,9 @@
     <script src="@Url.Content("~/theme/js/magnific-popup.min.js")"></script>
     <script src="@Url.Content("~/theme/js/wow.min.js")"></script>
     <script src="@Url.Content("~/theme/js/main.js")"></script>
+    @await Html.PartialAsync("_ToastSetUp")
+    @await RenderSectionAsync("Scripts", required: false)
+
     <script>
         $(document).ready(function () {
             // Khởi tạo metisMenu
