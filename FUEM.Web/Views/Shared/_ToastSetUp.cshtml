@@ -4,31 +4,37 @@
         "closeButton": true,
         "progressBar": true,
         "positionClass": "toast-top-right",
-        "timeOut": "3000"
+        "timeOut": "3000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
     };
+
     $(function () {
     @* Success *@
     @if (TempData["SuccessMessage"] != null)
     {
-        <text>toastr.success('@TempData["SuccessMessage"]');</text>
+        <text>toastr.success('@Html.Raw(TempData["SuccessMessage"])');</text>
     }
 
     @* Error *@
     @if (TempData["ErrorMessage"] != null)
     {
-        <text>toastr.error('@TempData["ErrorMessage"]');</text>
+        <text>toastr.error('@Html.Raw(TempData["ErrorMessage"])');</text>
     }
 
     @* Info *@
     @if (TempData["InfoMessage"] != null)
     {
-        <text>toastr.info('@TempData["InfoMessage"]');</text>
+        <text>toastr.info('@Html.Raw(TempData["InfoMessage"])');</text>
     }
 
     @* Warning *@
     @if (TempData["WarningMessage"] != null)
     {
-        <text>toastr.warning('@TempData["WarningMessage"]');</text>
+        <text>toastr.warning('@Html.Raw(TempData["WarningMessage"])');</text>
     }
     });
 </script>

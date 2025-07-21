@@ -2,6 +2,7 @@
 using FUEM.Application.Interfaces.EventUseCases;
 using FUEM.Application.Interfaces.LocationUseCases;
 using FUEM.Application.Interfaces.OrganizerUseCases;
+using FUEM.Application.Interfaces.RegistrationUseCases;
 using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Application.UseCases.CategoryUseCases;
 using FUEM.Application.UseCases.EventUseCases;
@@ -30,6 +31,7 @@ namespace FUEM.Application
             // Event
             builder.Services.AddTransient<ICreateEvent, CreateEvent>();
             builder.Services.AddTransient<IGetEventForGuest, GetEventForGuest>();
+            builder.Services.AddTransient<IProcessEvent, ProcessEvent>();
 
             //Category
             builder.Services.AddTransient<IGetAllCategories, GetAllCategories>();
