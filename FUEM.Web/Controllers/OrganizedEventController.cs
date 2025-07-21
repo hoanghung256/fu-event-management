@@ -23,7 +23,7 @@ namespace FUEM.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Organizer,Admin")]
+        [Authorize(Roles = "Admin, Club")]
         public async Task<IActionResult> Index([FromQuery] int pageNumber = 1)
         {
             Page<Event> eventsPage;
