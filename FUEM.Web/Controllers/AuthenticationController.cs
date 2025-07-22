@@ -42,25 +42,27 @@ namespace FUEM.Web.Controllers
                 {
                     int userId = 0;
                     Role? role = Role.Student;
+                    string displayName = "Guest";
                     HttpContext.Session.SetString("Email", email);
                     if (user is Student)
                     {
                         userId = ((Student)user).Id;
-                        //HttpContext.Session.SetString("Role", Role.Student.ToString()); 
+                        displayName = ((Student)user).Fullname;
                     }
                     else if (user is Organizer)
                     {
                         userId = ((Organizer)user).Id;
                         bool isAdmin = ((Organizer)user).IsAdmin ?? false;
                         role = isAdmin ? Role.Admin : Role.Club;
-                        //HttpContext.Session.SetString("Role", role.ToString());
+                        displayName = ((Organizer)user).Acronym;
                     }
 
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                         new Claim(ClaimTypes.Email, email),
-                        new Claim(ClaimTypes.Role, role.ToString())
+                        new Claim(ClaimTypes.Role, role.ToString()),
+                        new Claim(ClaimTypes.GivenName, displayName)
                     };
                     var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
                     var principal = new ClaimsPrincipal(claimsIdentity);

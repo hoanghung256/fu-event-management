@@ -13,8 +13,11 @@ namespace FUEM.Domain.Interfaces.Repositories
     {
         Task<Page<Event>> GetEventForGuestAsync(int page, int pageSize);
         Task<Page<Event>> SearchEventAsync(SearchEventCriteria criteria, int page, int pageSize);
-        Task<Event> AddAsync(Event createEvent);
         Task<Event> GetEventById(int id);
-
+        Task<List<Event>> GetRecentEventsByOrganizerId(int organizerId, int count = 10);
+        Task<Event> AddAsync(Event createEvent);
+        Task<Page<Event>> GetPendingEventForAdmin(int page, int pageSize);
+        Task<Event?> GetEventByIdAsync(int eventId);
+        Task<bool> UpdateEventAsync(Event e);
     }
 }

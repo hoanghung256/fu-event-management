@@ -399,7 +399,7 @@
                                 <img class="rounded-circle" src="@Url.Content(avatarPath)" alt="Avatar" />
                             </div>
                             <div class="user__content">
-                                <span>@User.FindFirst(ClaimTypes.Email)?.Value</span>
+                                <span>@User.FindFirst(ClaimTypes.GivenName)?.Value</span>
                             </div>
                         </a>
 
@@ -459,7 +459,8 @@
     <script src="~/theme/js/magnific-popup.min.js"></script>
     <script src="~/theme/js/wow.min.js"></script>
     <script src="~/theme/js/main.js"></script>
-
+    @await Html.PartialAsync("_ToastSetUp")
+    @await RenderSectionAsync("Scripts", required: false)
 
     <script>
         $(document).ready(function () {
