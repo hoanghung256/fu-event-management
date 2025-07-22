@@ -16,66 +16,60 @@
     <link rel="stylesheet" href="@Url.Content("~/theme/css/metisMenu.min.css")" />
     <link rel="stylesheet" href="@Url.Content("~/theme/css/fontawesome-pro.css")" />
     <link rel="stylesheet" href="@Url.Content("~/theme/css/main.css")" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"> <!-- TOASTR CSS HERE -->
     <style>
         body {
-            display: flex; /* Dùng flexbox cho toàn bộ layout */
-            min-height: 100vh; /* Đảm bảo body chiếm toàn bộ chiều cao viewport */
+            display: flex;
+            min-height: 100vh;
             margin: 0;
-            flex-direction: row; /* Sidebar và nội dung chính nằm cạnh nhau */
-          
+            flex-direction: row;
         }
 
         .expovent__sidebar .logo-details {
             text-align: center;
             margin-bottom: 20px;
-            display: flex; /* Đảm bảo là flex container */
-            align-items: center; /* QUAN TRỌNG: Căn giữa theo chiều dọc các item con (logo) */
-            justify-content: center; /* Căn giữa theo chiều ngang các item con */
-            min-height: 50px; /* Đảm bảo có đủ không gian */
-            /* Thêm một số điều chỉnh nhỏ để khắc phục độ lệch */
-            padding-top: 5px; /* Điều chỉnh để đẩy lên một chút nếu cần */
-            padding-bottom: 5px; /* Điều chỉnh để đẩy lên một chút nếu cần */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            padding-top: 5px;
+            padding-bottom: 5px;
         }
 
-            /* Đảm bảo logo nhỏ và logo chữ được căn giữa theo chiều dọc trong .logo-details */
             .expovent__sidebar .logo-details .logo__white,
             .expovent__sidebar .logo-details .log__smnall {
-                vertical-align: middle; /* Đảm bảo căn giữa theo chiều dọc nếu không phải flex */
-                /* Nếu vẫn lệch, có thể dùng margin-top/bottom hoặc transform */
+                vertical-align: middle;
             }
 
-            /* Điều chỉnh margin cho logo__white để nó không bị lệch so với logo chữ */
             .expovent__sidebar .logo-details .logo__white {
-                max-width: 60px; /* Kích thước cho logo nhỏ (fpt icon) */
+                max-width: 60px;
                 height: auto;
                 transition: opacity 0.3s ease, margin-right 0.3s ease;
-                /* Thêm hoặc điều chỉnh margin-right nếu cần một khoảng cách nhỏ giữa 2 logo */
-                margin-right: 5px; /* Khoảng cách nhỏ giữa icon FPT và chữ FPT University */
+                margin-right: 5px;
             }
 
         .expovent__sidebar.collapsed .logo-details .logo__white {
-            margin-right: 0; /* Loại bỏ margin khi thu gọn để icon nằm giữa */
+            margin-right: 0;
         }
 
         .expovent__sidebar.collapsed .logo-details .logo__white {
-            margin-right: 0; /* Loại bỏ margin khi thu gọn để icon nằm giữa */
+            margin-right: 0;
         }
 
-
-        .expovent__sidebar .logo-details .log__smnall { /* Logo chữ "FPT UNIVERSITY" */
-            max-width: 140px; /* Chiều rộng gốc */
+        .expovent__sidebar .logo-details .log__smnall {
+            max-width: 140px;
             margin-left: 1rem;
             transition: opacity 0.3s ease, width 0.3s ease, margin-left 0.3s ease;
         }
 
         .expovent__sidebar.collapsed .logo-details .log__smnall {
-            opacity: 0; /* Ẩn logo chữ */
-            width: 0; /* Co lại chiều rộng */
-            margin-left: 0; /* Bỏ margin */
+            opacity: 0;
+            width: 0;
+            margin-left: 0;
         }
 
         .expovent__sidebar .sidebar__inner {
-            flex-grow: 1; /* Cho phép menu chiếm hết không gian còn lại */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
@@ -84,7 +78,7 @@
             list-style: none;
             padding-left: 0;
             margin: 0;
-            flex-grow: 1; /* Cho phép menu đẩy copyright xuống dưới */
+            flex-grow: 1;
         }
 
             .expovent__sidebar ul li {
@@ -99,15 +93,14 @@
                     text-decoration: none;
                     border-radius: 8px;
                     transition: background-color 0.3s ease, padding 0.3s ease;
-                    white-space: nowrap; /* Ngăn không cho văn bản xuống dòng */
-                    overflow: hidden; /* Ẩn văn bản khi thu gọn */
-                    justify-content: flex-start; /* Mặc định căn trái */
+                    white-space: nowrap;
+                    overflow: hidden;
+                    justify-content: flex-start;
                 }
 
-        /* Căn giữa icon khi sidebar thu gọn */
         .expovent__sidebar.collapsed ul li a {
-            justify-content: center; /* Căn giữa icon */
-            padding: 10px 0; /* Điều chỉnh padding ngang khi thu gọn */
+            justify-content: center;
+            padding: 10px 0;
         }
 
         .expovent__sidebar ul li a i {
@@ -117,68 +110,61 @@
         }
 
         .expovent__sidebar.collapsed ul li a i {
-            margin-right: 0; /* Bỏ margin để icon nằm giữa hoàn toàn */
+            margin-right: 0;
         }
 
         .expovent__sidebar ul li a:hover {
             background-color: #ff6f00;
-            padding-left: 18px; /* Hiệu ứng padding khi hover */
+            padding-left: 18px;
         }
 
         .expovent__sidebar.collapsed ul li a:hover {
-            padding-left: 0; /* Không có padding thêm khi thu gọn và hover */
+            padding-left: 0;
         }
-
 
         .expovent__sidebar.collapsed .nav-text {
             opacity: 0;
             width: 0;
-            display: none; /* Ẩn hoàn toàn văn bản */
+            display: none;
         }
 
-        /* --- Sửa lỗi căn chỉnh Footer (Copyright) --- */
         .sidebar__copyright {
             text-align: center;
-            padding-top: 20px; /* Khoảng cách phía trên copyright */
+            padding-top: 20px;
             padding-bottom: 10px;
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.7);
-            width: 100%; /* Đảm bảo chiếm hết chiều rộng của sidebar */
-            background-color: #000; /* Đảm bảo nền khớp với sidebar */
-            margin-top: auto; /* Đẩy copyright xuống đáy của flex container (sidebar__inner) */
-            transition: opacity 0.3s ease, height 0.3s ease, padding 0.3s ease; /* Hiệu ứng chuyển động */
-            box-sizing: border-box; /* Đảm bảo padding không làm tràn width */
+            width: 100%;
+            background-color: #000;
+            margin-top: auto;
+            transition: opacity 0.3s ease, height 0.3s ease, padding 0.3s ease;
+            box-sizing: border-box;
         }
 
         .expovent__sidebar.collapsed .sidebar__copyright {
-            opacity: 0; /* Ẩn copyright khi thu gọn */
-            height: 0; /* Thu gọn chiều cao */
-            overflow: hidden; /* Ngăn nội dung bị tràn khi height = 0 */
-            padding-top: 0; /* Bỏ padding khi ẩn */
-            padding-bottom: 0; /* Bỏ padding khi ẩn */
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
         }
 
-
-        /* --- Khu vực nội dung chính --- */
-        /* --- Khu vực nội dung chính --- */
         .page__body-wrapper {
-            flex-grow: 1; 
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
-            background-color: #f5f5f5; 
+            background-color: #f5f5f5;
             overflow-x: hidden;
         }
 
-        /* --- Định kiểu Header --- */
         .app__header__area {
             background: white;
             padding: 10px 20px;
             display: flex;
-            justify-content: space-between; 
+            justify-content: space-between;
             border-bottom: 1px solid #ddd;
-            align-items: center; 
-            flex-shrink: 0; 
-           
+            align-items: center;
+            flex-shrink: 0;
         }
 
         .app__header-left {
@@ -212,7 +198,6 @@
                 transform: scale(1.1);
             }
 
-
         .bar-icon-2 span {
             display: block;
             width: 25px;
@@ -222,11 +207,9 @@
             transition: 0.3s;
         }
 
-        /* --- Căn phải cho profile --- */
         .app__header-right {
-            display: flex; /* Đảm bảo nó là một flex container */
-            align-items: center; /* Căn giữa các mục bên trong theo chiều dọc */
-            /* margin-left: auto; */ /* Thường không cần nếu justify-content: space-between hoạt động tốt */
+            display: flex;
+            align-items: center;
         }
 
         .user__portfolio {
@@ -236,13 +219,12 @@
             padding: 5px 10px;
             border-radius: 5px;
             transition: background-color 0.2s;
-            position: relative; /* Quan trọng cho việc định vị dropdown */
+            position: relative;
         }
 
             .user__portfolio:hover {
                 background-color: #f1f1f1;
             }
-
 
         .user__portfolio-thumb img {
             width: 40px;
@@ -257,11 +239,10 @@
             color: #333;
         }
 
-        /* Định kiểu dropdown menu người dùng */
         .user__dropdown {
             position: absolute;
             top: 100%;
-            right: 0; /* Đảm bảo dropdown căn phải theo user__portfolio */
+            right: 0;
             background-color: white;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -296,11 +277,10 @@
                     margin-right: 8px;
                 }
 
-        /* --- Padding cho nội dung chính --- */
         .main-content {
             padding: 2rem;
-            flex-grow: 1; /* Cho phép nội dung chiếm hết chiều cao còn lại */
-            overflow-y: auto; /* Thêm thanh cuộn nếu nội dung tràn ra */
+            flex-grow: 1;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -349,7 +329,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar" href="@Url.Action("ApprovalEvents", "Admin", new { action = "show" })" aria-expanded="false" style="text-decoration: none;">
+                        <a class="asidebar" href="@Url.Action("PendingEvents", "Admin")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-hourglass-end"></i>
                             <span class="nav-text">Pending Events</span>
                         </a>
@@ -395,9 +375,7 @@
             </div>
             <div class="app__header-right">
                 <div class="nav-item p-relative">
-                    <!-- Wrapper -->
                     <div class="dropdown">
-                        <!-- Trigger -->
                         <a id="userportfolio"
                            href="#"
                            class="user__portfolio dropdown-toggle"
@@ -412,14 +390,13 @@
                                 <img class="rounded-circle" src="@Url.Content(avatarPath)" alt="Avatar" />
                             </div>
                             <div class="user__content">
-                                <span>@User.FindFirst(ClaimTypes.Email)?.Value</span>
+                                <span>@User.FindFirst(ClaimTypes.GivenName)?.Value</span>
                             </div>
                         </a>
 
-                        <!-- Dropdown Menu -->
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="@Url.Action("Profile", "Admin")" style="text-decoration: none;">
+                                <a class="dropdown-item" href="@Url.Action("Profile", "CLub")" style="text-decoration: none;">
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_643_344)">
                                             <path d="M13.6569 10.3431C12.7855 9.47181 11.7484 8.82678 10.6168 8.43631C11.8288 7.60159 12.625 6.20463 12.625 4.625C12.625 2.07478 10.5502 0 8 0C5.44978 0 3.375 2.07478 3.375 4.625C3.375 6.20463 4.17122 7.60159 5.38319 8.43631C4.25162 8.82678 3.2145 9.47181 2.34316 10.3431C0.832156 11.8542 0 13.8631 0 16H1.25C1.25 12.278 4.27803 9.25 8 9.25C11.722 9.25 14.75 12.278 14.75 16H16C16 13.8631 15.1678 11.8542 13.6569 10.3431ZM8 8C6.13903 8 4.625 6.486 4.625 4.625C4.625 2.764 6.13903 1.25 8 1.25C9.86097 1.25 11.375 2.764 11.375 4.625C11.375 6.486 9.86097 8 8 8Z" fill="#7A7A7A" />
@@ -472,6 +449,7 @@
     <script src="@Url.Content("~/theme/js/magnific-popup.min.js")"></script>
     <script src="@Url.Content("~/theme/js/wow.min.js")"></script>
     <script src="@Url.Content("~/theme/js/main.js")"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> <!-- TOASTR JS HERE -->
     @await Html.PartialAsync("_ToastSetUp")
     @await RenderSectionAsync("Scripts", required: false)
 

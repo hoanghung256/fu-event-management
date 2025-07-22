@@ -2,11 +2,15 @@
 using FUEM.Application.Interfaces.EventUseCases;
 using FUEM.Application.Interfaces.LocationUseCases;
 using FUEM.Application.Interfaces.OrganizerUseCases;
+using FUEM.Application.Interfaces.RegistrationUseCases;
+using FUEM.Application.Interfaces.StudentUseCases;
 using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Application.UseCases.CategoryUseCases;
 using FUEM.Application.UseCases.EventUseCases;
 using FUEM.Application.UseCases.LocationUseCases;
 using FUEM.Application.UseCases.OrganizerUseCases;
+using FUEM.Application.UseCases.RegistrationUseCases;
+using FUEM.Application.UseCases.StudentUseCases;
 using FUEM.Application.UseCases.UserUseCases;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,6 +35,9 @@ namespace FUEM.Application
             builder.Services.AddTransient<ICreateEvent, CreateEvent>();
             builder.Services.AddTransient<IGetEventForGuest, GetEventForGuest>();
             builder.Services.AddTransient<IGetOrganizedEvents, GetOrganizedEvents>();
+            builder.Services.AddTransient<IRegisterIntoEvent, RegisterIntoEvent>();
+            builder.Services.AddTransient<IProcessEvent, ProcessEvent>();
+            builder.Services.AddTransient<IGetRecentEvents, GetRecentEvents>();
 
             //Category
             builder.Services.AddTransient<IGetAllCategories, GetAllCategories>();
@@ -40,6 +47,12 @@ namespace FUEM.Application
 
             //Organizer
             builder.Services.AddTransient<IGetAllOrganizers, GetAllOrganizers>();
+            builder.Services.AddTransient<IGetOrganizer, GetOrganizer>();
+            builder.Services.AddTransient<IEditOrganizer, EditOrganizer>();
+
+            //Student
+            builder.Services.AddTransient<IFollowUseCase, FollowUseCase>();
+            builder.Services.AddTransient<IGetStudent, GetStudent>();
 
             return builder;
         }

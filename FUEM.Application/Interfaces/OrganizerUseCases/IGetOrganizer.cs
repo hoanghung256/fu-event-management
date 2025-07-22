@@ -5,18 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FUEM.Domain.Interfaces.Repositories
+namespace FUEM.Application.Interfaces.OrganizerUseCases
 {
-    public interface IOrganizerRepository
+    public interface IGetOrganizer
     {
         Task<Organizer> GetOrganizerByEmailAsync(string email);
-
-        Task UpdatePasswordHashAsync(int id, string newPasswordHash);
-
-        Task<List<Organizer>> GetAllOrganizersAsync();
-
         Task<Organizer> GetOrganizerByIdAsync(int id);
-
-        Task EditAsync(Organizer organizer);
     }
 }

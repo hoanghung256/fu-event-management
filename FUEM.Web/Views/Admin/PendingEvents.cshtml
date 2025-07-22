@@ -1,0 +1,221 @@
+﻿@model FUEM.Domain.Common.Page<Event>
+@{
+    ViewData["Title"] = "Registration Events";
+    Layout = "_AdminLayout";
+}
+<style>
+    .main-content{
+        margin-top: 0 !important;
+        padding-top: 0 !important:
+    }
+</style>
+<section style="">
+    <div class="app__slide-wrapper">
+        <div class="breadcrumb__area">
+            <div class="breadcrumb__wrapper mb-35">
+                <div class="breadcrumb__main">
+                    <div class="breadcrumb__inner">
+                        <div class="breadcrumb__icon">
+                            <i class="flaticon-home"></i>
+                        </div>
+                        <div class="breadcrumb__menu">
+                            <nav>
+                                <ul>
+                                    <li><span><a asp-controller="Admin" asp-action="Dashboard">Dashboard</a></span></li>
+                                    <li class="active"><span>Registration Events</span></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card__wrapper">
+            <div class="card__header">
+                <div class="card__header-top">
+                    <div class="card__title-inner">
+                        <div class="card__header-icon">
+                            <i class="flaticon-ticket-1"></i>
+                        </div>
+                        <div class="card__header-title">
+                            <h4>Event Registration List</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pb-20">
+                <div class="">
+                    <div class="" id="myTabContent">
+                        <div class="" id="day-tab-1-pane" role="tabpanel" aria-labelledby="day-tab-1" tabindex="0">
+
+                            <div class="body__card-wrapper">
+                                <div class="attendant__wrapper mb-35">
+                                    @if (Model != null && Model.Items != null && Model.Items.Any())
+                                    {
+                                        <table class="mb-35">
+                                            <thead>
+                                                <tr>
+                                                    <th>Club Name</th>
+                                                    <th>Event Name</th>
+                                                    <th>Date</th>
+                                                    <th>Category</th>
+                                                    <th>Location</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var eventItem in Model.Items)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <div class="attendant__seminar">
+                                                                <span><a href="#">@eventItem.Organizer.Fullname</a></span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attendant__seminar">
+                                                                <span><a href="#">@eventItem.Fullname</a></span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attendant__date">
+                                                                <span id="date">@eventItem.DateOfEvent.ToString()</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <span>@eventItem.Category.CategoryName</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <span>@eventItem.Location.LocationName</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="attendant__status">
+                                                                @{
+                                                                    string statusClass = "";
+                                                                    switch (eventItem.Status.ToString())
+                                                                    {
+                                                                        case "APPROVED":
+                                                                            statusClass = "bg-green";
+                                                                            break;
+                                                                        case "PENDING":
+                                                                            statusClass = "warning-bg";
+                                                                            break;
+                                                                        case "REJECTED":
+                                                                            statusClass = "bg-warn";
+                                                                            break;
+                                                                        case "ON_GOING":
+                                                                            statusClass = "teal-bg";
+                                                                            break;
+                                                                        default:
+                                                                            statusClass = "";
+                                                                            break;
+                                                                    }
+                                                                }
+                                                                <span class="status__tag @statusClass">@eventItem.Status</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="">
+                                                                <a class="btn btn-outline-warning tickets-details-btn"
+                                                                   asp-controller="Admin"
+                                                                   asp-action="ApprovalEventDetails"
+                                                                   asp-route-action="detail"
+                                                                   asp-route-eventId="@eventItem.Id"
+                                                                   style="--bs-btn-hover-color: #fff; --bs-btn-hover-bg: #ffc107; --bs-btn-hover-border-color: #ffc107;">
+                                                                    Detail
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+                                    else
+                                    {
+                                        <p>No registration events found.</p>
+                                    }
+                                </div>
+
+                                <div class="basic__pagination d-flex align-items-center justify-content-end">
+                                    <nav>
+                                        <ul>
+                                            @if (Model != null && Model.PageNumber > 1)
+                                            {
+                                                <li>
+                                                    <a asp-controller="Admin" asp-action="PendingEvents" asp-route-pageNumber="@(Model.PageNumber - 1)">
+                                                        <i class="fa-regular fa-arrow-left-long"></i>
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            @if (Model != null)
+                                            {
+                                                
+                                                    int startPage = Math.Max(1, Model.PageNumber - 2);
+                                                    int endPage = Math.Min(Model.TotalPages, Model.PageNumber + 2);
+
+                                                    if (Model.TotalPages > 5)
+                                                    {
+                                                        if (startPage > 1)
+                                                        {
+                                                        <li><a asp-controller="Admin" asp-action="PendingEvents" asp-route-pageNumber="1">1</a></li>
+                                                            if (startPage > 2)
+                                                            {
+                                                                <li><span>...</span></li>
+                                                            }
+                                                        }
+                                                    }
+                                                
+
+                                                @for (int i = startPage; i <= endPage; i++)
+                                                {
+                                                    if (i == Model.PageNumber)
+                                                    {
+                                                        <li><span class="current">@i</span></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li><a asp-controller="Admin" asp-action="PendingEvents" asp-route-pageNumber="@i">@i</a></li>
+                                                    }
+                                                }
+
+                                                
+                                                    if (Model.TotalPages > 5)
+                                                    {
+                                                        if (endPage < Model.TotalPages)
+                                                        {
+                                                            if (endPage < Model.TotalPages - 1)
+                                                            {
+                                                                <li><span>...</span></li>
+                                                            }
+                                                        <li><a asp-controller="Admin" asp-action="PendingEvents" asp-route-pageNumber="@Model.TotalPages">@Model.TotalPages</a></li>
+                                                        }
+                                                    }
+                                                
+                                            }
+
+                                            @if (Model != null && Model.PageNumber < Model.TotalPages)
+                                            {
+                                                <li>
+                                                    <a asp-controller="Admin" asp-action="PendingEvents" asp-route-pageNumber="@(Model.PageNumber + 1)">
+                                                        <i class="fa-regular fa-arrow-right-long"></i>
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
