@@ -35,7 +35,7 @@ namespace FUEM.Web.Controllers
         public async Task<ActionResult> ProfileAsync(int? id)
         {
             List<Event> recentEvents = id == null ? await _getRecentEventsUseCase.GetRecentEventsByOrganizerId(int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value)) : await _getRecentEventsUseCase.GetRecentEventsByOrganizerId(id.Value);
-            if (User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value == Role.Club.ToString())
+            if (User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value == Role.Club.ToString() || User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value == Role.Admin.ToString())
             {
                 var org = await _getOrganizerUseCase.GetOrganizerByEmailAsync(User.FindFirst(System.Security.Claims.ClaimTypes.Email).Value);
                 ViewBag.RecentEvents = recentEvents;
@@ -56,7 +56,7 @@ namespace FUEM.Web.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Club")]
+        [Authorize(Roles = "Admin, Club")]
         public async Task<ActionResult> EditProfileAsync(Organizer? model, [FromForm] IFormFile? coverFile, [FromForm] IFormFile? avatarFile)
         {
             if (model == null)

@@ -24,78 +24,6 @@
     <link rel="stylesheet" href="@Url.Content("~/theme/css/main.css")">
 
     <style>
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 10px 15px;
-            margin: 10px 0;
-            border-left: 5px solid #28a745;
-            border-radius: 4px;
-        }
-
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px 15px;
-            margin: 10px 0;
-            border-left: 5px solid #dc3545;
-            border-radius: 4px;
-        }
-        .banner-container{
-                position: relative;
-                display: inline-block;
-                width: 100%;
-                height: 300px;
-                overflow: hidden;
-        }
-        .cover-edit-btn{
-                position: absolute;
-                bottom: 10px;
-                right: 10px;
-                background-color: rgba(0, 0, 0, 0.5);
-                border: none;
-                color: white;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 18px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                transition: background-color 0.3s ease;
-                z-index: 2;
-        }
-        .avatar-edit-btn{
-                position: absolute;
-                bottom: 0px;
-                right: 0px;
-                background-color: rgba(0, 0, 0, 0.5);
-                border: none;
-                color: white;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 18px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                transition: background-color 0.3s ease;
-                z-index: 2;
-            }
-            i[class^=flaticon-]{
-                line-height: 1;
-                top: 2px;
-                position: relative;
-                -webkit-transition: all 0.3s ease-out 0s;
-                -moz-transition: all 0.3s ease-out 0s;
-                -ms-transition: all 0.3s ease-out 0s;
-                -o-transition: all 0.3s ease-out 0s;
-                transition: all 0.3s ease-out 0s;
-            }
         body {
             display: flex;
             min-height: 100vh;
@@ -502,7 +430,7 @@
                                 <img class="rounded-circle" src="@Url.Content(avatarPath)" alt="Avatar" />
                             </div>
                             <div class="user__content">
-                                <span>@User.FindFirst(ClaimTypes.Email)?.Value</span>
+                                <span>@User.FindFirst(ClaimTypes.GivenName)?.Value</span>
                             </div>
                         </a>
 

@@ -3,24 +3,101 @@
 @using FUEM.Infrastructure.Common;
 @{
     var recentEvents = ViewBag.RecentEvents as List<Event>;
-    var isClub = User.IsInRole("Club");
-    var success = TempData[ToastType.SuccessMessage.ToString()] as string;
-    var error = TempData[ToastType.ErrorMessage.ToString()] as string;
+    var isClubOrAdmin = User.IsInRole("Club") || User.IsInRole("Admin");
 }
+
+<style>
+    .success-message {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 10px 15px;
+        margin: 10px 0;
+        border-left: 5px solid #28a745;
+        border-radius: 4px;
+    }
+
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px 15px;
+        margin: 10px 0;
+        border-left: 5px solid #dc3545;
+        border-radius: 4px;
+    }
+
+    .banner-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        height: 300px;
+        overflow: hidden;
+    }
+
+    .cover-edit-btn {
+        position: absolute;
+        bottom: 2rem;
+        right: 1rem;
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+        z-index: 2;
+    }
+
+    .avatar-edit-btn {
+        position: absolute;
+        bottom: 0px;
+        right: 0px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+        z-index: 2;
+    }
+
+    i[class^=flaticon-] {
+        line-height: 1;
+        top: 2px;
+        position: relative;
+        -webkit-transition: all 0.3s ease-out 0s;
+        -moz-transition: all 0.3s ease-out 0s;
+        -ms-transition: all 0.3s ease-out 0s;
+        -o-transition: all 0.3s ease-out 0s;
+        transition: all 0.3s ease-out 0s;
+    }
+</style>
 
 <section>
     <div class="app__slide-wrapper">
         <form asp-action="EditProfile" asp-controller="Club" method="post" enctype="multipart/form-data">
                 @Html.Hidden("Id", Model.Id)
         <div class="banner-container mb-15">
-            @if(isClub)
+            @if (isClubOrAdmin)
             {
                     <div class="banner-container" style="overflow: hidden; height: 300px; object-fit: cover; border-radius: 10px; position: relative;">
                         <input type="file" class="form-control" id="coverFile" name="coverFile" style="display: none;" accept="image/*">
                         <img src="@Url.Content(Model.CoverPath)" alt="Banner" style="width: 100%; height: 100%; object-fit: cover;" id="currentBanner">
                         <img id="newBannerPreview" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none;">
                         <button type="button" class="cover-edit-btn" onclick="document.getElementById('coverFile').click();">
-                            <i class="flaticon-edit"></i>
+                            <i class="fa fa-pencil"></i>
                         </button>
                     </div>
             }
@@ -58,26 +135,26 @@
                         <a class="nav-link" data-bs-toggle="tab" href="#recent">Recently</a>
                     </li>
                 </ul>
-                    @if (!string.IsNullOrEmpty(success))
-                    {
-                <div class="success-message">@success</div>
-                    }
-                    @if (!string.IsNullOrEmpty(error))
-                    {
-                    <div class="error-message">@error</div>
-                    }
+                @*     @if (!string.IsNullOrEmpty(success)) *@
+                @*     { *@
+                @* <div class="success-message">@success</div> *@
+                @*     } *@
+                @*     @if (!string.IsNullOrEmpty(error)) *@
+                @*     { *@
+                @*     <div class="error-message">@error</div> *@
+                @*     } *@
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="about">
                             <div class="row mt-3">
                                 <div class="col-md-4 text-center">
-                                    @if (isClub)
+                                    @if (isClubOrAdmin)
                                     {
                                         <div style="width: 190px; height: 190px; position: relative; border-radius: 50%; margin: 0 auto;">
                                             <input type="file" class="form-control" id="avatarFile" name="avatarFile" style="display: none;" accept="image/*">
                                             <img src="@Url.Content(Model.AvatarPath)" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;" id="currentAvatar">
                                             <img id="newAvatarPreview" style="width: 100%; height: 100%; object-fit: cover; object-position: center; display: none; border-radius: 50%;">
                                             <button type="button" class="avatar-edit-btn" onclick="document.getElementById('avatarFile').click();">
-                                                <i class="flaticon-edit"></i>
+                                                <i class="fa fa-pencil"></i>
                                             </button>
                                         </div>
                                     }
@@ -88,7 +165,7 @@
 
                                     <ul class="list-unstyled mt-3">
                                         <li><strong>Club Name:</strong>
-                                            @if (isClub)
+                                            @if (isClubOrAdmin)
                                             {
                                                     <input type="text" name="Fullname" value="@Model.Fullname" class="form-control" />
                                             }
@@ -98,7 +175,7 @@
                                             }
                                         </li>
                                         <li><strong>Club Acronym:</strong>
-                                            @if (isClub)
+                                            @if (isClubOrAdmin)
                                             {
                                                     <input type="text" name="Acronym" value="@Model.Acronym" class="form-control" />
                                             }
@@ -108,7 +185,7 @@
                                             }
                                         </li>
                                         <li><strong>Club Email:</strong>
-                                            @if (isClub)
+                                            @if (isClubOrAdmin)
                                             {
                                                         <input type="text" name="Email" value="@Model.Email" class="form-control" />
                                             }
@@ -121,7 +198,7 @@
                                 </div>
                                 <div class="col-md-8">
                                     <h4>About Us</h4>
-                                    @if (isClub)
+                                    @if (isClubOrAdmin)
                                     {
                                             <textarea name="Description" class="form-control" rows="6">@Model.Description</textarea>
                                     }
@@ -130,7 +207,7 @@
                                             <p>@Model.Description</p>
                                     }
 
-                                    @if (isClub)
+                                    @if (isClubOrAdmin)
                                     {
                                             <div class="text-end">
                                                 <button type="submit" class="btn btn-success mt-3">Save Changes</button>
