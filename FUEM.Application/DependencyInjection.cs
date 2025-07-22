@@ -34,6 +34,7 @@ namespace FUEM.Application
             // Event
             builder.Services.AddTransient<ICreateEvent, CreateEvent>();
             builder.Services.AddTransient<IGetEventForGuest, GetEventForGuest>();
+            builder.Services.AddTransient<IGetOrganizedEvents, GetOrganizedEvents>();
             builder.Services.AddTransient<IRegisterIntoEvent, RegisterIntoEvent>();
             builder.Services.AddTransient<IProcessEvent, ProcessEvent>();
             builder.Services.AddTransient<IGetRecentEvents, GetRecentEvents>();
