@@ -65,10 +65,11 @@ namespace FUEM.Web.Controllers
                     var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
                     var principal = new ClaimsPrincipal(claimsIdentity);
                     await HttpContext.SignInAsync("Cookies", principal);
+                    TempData[ToastType.InfoMessage.ToString()] = $"Login Successfully";
                     return RedirectToAction("Index", "Home");
                 }
 
-                TempData[ToastType.InfoMessage.ToString()] = $"Login Successfully";
+                TempData[ToastType.ErrorMessage.ToString()] = $"Incorrect email or password. Please try again!";
                 return View();
             }
             catch (Exception ex)

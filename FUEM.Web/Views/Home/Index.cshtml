@@ -1,4 +1,6 @@
-﻿@model FUEM.Web.ViewModels.EventListViewModel
+﻿@using System.Web
+@using System.Text.RegularExpressions
+@model FUEM.Web.ViewModels.EventListViewModel
 
 @{
     ViewData["Title"] = "Home";
@@ -6,6 +8,7 @@
     var fromDateStr = Model.SearchCriteria?.FromDate?.ToString("yyyy-MM-dd");
     var toDateStr = Model.SearchCriteria?.ToDate?.ToString("yyyy-MM-dd");
 }
+
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link href="~/theme/css/home.css" rel="stylesheet" />
@@ -54,68 +57,74 @@
         {
             @foreach (var e in Model.Items)
             {
-                <div class="event-card">
-                    <div class="event-image-container">
-                        @* <img src="@(string.IsNullOrEmpty(e.EventImages?.FirstOrDefault()?.Path) ? "https://placehold.co/400x250?text=FUEM" : e.EventImages.First().Path)" alt="@e.Fullname" /> *@
-                        <img src="https://placehold.co/400x250?text=FUEM" alt="@e.Fullname" />
-                        <div class="post-date">
-                            <div class="date">@e.DateOfEvent?.ToString("dd")</div> <span>/</span>
-                            <div class="month">@e.DateOfEvent?.ToString("MM")</div> <span>/</span>
-                            <div class="year">@e.DateOfEvent?.ToString("yyyy")</div>
-                        </div>
-                    </div>
-                    <div class="event-content">
-                        <div class="event-header">
-                            <div class="event-title">
-                                <h3><strong>@e.Fullname</strong></h3>
-                            </div>
-                            <div class="organizer-info">
-                                <small>Organizer:</small>
-                                <span>@e.Organizer?.Fullname</span>
+                <a href="@Url.Action("Detail", "EventRegistration", new { id = e.Id })">
+                    <div class="event-card">
+                        <div class="event-image-container">
+                            @* <img src="@(string.IsNullOrEmpty(e.EventImages?.FirstOrDefault()?.Path) ? "https://placehold.co/400x250?text=FUEM" : e.EventImages.First().Path)" alt="@e.Fullname" /> *@
+                            <img src="https://placehold.co/400x250?text=FUEM" alt="@e.Fullname" />
+                            <div class="post-date">
+                                <div class="date">@e.DateOfEvent?.ToString("dd")</div> <span>/</span>
+                                <div class="month">@e.DateOfEvent?.ToString("MM")</div> <span>/</span>
+                                <div class="year">@e.DateOfEvent?.ToString("yyyy")</div>
                             </div>
                         </div>
+                        <div class="event-content">
+                            <div class="event-header">
+                                <div class="event-title">
+                                    <h3><strong>@e.Fullname</strong></h3>
+                                </div>
+                                <div class="organizer-info">
+                                    <small>Organizer:</small>
+                                    <span>@e.Organizer?.Fullname</span>
+                                </div>
 
-                        <div class="register-deadline mb-2">
-                            <div class="deadline-item">
-                                <div>
-                                    <small>Register Deadline:</small>
-                                    <span>@(e.GuestRegisterDeadline?.ToString("dd/MM/yyyy") ?? "TBA")</span>
+                                <div class="register-deadline mb-2">
+                                    <div class="deadline-item">
+                                        <div>
+                                            <small>Register Deadline:</small>
+                                            <span>@(e.GuestRegisterDeadline?.ToString("dd/MM/yyyy") ?? "TBA")</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @{
+                                    var rawText = e.Description ?? "";
+                                    var plainText = Regex.Replace(rawText, "<.*?>", "");
+                                    var shortText = plainText.Length > 200 ? plainText.Substring(0, 200) + "..." : plainText;
+                                }
+                                <p class="event-description">@shortText</p>
+                            </div>
+
+
+                            <div class="event-footer">
+                                <div class="event-type-badge @(e.Category?.CategoryName?.ToLower().Replace(" ", ""))">
+                                    @{
+                                        var categoryIcon = "fa-solid fa-calendar-days";
+                                        var categoryText = e.Category?.CategoryName?.ToUpper() ?? "EVENT";
+                                        switch (e.Category?.CategoryName?.ToLower())
+                                        {
+                                            case "workshop": categoryIcon = "fa-solid fa-calendar-days"; break;
+                                            case "competition": categoryIcon = "fa-solid fa-trophy"; break;
+                                            case "conference": categoryIcon = "fa-solid fa-users"; break;
+                                            case "seminar": categoryIcon = "fa-solid fa-lightbulb"; break;
+                                            case "cultural event": categoryIcon = "fa-solid fa-music"; break;
+                                            default: categoryIcon = "fa-solid fa-bars"; break;
+                                        }
+                                    }
+                                    <i class="@categoryIcon"></i> @categoryText
+                                </div>
+                                <div class="location-info">
+                                    <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
+                                    <span>@e.Location?.LocationName</span>
+                                </div>
+                                <div class="registration-info">
+                                    <div class="icon"><i class="fa-solid fa-users"></i></div>
+                                    <span>@e.GuestRegisterCount / @e.GuestRegisterLimit registered</span>
                                 </div>
                             </div>
                         </div>
-
-                        <p class="event-description">@e.Description?.Substring(0, Math.Min(200, e.Description.Length))...</p>
-
-                        <div class="event-footer">
-                            <div class="event-type-badge @(e.Category?.CategoryName?.ToLower().Replace(" ", ""))">
-                                @{
-                                    var categoryIcon = "fa-solid fa-calendar-days";
-                                    var categoryText = e.Category?.CategoryName?.ToUpper() ?? "EVENT";
-                                    switch (e.Category?.CategoryName?.ToLower())
-                                    {
-                                        case "workshop": categoryIcon = "fa-solid fa-calendar-days"; break;
-                                        case "competition": categoryIcon = "fa-solid fa-trophy"; break;
-                                        case "conference": categoryIcon = "fa-solid fa-users"; break;
-                                        case "seminar": categoryIcon = "fa-solid fa-lightbulb"; break;
-                                        case "cultural event": categoryIcon = "fa-solid fa-music"; break;
-                                        default: categoryIcon = "fa-solid fa-bars"; break;
-                                    }
-                                }
-                                <i class="@categoryIcon"></i> @categoryText
-                            </div>
-                            <div class="location-info">
-                                <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
-                                @* <span>@e.Location?.LocationName</span> *@
-                                <span>@e.Location?.LocationName</span>
-                            </div>
-                            <div class="registration-info">
-                                <div class="icon"><i class="fa-solid fa-users"></i></div>
-                                <span>@e.GuestRegisterCount / @e.GuestRegisterLimit registered</span>
-                            </div>
-                            <a href="@Url.Action("Detail", "Event", new { id = e.Id })" class="btn btn-outline-warning tickets-details-btn">Details</a>
-                        </div>
                     </div>
-                </div>
+                </a>
             }
         }
     </section>

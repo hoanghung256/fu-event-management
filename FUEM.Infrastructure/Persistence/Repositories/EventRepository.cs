@@ -27,6 +27,16 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             return createEvent;
         }
 
+        public async Task<Event> GetEventById(int id)
+        {
+            var detail = await _context.Events
+                .Include(e => e.EventImages)
+                .Include(e => e.Location)
+                .Include(e => e.Organizer)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            return detail;
+        }
         public async Task<Page<Event>> GetEventForGuestAsync(int page, int pageSize)
         {
             int totalItems = await _context.Events.CountAsync();
@@ -50,7 +60,7 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             };
         }
 
-        public async Task<Page<Event>> SearchEventAsync(SearchEventCriteria criteria, int page, int pageSize)
+        public async Task<Page<Event>> SearchEventAsync(SearchEventCriteria? criteria, int page, int pageSize)
         {
             var query = _context.Events.Include(e => e.Category)
                                        .Include(e => e.Organizer)

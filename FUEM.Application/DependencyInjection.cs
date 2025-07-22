@@ -2,11 +2,13 @@
 using FUEM.Application.Interfaces.EventUseCases;
 using FUEM.Application.Interfaces.LocationUseCases;
 using FUEM.Application.Interfaces.OrganizerUseCases;
+using FUEM.Application.Interfaces.RegistrationUseCases;
 using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Application.UseCases.CategoryUseCases;
 using FUEM.Application.UseCases.EventUseCases;
 using FUEM.Application.UseCases.LocationUseCases;
 using FUEM.Application.UseCases.OrganizerUseCases;
+using FUEM.Application.UseCases.RegistrationUseCases;
 using FUEM.Application.UseCases.UserUseCases;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +32,7 @@ namespace FUEM.Application
             // Event
             builder.Services.AddTransient<ICreateEvent, CreateEvent>();
             builder.Services.AddTransient<IGetEventForGuest, GetEventForGuest>();
+            builder.Services.AddTransient<IRegisterIntoEvent, RegisterIntoEvent>();
 
             //Category
             builder.Services.AddTransient<IGetAllCategories, GetAllCategories>();

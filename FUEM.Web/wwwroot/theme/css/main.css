@@ -3723,7 +3723,7 @@ input[type=file] {
 .expovent__sidebar::before {
     position: absolute;
     content: "";
-    height: 76px;
+/*    height: 76px;*/
     width: 100%;
     left: 0;
     top: 0;
@@ -7580,7 +7580,6 @@ input[type=file] {
     align-items: center;
     gap: 25px;
     justify-content: space-between;
-    flex-wrap: wrap;
 }
 
 /*----------------------------------------*/
@@ -9043,7 +9042,7 @@ input[type=file] {
 
 /* Hình ảnh của sự kiện */
 .event-image {
-    width: 30%;
+/*    width: 30%;*/
     position: relative;
 }
 
