@@ -147,5 +147,17 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             return rowAffected > 0;
         }
 
+        public async Task<List<Event>> GetRecentEventsByOrganizerId(int organizerId, int count = 10)
+        {
+            var result = await _context.Events
+                .Where(e => e.OrganizerId == organizerId)
+                .Include(e => e.Category)
+                .Include(e => e.Location)
+                .Include(e => e.EventImages)
+                .OrderByDescending(e => e.DateOfEvent)
+                .Take(count)
+                .ToListAsync();
+            return result;
+        }
     }
 }

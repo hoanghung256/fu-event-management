@@ -23,7 +23,7 @@ namespace FUEM.Application.UseCases.UserUseCases
 
         public async Task<object> LoginAsync(string email, string password)
         {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
                 throw new ArgumentNullException("Email/Password can not be null");
             }

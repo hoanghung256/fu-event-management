@@ -13,28 +13,28 @@
     };
 
     $(function () {
-    @* Success *@
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <text>toastr.success('@Html.Raw(TempData["SuccessMessage"])');</text>
-    }
+        @* Success *@
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>toastr.success('@Html.Raw(TempData["SuccessMessage"])');</text>
+        }
 
-    @* Error *@
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <text>toastr.error('@Html.Raw(TempData["ErrorMessage"])');</text>
-    }
+        @* Error *@
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>toastr.error('@Html.Raw(TempData["ErrorMessage"])');</text>
+        }
 
-    @* Info *@
-    @if (TempData["InfoMessage"] != null)
-    {
-        <text>toastr.info('@Html.Raw(TempData["InfoMessage"])');</text>
-    }
+        @* Info *@
+        @if (TempData["InfoMessage"] != null)
+        {
+            <text>toastr.info('@Html.Raw(TempData["InfoMessage"])');</text>
+        }
 
-    @* Warning *@
-    @if (TempData["WarningMessage"] != null)
-    {
-        <text>toastr.warning('@Html.Raw(TempData["WarningMessage"])');</text>
-    }
+        @* Warning *@
+        @if (TempData["WarningMessage"] != null)
+        {
+            <text>toastr.warning('@Html.Raw(TempData["WarningMessage"])');</text>
+        }
     });
 </script>
