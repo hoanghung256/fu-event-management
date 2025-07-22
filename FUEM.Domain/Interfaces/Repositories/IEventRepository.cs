@@ -16,5 +16,6 @@ namespace FUEM.Domain.Interfaces.Repositories
         Task<Page<Event>> GetAllOrganizedEventsAsync(int pageNumber, int pageSize);
         Task<Page<Event>> SearchEventAsync(SearchEventCriteria criteria, int page, int pageSize);
         Task<Event> AddAsync(Event createEvent);
+        Task<Page<Event>> GetAttendedEventsForUserIdAsync(string userId, int pageNumber, int pageSize);
     }
 }
