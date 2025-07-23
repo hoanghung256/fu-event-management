@@ -192,6 +192,36 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
+        public async Task<Page<Event>> GetAttendedEventsForUserIdAsync(string userId, int pageNumber, int pageSize)
+        {
+            int guestId = int.Parse(userId);
+
+            int totalItems = await _context.EventGuests
+                .Where(eg => eg.GuestId == guestId && eg.IsAttended == true)
+                .CountAsync();
+
+            var eventIds = await _context.EventGuests
+                .Where(eg => eg.GuestId == guestId && eg.IsAttended == true)
+                .OrderByDescending(eg => eg.EventId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(eg => eg.EventId)
+                .ToListAsync();
+
+            var events = await _context.Events
+                .Include(e => e.Location) 
+                .Where(e => eventIds.Contains(e.Id))
+                .ToListAsync();
+
+            return new Page<Event>
+            {
+                Items = events,
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
 
 
         public async Task<bool> UpdateEventAsync(Event e)
@@ -215,4 +245,5 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             return result;
         }
     }
+
 }
