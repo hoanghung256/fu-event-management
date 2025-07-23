@@ -9,5 +9,8 @@ namespace FUEM.Domain.Interfaces.Repositories
 {
     public interface IEventGuestRepository
     {
+        Task<bool> IsAlreadyRegisteredAsync(int eventId, int studentId);
+        Task AddAsync(EventGuest guest);
     }
+
 }

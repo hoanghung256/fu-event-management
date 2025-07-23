@@ -430,7 +430,7 @@
                                 <img class="rounded-circle" src="@Url.Content(avatarPath)" alt="Avatar" />
                             </div>
                             <div class="user__content">
-                                <span>@User.FindFirst(ClaimTypes.Email)?.Value</span>
+                                <span>@User.FindFirst(ClaimTypes.GivenName)?.Value</span>
                             </div>
                         </a>
 

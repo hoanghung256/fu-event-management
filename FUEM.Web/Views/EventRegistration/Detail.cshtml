@@ -1,0 +1,196 @@
+﻿@model FUEM.Domain.Entities.Event
+@{
+    ViewBag.Title = Model.Fullname ?? "Event Detail";
+    var isRegisteredAsGuest = TempData["isRegisteredAsGuest"] as bool?;
+    var isRegisteredAsCollaborator = TempData["isRegisteredAsCollaborator"] as bool?;
+    var isGuest = TempData["IsGuest"] as bool?;
+}
+
+<section>
+    <div class="app__slide-wrapper">
+        <div class="breadcrumb__area">
+            <div class="breadcrumb__wrapper mb-35">
+                <div class="breadcrumb__main">
+                    <div class="breadcrumb__inner">
+                        <div class="breadcrumb__icon">
+                            <i class="flaticon-home"></i>
+                        </div>
+                        <div class="breadcrumb__menu">
+                            <nav>
+                                <ul>
+                                    <li><span><a class="acolor" href="@Url.Action("Index", "Home")">Home</a></span></li>
+                                    <li class="active"><span>Event Details</span></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="pb-20">
+            <div>
+                <div class="event__details-area">
+                    <div class="row">
+                        <!-- HEADER -->
+                        <div class="body__card-wrapper mb-1 pt-3 pb-2">
+                            <div class="card__header-top">
+                                <div class="card__title-inner">
+                                    <h2 class="event__information-title" style="font-size: 28px;">@Model.Fullname</h2>
+                                </div>
+                            </div>
+                            <div class="review__main-wrapper">
+                                <div class="review__author-meta mb-15">
+                                    <div class="review__author-thumb">
+                                        <img class="rounded-circle" style="height: 40px; width: 40px;" src="@(!string.IsNullOrEmpty(Model.Organizer?.AvatarPath) ? Model.Organizer.AvatarPath : "/assets/img/default-avatar.png")" alt="Organizer Avatar" />
+                                    </div>
+                                    <div class="review__author-name">
+                                        <h4>
+                                            <a class="acolor" href="@Url.Action("Profile", "Account", new { role = "club", id = Model.Organizer?.Id })">
+                                                @Model.Organizer?.Fullname
+                                            </a>
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LEFT CONTENT -->
+                        <div class="col-md-8 p-1">
+                            <div class="event__details-left">
+                                <div class="body__card-wrapper mb-20">
+                                    <div class="review__tab">
+                                        <nav>
+                                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                                <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab">About</button>
+                                            </div>
+                                        </nav>
+                                        <div class="tab-content" id="nav-tabContent">
+                                            <div class="tab-pane fade show active" id="nav-home" role="tabpanel">
+                                                <div class="about__event-thumb w-img mt-40">
+                                                    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+                                                        <div class="carousel-indicators">
+                                                            @for (var i = 0; i < Model.EventImages.Count; i++)
+                                                            {
+                                                                <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")"></button>
+                                                            }
+                                                        </div>
+                                                        <div class="carousel-inner">
+                                                            @for (int i = 0; i < Model.EventImages.Count; i++)
+                                                            {
+                                                                <div class="carousel-item @(i == 0 ? "active" : "")">
+                                                                    <div>@Model.EventImages.ToList()[i].Path</div>
+                                                                    <img src="@Model.EventImages.ToList()[i].Path" class="d-block w-100" alt="Event Image @(i + 1)" />
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+                                                            <span class="carousel-control-prev-icon"></span>
+                                                        </button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+                                                            <span class="carousel-control-next-icon"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="about__content mt-30">
+                                                    <h4>About This Event</h4>
+                                                    <p>@Html.Raw(Model.Description?.Replace("\n", "<br />"))</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT CONTENT -->
+                        <div class="col-md-4 p-1">
+                            <div class="event__details-right">
+                                <div class="body__card-wrapper mb-20">
+                                    <div class="event__meta-time">
+                                        <ul>
+                                            <li style="display:flex;">
+                                                <div style="margin-right: 10px;">
+                                                    <span>Date: </span>
+                                                    <i>@Model.DateOfEvent?.ToString("dd/MM/yyyy")</i>
+                                                </div>
+                                                <div style="margin-right: 10px;">
+                                                    <span>Time: </span>
+                                                    <i>@Model.StartTime?.ToString(@"hh\:mm")</i> - <i>@Model.EndTime?.ToString(@"hh\:mm")</i>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <span>Venue: </span>
+                                                @Model.Location?.LocationName
+                                            </li>
+
+                                            @if (Model.GuestRegisterLimit > 0)
+                                            {
+                                                <li>
+                                                    <span>Guest Register Deadline: </span>
+                                                    <i>@Model.GuestRegisterDeadline?.ToString("dd/MM/yyyy")</i>
+                                                </li>
+                                                <li>
+                                                    <span>Guest Registered: </span>
+                                                    @Model.GuestRegisterCount / @Model.GuestRegisterLimit
+                                                </li>
+                                            }
+
+                                            @if (Model.CollaboratorRegisterLimit > 0)
+                                            {
+                                                <li>
+                                                    <span>Collaborator Register Deadline: </span>
+                                                    <i>@Model.CollaboratorRegisterDeadline?.ToString("dd/MM/yyyy")</i>
+                                                </li>
+                                                <li>
+                                                    <span>Collaborator Registered: </span>
+                                                    @Model.CollaboratorRegisterCount / @Model.CollaboratorRegisterLimit
+                                                </li>
+                                            }
+                                        </ul>
+
+                                        @if (isRegisteredAsGuest == true || isRegisteredAsCollaborator == true)
+                                        {
+                                            <div id="registeredMessage">
+                                                <button class="element__btn border-green" disabled>
+                                                    Registered (@(isRegisteredAsGuest == true ? "Guest" : "Collaborator"))
+                                                </button>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="ticket__price-inner" id="buttonGroup">
+                                                <div class="ticket__price-item">
+                                                    <form asp-action="Register" asp-controller="EventRegistration" method="post">
+                                                        <input type="hidden" name="eventId" value="@Model.Id" />
+                                                        <input type="hidden" name="isGuest" value="false" />
+                                                        <button class="element__btn border-yellow" type="submit">Collaborator Register</button>
+                                                    </form>
+                                                </div>
+                                                <div class="ticket__price-item">
+                                                    <form asp-action="Register" asp-controller="EventRegistration" method="post">
+                                                        <input type="hidden" name="eventId" value="@Model.Id" />
+                                                        <input type="hidden" name="isGuest" value="true" />
+                                                        <button class="element__btn border-yellow">Guest Register</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END RIGHT -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End content -->
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+}
