@@ -3,6 +3,7 @@ using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace FUEM.Web.Hubs
 {
@@ -50,18 +51,20 @@ namespace FUEM.Web.Hubs
 
         public async Task JoinGroup(string groupName, string eventName)
         {
-            int? userId = Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null ? int.Parse(Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value) : null;
+            Claim id = Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            Claim role = Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role);
+            int? userId = id != null ? int.Parse(id.Value) : null;
             Event? eve = await _eventRepository.GetEventByNameAsync(eventName);
             ChatGroup groupChat = await _chatUseCase.GetChatGroupByEventIdAsync(eve.Id);
             Student student = null;
             Organizer organizer = null;
             if (userId != null)
             {
-                if (Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Club.ToString() || Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Admin.ToString())
+                if (role.Value == Role.Club.ToString() || role.Value == Role.Admin.ToString())
                 {
                     organizer = await _organizerRepository.GetOrganizerByIdAsync(userId.Value);
                 }
-                else if (Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Student.ToString())
+                else if (role.Value == Role.Student.ToString())
                 {
                     student = await _studentRepository.GetStudentByIdAsync(userId.Value);
                 }
@@ -71,27 +74,31 @@ namespace FUEM.Web.Hubs
 
         public async Task LeaveGroup(string groupName)
         {
-            int? userId = Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null ? int.Parse(Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value) : null;
+            Claim id = Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            Claim role = Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role);
+            int? userId = id != null ? int.Parse(id.Value) : null;
             Student student = null;
             Organizer organizer = null;
             if (userId != null)
             {
-                if (Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Club.ToString() || Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Admin.ToString())
+                if (role.Value == Role.Club.ToString() || role.Value == Role.Admin.ToString())
                 {
                     organizer = await _organizerRepository.GetOrganizerByIdAsync(userId.Value);
                 }
-                else if (Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Student.ToString())
+                else if (role.Value == Role.Student.ToString())
                 {
                     student = await _studentRepository.GetStudentByIdAsync(userId.Value);
                 }
-                await Groups.RemoveFromGroupAsync(organizer.Acronym ?? student.Fullname, groupName);
-                //await Clients.Group(groupName).SendAsync("ReceiveMessage", "System", $"{organizer.Acronym ?? student.Fullname} has left the group {groupName}.");
+                await Groups.RemoveFromGroupAsync(role.Value == Role.Student.ToString() ? student.Fullname : organizer.Acronym, groupName);
+                //await Clients.Group(groupName).SendAsync("ReceiveMessage", "System", $"{role.Value == Role.Student.ToString() ? student.Fullname : organizer.Acronym} has left the group {groupName}.");
             }
         }
 
         public async Task SendMessage(string groupName, string eventName, string message)
         {
-            int? userId = Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null ? int.Parse(Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value) : null;
+            Claim id = Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            Claim role = Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role);
+            int? userId = id != null ? int.Parse(id.Value) : null;
             Event? eve = await _eventRepository.GetEventByNameAsync(eventName);
             ChatGroup groupChat = await _chatUseCase.GetChatGroupByEventIdAsync(eve.Id);
             if (userId == null)
@@ -112,14 +119,14 @@ namespace FUEM.Web.Hubs
                 ChatMessage chatMessage = new ChatMessage();
                 Student student = null;
                 Organizer organizer = null;
-                if (Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Club.ToString() || Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Admin.ToString())
+                if (role.Value == Role.Club.ToString() || role.Value == Role.Admin.ToString())
                 {
                     chatMessage.Content = message;
                     chatMessage.SenderOrganizerId = userId.Value;
                     chatMessage.GroupId = groupChat.Id;
                     organizer = await _organizerRepository.GetOrganizerByIdAsync(userId.Value);
                 }
-                else if (Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Student.ToString())
+                else if (role.Value == Role.Student.ToString())
                 {
                     chatMessage.Content = message;
                     chatMessage.SenderStudentId = userId.Value;
@@ -127,7 +134,7 @@ namespace FUEM.Web.Hubs
                     student = await _studentRepository.GetStudentByIdAsync(userId.Value);
                 }
                 await _chatUseCase.AddGroupMessageAsync(chatMessage);
-                await Clients.Group(groupChat.Name).SendAsync("ReceiveMessage", Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Student.ToString() ? student.Fullname : organizer.Acronym, message);
+                await Clients.Group(groupChat.Name).SendAsync("ReceiveMessage", role.Value == Role.Student.ToString() ? student.Fullname : organizer.Acronym, message);
             }
         }
     }
