@@ -3,9 +3,11 @@ using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Application.UseCases.UserUseCases;
 using FUEM.Domain.Entities;
 using FUEM.Domain.Interfaces.Repositories;
+using FUEM.Infrastructure.Common;
 using FUEM.Infrastructure.Persistence;
 using FUEM.Infrastructure.Persistence.Repositories;
 using FUEM.Web.Filters;
+using FUEM.Web.Hubs;
 using Microsoft.EntityFrameworkCore;
 
 namespace FUEM.Web
@@ -36,6 +38,8 @@ namespace FUEM.Web
             // Register DbContext  
             builder.Services.AddDbContextPool<FUEMDbContext>(options => options.UseSqlServer(connectionString));
 
+            builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
+
             builder.AddRepositories();
 
             builder.AddUseCases();
@@ -58,6 +62,8 @@ namespace FUEM.Web
             {
                 options.Filters.Add<InsertSignedFirebaseUrl>();
             });
+
+            builder.Services.AddSignalR();
 
             //builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true && options.AppendTrailingSlash);
 
@@ -86,6 +92,8 @@ namespace FUEM.Web
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Authentication}/{action=Login}/{id?}");
+
+            app.MapHub<ChatHub>("/chatHub");
 
             app.Run();
         }

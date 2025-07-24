@@ -3,6 +3,7 @@ using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -159,5 +160,13 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 .ToListAsync();
             return result;
         }
+
+        public async Task<Event?> GetEventByNameAsync(string eventName)
+            => await _context.Events
+                .Include(e => e.Location)
+                .Include(e => e.Category)
+                .Include(e => e.Organizer)
+                .Include(e => e.EventImages)
+                .FirstOrDefaultAsync(e => e.Fullname == eventName);
     }
 }

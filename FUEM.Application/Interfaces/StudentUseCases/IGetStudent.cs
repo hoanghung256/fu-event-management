@@ -10,5 +10,6 @@ namespace FUEM.Application.Interfaces.StudentUseCases
     public interface IGetStudent
     {
         Task<Student> GetStudentByEmail(string email);
+        Task<Student?> GetStudentById(int id);
     }
 }

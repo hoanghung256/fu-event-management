@@ -1,4 +1,5 @@
 ﻿using FUEM.Application.Interfaces.CategoryUseCases;
+using FUEM.Application.Interfaces.ChatUseCases;
 using FUEM.Application.Interfaces.EventUseCases;
 using FUEM.Application.Interfaces.LocationUseCases;
 using FUEM.Application.Interfaces.OrganizerUseCases;
@@ -6,6 +7,7 @@ using FUEM.Application.Interfaces.RegistrationUseCases;
 using FUEM.Application.Interfaces.StudentUseCases;
 using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Application.UseCases.CategoryUseCases;
+using FUEM.Application.UseCases.ChatUseCases;
 using FUEM.Application.UseCases.EventUseCases;
 using FUEM.Application.UseCases.LocationUseCases;
 using FUEM.Application.UseCases.OrganizerUseCases;
@@ -35,6 +37,7 @@ namespace FUEM.Application
             builder.Services.AddTransient<IGetEventForGuest, GetEventForGuest>();
             builder.Services.AddTransient<IProcessEvent, ProcessEvent>();
             builder.Services.AddTransient<IGetRecentEvents, GetRecentEvents>();
+            builder.Services.AddTransient<IGetEvent, GetEvent>();
 
             //Category
             builder.Services.AddTransient<IGetAllCategories, GetAllCategories>();
@@ -50,6 +53,9 @@ namespace FUEM.Application
             //Student
             builder.Services.AddTransient<IFollowUseCase, FollowUseCase>();
             builder.Services.AddTransient<IGetStudent, GetStudent>();
+
+            //Chat
+            builder.Services.AddTransient<IGetChat, GetChat>();
 
             return builder;
         }

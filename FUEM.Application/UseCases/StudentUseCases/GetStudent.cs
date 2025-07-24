@@ -21,5 +21,8 @@ namespace FUEM.Application.UseCases.StudentUseCases
 
         public async Task<Student> GetStudentByEmail(string email)
             => await _repository.GetStudentByEmailAsync(email);
+
+        public async Task<Student?> GetStudentById(int id)
+            => await _repository.GetStudentByIdAsync(id);
     }
 }

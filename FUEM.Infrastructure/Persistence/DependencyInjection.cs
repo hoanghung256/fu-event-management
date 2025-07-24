@@ -16,6 +16,7 @@ namespace FUEM.Infrastructure.Persistence
         public static IHostApplicationBuilder AddRepositories(this IHostApplicationBuilder builder)
         {
             builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddTransient<IChatRepository, ChatRepository>();
             builder.Services.AddTransient<IEventCollaboratorRepository, EvenCollaboratorRepository>();
             //builder.Services.AddTransient<IEventGuestRepository, EventGuestRepository>();
             builder.Services.AddTransient<IEventImageRepository, EventImageRepository>();
@@ -30,6 +31,7 @@ namespace FUEM.Infrastructure.Persistence
             builder.Services.AddTransient<IStudentRepository, StudentRepository>();
 
             builder.Services.AddTransient<FirebaseStorageService>();
+            builder.Services.AddTransient<MongoDBService>();
 
             return builder;
         }
