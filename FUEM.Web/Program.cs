@@ -59,7 +59,7 @@ namespace FUEM.Web
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowFrontend", builder =>
+                options.AddDefaultPolicy(builder =>
                 {
                     builder
                         .WithOrigins("https://fuem.azurewebsites.net") // 👈 your actual frontend domain
@@ -100,7 +100,7 @@ namespace FUEM.Web
             //app.UseStatusCodePagesWithReExecute("/Error/{0}");
             app.UseWebSockets();
             app.UseSession();
-            //app.UseCors("AllowFrontend");
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
 
