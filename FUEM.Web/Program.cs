@@ -57,6 +57,18 @@ namespace FUEM.Web
                     options.SlidingExpiration = true;
                 });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", builder =>
+                {
+                    builder
+                        .WithOrigins("https://fuem.azurewebsites.net") // 👈 your actual frontend domain
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials(); // 👈 needed for cookies or auth
+                });
+            });
+
             builder.Services.AddAuthorization();
 
             //builder.Services.AddScoped<InsertSignedFirebaseUrl>();
