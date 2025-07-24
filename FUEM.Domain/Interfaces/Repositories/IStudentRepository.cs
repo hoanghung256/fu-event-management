@@ -10,7 +10,7 @@ namespace FUEM.Domain.Interfaces.Repositories
     public interface IStudentRepository
     {
         Task<Student?> GetStudentByEmailAsync(string email);
-
+        Task<Student?> GetStudentByIdAsync(int id);
         Task AddAsync(Student s);
         Task UpdatePasswordHashAsync(int studentId, string newPasswordHash);
         Task<string?> GetPasswordHashAsync(int studentId);
