@@ -1,0 +1,145 @@
+﻿@model FUEM.Domain.Common.Page<FUEM.Domain.Entities.Event>
+
+@{
+
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else if (User.IsInRole("Club"))
+    {
+        Layout = "~/Views/Shared/_ClubLayout.cshtml";
+    }
+    else 
+    {
+        Layout = "~/Views/Shared/_GuestLayout.cshtml";
+    }
+
+    ViewData["Title"] = "Sự kiện Đã Tổ Chức";
+}
+
+<style>
+
+
+   
+    .organized-events-heading {
+        font-size: 2.5rem;
+        color: #F37021; 
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        text-transform: uppercase;
+        border-bottom: 3px solid #f37021; 
+        padding-bottom: 0.2rem;
+    }
+
+  
+    .events-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+        border-radius: 8px; 
+        overflow: hidden; 
+    }
+
+        .events-table th,
+        .events-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd; 
+        }
+
+        .events-table th {
+            background-color: #f2f2f2; 
+            color: #333;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .events-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9; 
+        }
+
+        .events-table tbody tr:hover {
+            background-color: #e9ecef; 
+            transition: background-color 0.2s ease-in-out;
+        }
+
+
+    .element__btn {
+        display: inline-flex;
+        padding: 5px 10px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .border-yellow {
+        border: 1px solid #F37021; 
+        color: #F37021;
+        background-color: transparent;
+    }
+
+        .border-yellow:hover {
+            background-color: #F37021;
+            color: white;
+        }
+
+ 
+    .no-events-message {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 1.1rem;
+        color: #777;
+    }
+</style>
+
+    <div class="breadcrumb__menu">
+        <nav>
+            <ul>
+                <li><span><a class="acolor" href="@Url.Action("Index", "Home")">Home</a></span></li>
+                <li class="active"><span>Attended Events</span></li> 
+            </ul>
+        </nav>
+    </div>
+
+<div class="container mt-5">
+    <h2 class="text-center mt-50 mb-4 organized-events-heading">Organized events</h2>
+
+    @if (Model != null && Model.Items.Any())
+    {
+        <table class="events-table">
+            <thead>
+                <tr>
+                    <th>Event name</th>
+                    <th>Date of event</th>
+                    <th>Guest attended</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var eventItem in Model.Items)
+                {
+                    <tr style="cursor: pointer;" onclick="window.location.href='@Url.Action("CompareEvents", "Admin", new { eventId = eventItem.Id })'">
+                            <td>@eventItem.Fullname</td>
+                            <td>@eventItem.DateOfEvent?.ToString("dd/MM/yyyy")</td>
+                            <td>@eventItem.GuestRegisterCount / @eventItem.GuestRegisterLimit</td>
+                            <td>
+                                <a href="#" class="element__btn border-yellow">View feedbacks</a>
+                            </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        
+        @await Html.PartialAsync("_PaginationControl", Model)
+    }
+    else
+    {
+        <p class="no-events-message">No event has been organized yet.</p>
+    }
+</>

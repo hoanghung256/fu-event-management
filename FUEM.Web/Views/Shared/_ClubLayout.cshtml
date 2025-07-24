@@ -40,7 +40,7 @@
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
-            position: relative;
+            position: fixed;
             z-index: 10; /* Ensure sidebar is above main content if needed */
         }
 
@@ -362,14 +362,14 @@
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar" href="@Url.Action("YourEvents", "Club")" aria-expanded="false" style="text-decoration: none;">
+                        <a class="asidebar" href="@Url.Action("Index", "OrganizedEvent")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-calendar-check"></i>
                             <span class="nav-text">Your Events</span>
                         </a>
                     </li>
                     <li>
                         <a class="asidebar" href="@Url.Action("ManageRegistrations", "Club")" aria-expanded="false" style="text-decoration: none;">
-                            <i class="fa-solid fa-clipboard-list-check"></i>
+                            <i class="fa-solid fa-file-signature"></i>
                             <span class="nav-text">Manage Registrations</span>
                         </a>
                     </li>
@@ -401,7 +401,7 @@
             </div>
         </div>
         <div class="sidebar__copyright">
-            <p>Copyright FUEM 2024</p>
+            <p>Copyright FUEM 2025</p>
         </div>
     </div>
     <div class="page__body-wrapper">

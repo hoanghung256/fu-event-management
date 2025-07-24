@@ -1,0 +1,109 @@
+﻿@model FUEM.Domain.Common.Page<FUEM.Domain.Entities.Event>
+
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = "AttendedEvents";
+}
+
+<style>
+    /* CSS hiện tại cho tiêu đề và container vẫn giữ nguyên */
+    .attended-events-heading {
+        font-size: 2.5rem;
+        color: #28a745;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        text-transform: uppercase;
+        border-bottom: 3px solid #28a745;
+        padding-bottom: 0.5rem;
+    }
+
+    /* Thêm hoặc điều chỉnh CSS cho bảng */
+    .events-table {
+        width: 100%;
+        border-collapse: collapse; 
+        margin-top: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+        border-radius: 8px; 
+        overflow: hidden; 
+    }
+
+        .events-table th,
+        .events-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .events-table th {
+            background-color: #f2f2f2; 
+            color: #333;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .events-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .events-table tbody tr:hover {
+            background-color: #e9ecef; 
+            transition: background-color 0.2s ease-in-out;
+        }
+
+    
+    .no-events-message {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 1.1rem;
+        color: #777;
+    }
+</style>
+<div class="breadcrumb__menu">
+    <nav>
+        <ul>
+            <li><span><a class="acolor" href="@Url.Action("Index", "Home")">Home</a></span></li>
+            <li class="active"><span>Attended Events</span></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="container mt-50">
+    <h2 class="text-center mb-4 attended-events-heading">Attended Events</h2>
+
+    @if (Model != null && Model.Items.Any())
+    {
+        <table class="events-table">
+            <thead>
+                <tr>
+                    <th>Tên sự kiện</th>
+                    <th>Ngày tổ chức</th>
+                    <th>Thời gian</th>
+                    <th>Địa điểm</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var eventItem in Model.Items)
+                {
+                    <tr>
+                        <td>@eventItem.Fullname</td>
+                        <td>@eventItem.DateOfEvent?.ToString("dd/MM/yyyy")</td>
+                        <td>@eventItem.StartTime - @eventItem.EndTime</td>
+                        <td>@(eventItem.Location?.LocationName)</td>
+                        <td>
+                            <button class="btn-feedback" data-event-id="@eventItem.Id" data-event-name="@eventItem.Fullname">Feedback</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @* Giữ nguyên phần phân trang hiện có *@
+        @await Html.PartialAsync("_PaginationControl", Model)
+    }
+    else
+    {
+        <p class="no-events-message">Bạn chưa tham gia sự kiện nào.</p>
+    }
+</div>

@@ -17,8 +17,8 @@ namespace FUEM.Infrastructure.Persistence
         {
             builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
             builder.Services.AddTransient<IChatRepository, ChatRepository>();
-            builder.Services.AddTransient<IEventCollaboratorRepository, EvenCollaboratorRepository>();
-            //builder.Services.AddTransient<IEventGuestRepository, EventGuestRepository>();
+            builder.Services.AddTransient<IEventCollaboratorRepository, EventCollaboratorRepository>();
+            builder.Services.AddTransient<IEventGuestRepository, EventGuestRepository>();
             builder.Services.AddTransient<IEventImageRepository, EventImageRepository>();
             builder.Services.AddTransient<IEventRepository, EventRepository>();
             builder.Services.AddTransient<IFeedbackRepository, FeedbackRepository>();

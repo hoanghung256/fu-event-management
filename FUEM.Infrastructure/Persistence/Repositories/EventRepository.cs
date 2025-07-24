@@ -29,6 +29,16 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             return createEvent;
         }
 
+        public async Task<Event> GetEventById(int id)
+        {
+            var detail = await _context.Events
+                .Include(e => e.EventImages)
+                .Include(e => e.Location)
+                .Include(e => e.Organizer)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            return detail;
+        }
         public async Task<Event?> GetEventByIdAsync(int eventId)
         {
             return await _context.Events
@@ -139,6 +149,81 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
+        
+        public async Task<Page<Event>> GetAllOrganizedEventsAsync(int pageNumber, int pageSize)
+        {
+            int totalItems = await _context.Events
+                .Where(e => e.Status == EventStatus.END)
+                .CountAsync();
+
+            var items = await _context.Events
+                .Where(e => e.Status == EventStatus.END)
+                .OrderByDescending(e => e.DateOfEvent)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new Page<Event>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+        
+        public async Task<Page<Event>> GetOrganizedEventsByOrganizerIdAsync(string organizerId, int pageNumber, int pageSize)
+        {
+            int totalItems = await _context.Events
+                .Where(e => e.OrganizerId.ToString() == organizerId && e.Status == EventStatus.END)
+                .CountAsync();
+
+            var items = await _context.Events
+                .Where(e => e.OrganizerId.ToString() == organizerId && e.Status == EventStatus.END)
+                .OrderByDescending(e => e.DateOfEvent)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new Page<Event>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+        public async Task<Page<Event>> GetAttendedEventsForUserIdAsync(string userId, int pageNumber, int pageSize)
+        {
+            int guestId = int.Parse(userId);
+
+            int totalItems = await _context.EventGuests
+                .Where(eg => eg.GuestId == guestId && eg.IsAttended == true)
+                .CountAsync();
+
+            var eventIds = await _context.EventGuests
+                .Where(eg => eg.GuestId == guestId && eg.IsAttended == true)
+                .OrderByDescending(eg => eg.EventId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(eg => eg.EventId)
+                .ToListAsync();
+
+            var events = await _context.Events
+                .Include(e => e.Location) 
+                .Where(e => eventIds.Contains(e.Id))
+                .ToListAsync();
+
+            return new Page<Event>
+            {
+                Items = events,
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
+
 
         public async Task<bool> UpdateEventAsync(Event e)
         {
@@ -169,4 +254,5 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 .Include(e => e.EventImages)
                 .FirstOrDefaultAsync(e => e.Fullname == eventName);
     }
+
 }

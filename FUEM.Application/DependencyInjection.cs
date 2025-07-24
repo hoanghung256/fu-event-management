@@ -11,6 +11,7 @@ using FUEM.Application.UseCases.ChatUseCases;
 using FUEM.Application.UseCases.EventUseCases;
 using FUEM.Application.UseCases.LocationUseCases;
 using FUEM.Application.UseCases.OrganizerUseCases;
+using FUEM.Application.UseCases.RegistrationUseCases;
 using FUEM.Application.UseCases.StudentUseCases;
 using FUEM.Application.UseCases.UserUseCases;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,8 @@ namespace FUEM.Application
             // Event
             builder.Services.AddTransient<ICreateEvent, CreateEvent>();
             builder.Services.AddTransient<IGetEventForGuest, GetEventForGuest>();
+            builder.Services.AddTransient<IGetOrganizedEvents, GetOrganizedEvents>();
+            builder.Services.AddTransient<IRegisterIntoEvent, RegisterIntoEvent>();
             builder.Services.AddTransient<IProcessEvent, ProcessEvent>();
             builder.Services.AddTransient<IGetRecentEvents, GetRecentEvents>();
             builder.Services.AddTransient<IGetEvent, GetEvent>();
@@ -56,6 +59,9 @@ namespace FUEM.Application
 
             //Chat
             builder.Services.AddTransient<IGetChat, GetChat>();
+
+            //Admin
+            builder.Services.AddTransient<ICompareEventUseCase, CompareEventUseCase>();
 
             return builder;
         }

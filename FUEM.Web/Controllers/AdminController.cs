@@ -3,6 +3,8 @@ using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using FUEM.Application.Interfaces;
+using FUEM.Domain.Common;
+using System.Security.Claims;
 
 namespace FUEM.Web.Controllers
 {
@@ -10,10 +12,15 @@ namespace FUEM.Web.Controllers
     {
         private readonly IEventRepository _eventRepository;
         private readonly IProcessEvent _processEventUseCase;
-        public AdminController(IEventRepository eventRepository, IProcessEvent processEventUseCase)
+        private readonly ICompareEventUseCase _compareEventUseCase;
+        private readonly IGetOrganizedEvents _getOrganizedEvents;
+
+        public AdminController(IEventRepository eventRepository, IProcessEvent processEventUseCase, ICompareEventUseCase compareEventUseCase, IGetOrganizedEvents getOrganizedEvents)
         {
             _eventRepository = eventRepository;
             _processEventUseCase = processEventUseCase;
+            _compareEventUseCase = compareEventUseCase;
+            _getOrganizedEvents = getOrganizedEvents;
         }
 
         public async Task<IActionResult> PendingEvents(int pageNumber = 1, int pageSize = 5)
@@ -57,6 +64,16 @@ namespace FUEM.Web.Controllers
                 TempData[ToastType.ErrorMessage.ToString()] = "An error occurred while processing your request.";
             }
             return RedirectToAction("PendingEvents");
+        }
+
+        [HttpGet("Admin/CompareEvents")]
+        public async Task<IActionResult> CompareEvents(int eventId, int? comparedId)
+        {
+            string organizerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var recentOrganizedEvents = await _compareEventUseCase.GetRemainEventAsync(organizerIdStr, eventId, comparedId);
+            ViewBag.RecentOrganizedEvents = recentOrganizedEvents;
+            var eventList = await _compareEventUseCase.CompareEvent(eventId, comparedId);
+            return View(eventList);
         }
     }
 }

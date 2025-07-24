@@ -10,6 +10,8 @@ using FUEM.Web.Filters;
 using FUEM.Web.Hubs;
 using Microsoft.EntityFrameworkCore;
 
+using FUEM.Application.UseCases.EventUseCases;
+
 namespace FUEM.Web
 {
     public class Program
@@ -30,6 +32,7 @@ namespace FUEM.Web
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+            builder.Services.AddScoped<IGetAttendedEvents, GetAttendedEvents>();
 
             // Get connection string  
             var connectionString = GetConnectionString(builder);
