@@ -98,9 +98,9 @@ namespace FUEM.Web
             app.UseRouting();
 
             //app.UseStatusCodePagesWithReExecute("/Error/{0}");
-
+            app.UseWebSockets();
             app.UseSession();
-
+            //app.UseCors("AllowFrontend");
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -109,6 +109,8 @@ namespace FUEM.Web
                 pattern: "{controller=Authentication}/{action=Login}/{id?}");
 
             app.MapHub<ChatHub>("/chatHub");
+            //app.MapHub<ChatHub>("/chatHub").RequireCors("AllowFrontend");
+
 
             app.Run();
         }
