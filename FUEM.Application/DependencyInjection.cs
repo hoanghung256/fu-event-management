@@ -54,6 +54,9 @@ namespace FUEM.Application
             builder.Services.AddTransient<IFollowUseCase, FollowUseCase>();
             builder.Services.AddTransient<IGetStudent, GetStudent>();
 
+            //Admin
+            builder.Services.AddTransient<ICompareEventUseCase, CompareEventUseCase>();
+
             return builder;
         }
     }
