@@ -53,6 +53,7 @@ namespace FUEM.Application
             //Student
             builder.Services.AddTransient<IFollowUseCase, FollowUseCase>();
             builder.Services.AddTransient<IGetStudent, GetStudent>();
+            builder.Services.AddTransient<IManageCalendar, ManageCalendar>();
 
             return builder;
         }

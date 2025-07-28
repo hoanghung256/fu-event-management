@@ -1,0 +1,263 @@
+﻿@{
+    ViewData["Title"] = "My Calendar";
+}
+<style>
+    /* Tùy chỉnh màu nền và border cho toàn bộ lịch */
+    .fc {
+        font-family: 'Inter', sans-serif; /* Đảm bảo font Inter được sử dụng */
+        border-radius: 8px; /* Bo tròn góc cho toàn bộ lịch */
+        overflow: hidden; /* Đảm bảo nội dung không tràn ra ngoài góc bo tròn */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Thêm đổ bóng nhẹ */
+    }
+
+        /* Tùy chỉnh thanh tiêu đề (header toolbar) */
+        .fc .fc-toolbar {
+            background-color: #f8f9fa; /* Màu nền nhẹ cho thanh toolbar */
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 8px 8px 0 0; /* Bo tròn góc trên */
+        }
+
+        /* Tùy chỉnh tiêu đề tháng/tuần/ngày */
+        .fc .fc-toolbar-title {
+            color: #343a40; /* Màu chữ đậm */
+            font-size: 1.8rem; /* Kích thước chữ lớn hơn */
+            font-weight: 600;
+        }
+
+        /* Tùy chỉnh các nút điều hướng (prev, next, today) và nút chuyển đổi view */
+        .fc .fc-button {
+            /* Gradient cam */
+            background: linear-gradient(to right, #ff6f00, #ffb300); /* Màu cam nhạt đến cam đậm */
+            color: #fff; /* Chữ màu trắng */
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease; /* Hiệu ứng chuyển động mượt mà */
+            box-shadow: 0 2px 5px rgba(255, 99, 71, 0.3); /* Đổ bóng nhẹ */
+        }
+
+            .fc .fc-button:hover {
+                background: linear-gradient(to right, #ff6f00, #ffb300); /* Gradient đậm hơn khi hover */
+                color: #fff;
+                box-shadow: 0 4px 10px rgba(255, 99, 71, 0.5); /* Đổ bóng rõ hơn khi hover */
+                transform: translateY(-1px); /* Nút nhích lên một chút */
+            }
+
+            .fc .fc-button:active {
+                background: linear-gradient(to right, #ff6f00, #ffb300); /* Đảo ngược gradient khi click */
+                box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng nhấn xuống */
+                transform: translateY(0);
+            }
+
+
+        /* Tùy chỉnh màu nền cho các ngày trong lịch */
+        .fc .fc-daygrid-day {
+            background-color: #ffffff; /* Nền trắng cho các ô ngày */
+            border: 1px solid #f0f0f0; /* Viền nhẹ giữa các ô */
+        }
+
+            /* Tùy chỉnh màu nền cho ngày hiện tại */
+            .fc .fc-daygrid-day.fc-day-today {
+                background-color: #e6f7ff; /* Màu xanh nhạt cho ngày hôm nay */
+                border: 1px solid #91d5ff;
+            }
+
+            /* Tùy chỉnh màu nền cho các ngày cuối tuần */
+            .fc .fc-daygrid-day.fc-day-sat,
+            .fc .fc-daygrid-day.fc-day-sun {
+                background-color: #fcfcfc; /* Nền xám nhạt cho cuối tuần */
+            }
+
+        /* Tùy chỉnh màu chữ cho các ngày không thuộc tháng hiện tại */
+        .fc .fc-daygrid-day-other .fc-daygrid-day-top {
+            opacity: 0.6; /* Làm mờ chữ ngày của tháng khác */
+        }
+
+    /* Tùy chỉnh sự kiện */
+    .fc-event {
+        border-radius: 4px; /* Bo tròn góc sự kiện */
+        padding: 2px 5px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        /* Đảm bảo chiều cao tối thiểu để text có thể hiển thị một dòng */
+        min-height: 22px; /* Tùy chỉnh nếu cần */
+    }
+
+    /* Cắt gọn tên sự kiện */
+    .fc-event-title {
+        white-space: nowrap; /* Ngăn không cho text xuống dòng */
+        overflow: hidden; /* Ẩn phần text tràn ra ngoài */
+        text-overflow: ellipsis; /* Thêm dấu ba chấm (...) vào cuối nếu text bị cắt */
+        display: block; /* Đảm bảo nó là block để overflow hoạt động */
+        color: black; /* Mặc định chữ trắng trên nền sự kiện */
+    }
+
+    /* Tùy chỉnh cho chế độ xem timeGrid (tuần/ngày theo giờ) */
+    .fc .fc-timegrid-slot {
+        border-top: 1px dashed #f0f0f0; /* Đường kẻ mờ cho các slot thời gian */
+    }
+
+    .fc .fc-timegrid-slot-label {
+        color: #6c757d; /* Màu chữ cho nhãn thời gian */
+        font-size: 0.8rem;
+    }
+
+    /* Tùy chỉnh cho chế độ xem list (danh sách) */
+    .fc .fc-list-event {
+        border-bottom: 1px solid #eee;
+        padding: 10px 0;
+    }
+
+        .fc .fc-list-event:hover {
+            background-color: #f8f9fa;
+        }
+
+    .fc .fc-list-event-title {
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    .fc .fc-list-event-time {
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+</style>
+<section>
+    <div class="app__slide-wrapper">
+        <div class="breadcrumb__area">
+            <div class="breadcrumb__wrapper mb-35">
+                <div class="breadcrumb__main">
+                    <div class="breadcrumb__inner">
+                        <div class="breadcrumb__icon">
+                            <i class="flaticon-home"></i>
+                        </div>
+                        <div class="breadcrumb__menu">
+                            <nav>
+                                <ul>
+                                    <li><span><a asp-controller="Home" asp-action="Home">Home</a></span></li>
+                                    <li class="active"><span>My Calendar</span></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card__wrapper">
+            <div class="card__header">
+                <div class="card__header-top">
+                    <div class="card__title-inner">
+                        <div class="card__header-icon">
+                            <i class="fa-solid fa-calendar-alt"></i>
+                        </div>
+                        <div class="card__header-title">
+                            <h4>Calendar for registered events</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pb-20">
+                <div id='calendar'></div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            @*@Html.Raw(Json.Serialize(...))}}*@
+           var studentId = @Html.Raw(Json.Serialize(ViewBag.StudentId));
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                editable: false,
+                initialView: 'dayGridMonth', 
+                locale: 'en', 
+                height: 'auto', 
+                expandRows: true, 
+                slotMinTime: '06:00:00', 
+                slotMaxTime: '22:00:00', 
+
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                },
+                buttonText: {
+                    today: 'Today', 
+                    month: 'Month', 
+                    week: 'Week', 
+                    day: 'Day',
+                    listWeek: 'Week List' 
+                },
+                    eventColor: '#00000',
+                    eventTextColor: '#ffffff',
+                @*events: 
+                    [
+                    {
+                        "id": 1,
+                        "title": "Hội thảo AI & Machine Learning",
+                         "start": "2025-07-25T09:00:00",
+        "end": "2025-07-25T12:00:00",
+        "url": "/Student/EventDetails/1",
+        "color": "#28a745",
+        "extendedProps": {
+            "location": "Phòng Lab A101",
+            "status": "APPROVED",
+            "description": "Hội thảo chuyên sâu về các ứng dụng mới nhất của AI.",
+            "isAttended": true
+        },
+        "allDay": false
+    }]                
+                *@
+                
+
+                // Cấu hình nguồn sự kiện từ API
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    // fetchInfo.startStr và fetchInfo.endStr là các chuỗi ISO 8601 của phạm vi hiển thị hiện tại của lịch
+                    console.log('fetch info', fetchInfo);
+                    fetch(`/Student/GetRegisteredEvents?start=${fetchInfo.startStr}&end=${fetchInfo.endStr}&studentId=${studentId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            successCallback(data); 
+                            console.log("data day: ", data);
+                        })
+                        .catch(error => {
+                            console.error('There was a problem with the fetch operation:', error);
+                            toastr.error('Cannot load events. Try again later.');
+                            failureCallback(error);
+                        });
+                },
+
+                eventClick: function(info) {
+                    if (info.event.url) {
+                        window.open(info.event.url, '_blank');
+                    } else {
+						// detail modal or alert event information
+                        let eventDetails = `Event: ${info.event.title}\n`;
+                        eventDetails += `Time: ${info.event.start.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} - ${info.event.end ? info.event.end.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}\n`;
+                        eventDetails += `Location: ${info.event.extendedProps.location || 'Không rõ'}\n`;
+                        eventDetails += `Status: ${info.event.extendedProps.status || 'N/A'}\n`;
+                        eventDetails += `Description: ${info.event.extendedProps.description || 'Không có mô tả'}`;
+                        alert(eventDetails); // Thay thế bằng modal đẹp hơn sau này
+                    }
+                },
+                eventDidMount: function(info) {
+
+                }
+            }); 
+
+            calendar.render();
+        });
+    </script>
+}
