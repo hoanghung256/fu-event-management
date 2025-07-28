@@ -30,6 +30,8 @@ jobs:
           $json.ConnectionStrings.UserId = "${{ secrets.DB_USER }}"
           $json.ConnectionStrings.Password = "${{ secrets.DB_PASSWORD }}"
           $json.ConnectionStrings.Database = "${{ secrets.DB_NAME }}"
+          $json.MongoDb.ConnectionString = "${{ secrets.MONGO_CONNECTION_STRING }}"
+          $json.MongoDb.DatabaseName = "${{ secrets.MONGO_DB_NAME }}"
           $json | ConvertTo-Json -Depth 10 | Set-Content 'FUEM.Web/appsettings.Production.json'
 
       - name: Build with dotnet
