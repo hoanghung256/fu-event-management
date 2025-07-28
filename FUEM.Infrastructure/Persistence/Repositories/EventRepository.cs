@@ -101,6 +101,20 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
+        public async Task<List<Event>> GetRegisteredEventsForStudentAsysnc(int studentId, DateTime startDate, DateTime endDate)
+        {
+            DateOnly startOnly = DateOnly.FromDateTime(startDate);
+            DateOnly endOnly = DateOnly.FromDateTime(endDate);
+            var events = await _context.Events
+                .Include(e => e.EventGuests)
+                .Include(e => e.Category)
+                .Include(e => e.Organizer)
+                .Include(e => e.Location)
+                .Include(e => e.EventImages)
+                .Where(e => e.EventGuests.Any(eg => eg.GuestId == studentId) && e.DateOfEvent >= startOnly && e.DateOfEvent <= endOnly)
+                .ToListAsync();
+            return events;
+        }
 
         public async Task<Page<Event>> SearchEventAsync(SearchEventCriteria criteria, int page, int pageSize)
         {

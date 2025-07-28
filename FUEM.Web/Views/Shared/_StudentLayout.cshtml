@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="@Url.Content("~/theme/css/metisMenu.min.css")" />
     <link rel="stylesheet" href="@Url.Content("~/theme/css/fontawesome-pro.css")" />
     <link rel="stylesheet" href="@Url.Content("~/theme/css/main.css")" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' /> <!-- FullCalendar CSS -->
     <style>
         body {
             display: flex; /* Use flexbox for the entire layout */
@@ -340,7 +342,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar" href="@Url.Action("RegisteredEvent", "Student")" aria-expanded="false" style="text-decoration: none;">
+                        <a class="asidebar" href="@Url.Action("StudentCalendar", "Student")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-file-signature"></i>
                             <span class="nav-text">Registered Events</span>
                         </a>
@@ -452,6 +454,8 @@
     <script src="~/theme/js/wow.min.js"></script>
     <script src="~/theme/js/main.js"></script>
     @await Html.PartialAsync("_ToastSetUp")
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script> <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/vi.global.min.js'></script> <!-- Ngôn ngữ tiếng Việt -->
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
