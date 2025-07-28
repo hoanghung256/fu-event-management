@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FUEM.Application.Interfaces.RegistrationUseCases;
+using FUEM.Domain.Common;
 using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
@@ -18,6 +19,8 @@ namespace FUEM.Application.UseCases.OrganizerUseCases
         {
             _eventRepository = eventRepository;
         }
+
+        public Task<Page<Event>> GetPendingEventForAdmin(int pageNumber, int pageSize) => _eventRepository.GetPendingEventForAdmin(pageNumber, pageSize);
 
         public async Task<bool> ProcessEventAsync(int eventId, string action)
         {

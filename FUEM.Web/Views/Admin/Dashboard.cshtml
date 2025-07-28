@@ -1,0 +1,375 @@
+﻿@using System.Security.Claims
+@using FUEM.Domain.Enums
+@model AdminDashboardViewModel;
+
+<style>
+    .no-events {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 200px; /* Adjust based on your layout */
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        text-align: center;
+        /* font-size: 18px; */
+        font-weight: bold;
+        color: #777;
+    }
+
+    .no-events span {
+        display: block;
+        padding: 20px;
+    }
+
+    .small-btn {
+        height: 3rem !important;
+    }
+</style>
+
+@{
+    DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+    var todaysEvents = Model.UpcommingEventList?.Where(e => e.DateOfEvent == DateOnly.FromDateTime(DateTime.Now)).ToList();
+}
+
+<section>
+    <!-- Example static area -->
+    <div class="app__slide-wrapper">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="breadcrumb__wrapper mb-35">
+                    <div class="breadcrumb__inner">
+                        <div class="breadcrumb__icon">
+                            <i class="flaticon-home"></i>
+                        </div>
+                        <div class="breadcrumb__menu">
+                            <nav>
+                                <ul>
+                                    <li class="active"><span>Dashboard</span></li>
+                                </ul>
+                            </nav>
+                        </div>  
+                        <!-- Example notification icon -->
+                        <div class="notification">
+                            <a style="color: gray;" class="text-center" id="notifydropdown" href="#">
+                                <i style="width: 40px; font-size: 1.75rem;" class="fa-regular fa-bell"></i>
+                            </a>
+                            <div class="notification__dropdown">
+                                <div class="notification__card card__scroll">
+                                    <div class="notification__header">
+                                        <div class="notification__inner">
+                                            <h5>Notifications</h5>
+                                        </div>
+                                    </div>
+                                    <ul>
+                                        @* Example: Replace with your actual notifications *@
+                                        @* foreach (var noti in Model.NotificationList) { } *@
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row g-20">
+            <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+                <div class="expovent__count-item mb-20">
+                    <div class="expovent__count-thumb include__bg transition-3"
+                    data-background="assets/img/bg/count-bg.png"></div>
+                    <div class="expovent__count-content">
+                        <h3 class="expovent__count-number">@Model.OrganizedEventThisMonthList.Count</h3>
+                        <span class="expovent__count-text">Total Events Organized</span>
+                    </div>
+                    <div class="expovent__count-icon">
+                        <i class="fa fa-users"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+                <div class="expovent__count-item mb-20">
+                    <div class="expovent__count-thumb include__bg transition-3"
+                         data-background="assets/img/bg/count-bg.png"></div>
+                    <div class="expovent__count-content">
+                        <h3 class="expovent__count-number">6</h3>
+                        <span class="expovent__count-text">Total Clubs</span>
+                    </div>
+                    <div class="expovent__count-icon">
+                        <i class="fa fa-cubes"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+                <div class="expovent__count-item mb-20">
+                    <div class="expovent__count-thumb include__bg transition-3"
+                         data-background="assets/img/bg/count-bg.png"></div>
+                    <div class="expovent__count-content">
+                        <h3 class="expovent__count-number">@Model.UpcommingEventList.Count</h3>
+                        <span class="expovent__count-text">Total Upcoming Events</span>
+                    </div>
+                    <div class="expovent__count-icon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Events -->
+        <div>
+            @if (todaysEvents != null && todaysEvents.Any())
+            {
+                foreach (var eventItem in todaysEvents)
+                {
+                    <div class="card__wrapper">
+                        <div class="card__header">
+                            <div class="card__title-inner d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="card__header-icon">
+                                        <i class="flaticon-reminder"></i>
+                                    </div>
+                                    <div class="card__header-title ml-5">
+                                        <h3>Today: @eventItem.Fullname</h3>
+                                    </div>
+                                </div>
+                                @* Example: Only show buttons if organizer *@
+                                @if (eventItem.Organizer.Id == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value))
+                                {
+                                    <div class="card__header-right">
+                                        <div class="element__btn yellow-bg pl-5 small-btn">
+                                            <a href="@Url.Action("Index", "CheckIn", new { eventId = eventItem.Id })">Check-in Page</a>
+                                        </div>
+                                        <div class="element__btn yellow-bg pl-5 small-btn">
+                                            <a href="@Url.Action("OnGoingEvent", "Admin", new { action = "access", eventId = eventItem.Id })">Landing Page</a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <hr />
+                        </div>
+
+                        <div>
+                            <div class="card__inner">
+                                <div class="card-body d-flex align-items-center">
+                                    <div class="col-xxl-6 col-xl-6">
+                                        <div class="event__meta-time">
+                                            <ul>
+                                                <li><span>Organizer :</span> @eventItem.Organizer.Fullname</li>
+                                                <li>
+                                                    <span>Date :</span> @eventItem.DateOfEvent?.ToString("dd-MM-yyyy")
+                                                    <span>Time :</span> @eventItem?.StartTime - @eventItem?.EndTime
+                                                </li>
+                                                <li><span>Category :</span> @eventItem?.Category?.CategoryName</li>
+                                                <li><span>Location :</span> @eventItem?.Location?.LocationName</li>
+                                                <li>
+                                                    <span>Status :</span>
+                                                    @if (eventItem?.Status == EventStatus.APPROVED)
+                                                    {
+                                                        <span class="status__tag bg-green">APPROVED</span>
+                                                    }
+                                                    else if (eventItem?.Status == EventStatus.ON_GOING)
+                                                    {
+                                                        <span class="status__tag teal-bg">ON GOING</span>
+                                                    }
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-xxl-6 col-xl-6 d-flex justify-content-end">
+                                        <div class="chart-section" style="width: 300px;">
+                                            <canvas id="registrationChart-@eventItem.Id" width="300" height="400"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Upcoming Event List -->
+        <div class="row">
+            <div class="col-xxl-12">
+                <div class="card__wrapper">
+                    <div class="card__header">
+                        <div class="card__title-inner">
+                            <div class="card__header-icon">
+                                <i class="flaticon-ticket-1"></i>
+                            </div>
+                            <div class="card__header-title">
+                                <h4>Upcoming Event List</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="attendant__wrapper mb-20">
+                        @if (Model.UpcommingEventList == null || !Model.UpcommingEventList.Any())
+                        {
+                            <div class="no-events">
+                                <span>No upcoming event</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID No</th>
+                                        <th>Organizer</th>
+                                        <th>Event Name</th>
+                                        <th>Date</th>
+                                        <th>Category</th>
+                                        <th>Location</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var eventItem in Model.UpcommingEventList)
+                                    {
+                                        <tr>
+                                            <td><span>#@eventItem.Id</span></td>
+                                            <td>
+                                                <img src="@eventItem?.Organizer?.AvatarPath" alt="avatar" width="40" />
+                                                <span>@eventItem?.Organizer?.Fullname</span>
+                                            </td>
+                                            <td>@eventItem?.Fullname</td>
+                                            <td>@eventItem?.DateOfEvent</td>
+                                            <td>@eventItem?.Category?.CategoryName</td>
+                                            <td>@eventItem?.Location?.LocationName</td>
+                                            <td>
+                                                @* Example dropdown *@
+                                                <a href="@Url.Action("EditEvent", "Admin", new { eventId = eventItem?.Id })">Edit</a> |
+                                                <a href="#">Detail</a> |
+                                                <a href="@Url.Action("ViewGuestList", "Admin", new { eventId = eventItem?.Id })">Register Guest</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Events -->
+        <div class="row">
+            <div class="col-xxl-6 col-xl-6 p-2">
+                <div class="card__wrapper">
+                    <div class="card__header">
+                        <div class="card__title-inner">
+                            <div class="card__header-icon">
+                                <i class="flaticon-calendar-3"></i>
+                            </div>
+                            <div class="card__header-title">
+                                <h4>Pending Events</h4>
+                            </div>
+                        </div>
+                        <div class="card__header-right">
+                            <a href="@Url.Action("ApprovalEvents", "Admin", new { action = "show" })">View All</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.PendingEventList == null || !Model.PendingEventList.Any())
+                        {
+                            <div class="no-events">
+                                <span>No events organized yet</span>
+                            </div>
+                        }
+                        else
+                        {
+                            foreach (var eventItem in Model.PendingEventList)
+                            {
+                                <div class="news__item">
+                                    <div class="news__content">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h4>
+                                                <a href="@Url.Action("ApprovalEvents", "Admin", new { action = "detail", eventId = eventItem.Id })">@eventItem.Fullname</a>
+                                            </h4>
+                                            <span class="status__tag warning-bg">@eventItem.Status</span>
+                                        </div>
+                                        <div>
+                                            <span>@eventItem?.Organizer?.Fullname</span> |
+                                            <span>@eventItem?.DateOfEvent</span> |
+                                            <span>@eventItem?.Category?.CategoryName</span> |
+                                            <span>@eventItem?.Location?.LocationName</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Organized Events This Month -->
+            <div class="col-xxl-6 col-xl-6 p-2">
+                <div class="card__wrapper">
+                    <div class="card__header">
+                        <div class="card__title-inner">
+                            <div class="card__header-icon">
+                                <i class="flaticon-calendar-3"></i>
+                            </div>
+                            <div class="card__header-title">
+                                <h4>Organized Events This Month</h4>
+                            </div>
+                        </div>
+                        <div class="card__header-right">
+                            <a href="@Url.Action("OrganizedEvent", "Admin")">View All Event</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.OrganizedEventThisMonthList == null || !Model.OrganizedEventThisMonthList.Any())
+                        {
+                            <div class="no-events">
+                                <span>No events organized yet</span>
+                            </div>
+                        }
+                        else
+                        {
+                            foreach (var eventItem in Model.OrganizedEventThisMonthList)
+                            {
+                                <div class="news__item">
+                                    <h4><a href="@Url.Action("OrganizedEventReport", "Admin", new { eventIdDetail = eventItem?.Id, action = "detail", organizerId = eventItem?.Organizer?.Id })">@eventItem?.Fullname</a></h4>
+                                    <div>
+                                        <span>@eventItem?.Organizer?.Acronym</span> |
+                                        <span>@eventItem?.DateOfEvent</span> |
+                                        <span>@eventItem?.Location?.LocationName</span> |
+                                        <span>@eventItem?.Category?.CategoryName</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    @foreach (var eventItem in todaysEvents)
+        {
+            <text>
+                console.log('@eventItem.Id')
+                    var ctx = document.getElementById('registrationChart-@eventItem.Id').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Registered', 'Available Slots'],
+                            datasets: [{
+                                data: [@eventItem.GuestRegisterCount, @eventItem.GuestRegisterLimit - @eventItem.GuestRegisterCount],
+                                backgroundColor: ['#FF6500', '#ECDFCC']
+                        }]
+                    }
+                });
+            </text>
+        }
+    });
+</script>

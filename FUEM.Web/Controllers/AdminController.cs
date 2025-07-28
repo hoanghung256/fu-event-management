@@ -3,6 +3,7 @@ using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using FUEM.Application.Interfaces;
+using FUEM.Domain.Common;
 
 namespace FUEM.Web.Controllers
 {
@@ -10,15 +11,20 @@ namespace FUEM.Web.Controllers
     {
         private readonly IEventRepository _eventRepository;
         private readonly IProcessEvent _processEventUseCase;
-        public AdminController(IEventRepository eventRepository, IProcessEvent processEventUseCase)
+        private readonly IGetEventForGuest _getEvent;
+        private readonly IGetOrganizedEvents _getOrganizedEvents;
+
+        public AdminController(IEventRepository eventRepository, IProcessEvent processEventUseCase, IGetEventForGuest getEvent, IGetOrganizedEvents getOrganizedEvents)
         {
             _eventRepository = eventRepository;
             _processEventUseCase = processEventUseCase;
+            _getEvent = getEvent;
+            _getOrganizedEvents = getOrganizedEvents;
         }
 
         public async Task<IActionResult> PendingEvents(int pageNumber = 1, int pageSize = 5)
         {
-            var eventPage = await _eventRepository.GetPendingEventForAdmin(pageNumber, pageSize);
+            var eventPage = await _processEventUseCase.GetPendingEventForAdmin(pageNumber, pageSize);
 
             return View(eventPage);
         }
@@ -57,6 +63,23 @@ namespace FUEM.Web.Controllers
                 TempData[ToastType.ErrorMessage.ToString()] = "An error occurred while processing your request.";
             }
             return RedirectToAction("PendingEvents");
+        }
+
+        [HttpGet("Admin/Dashboard")]
+        public async Task<IActionResult> Dashboard()
+        {
+            Page<Event> pendingEventPage = await _processEventUseCase.GetPendingEventForAdmin(1, 10);
+            Page<Event> upcommingEventPage = await _getEvent.GetUpcomingEventForAdminAsync(1, 10);
+            Page<Event> organizedEventPage = await _getOrganizedEvents.GetOrganizedEventsForAdminAsync(1, 10);
+
+            AdminDashboardViewModel adminDashboardViewModel = new()
+            {
+                PendingEventList = pendingEventPage.Items,
+                UpcommingEventList = upcommingEventPage.Items,
+                OrganizedEventThisMonthList = organizedEventPage.Items,
+            };
+
+            return View(adminDashboardViewModel);
         }
     }
 }

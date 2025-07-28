@@ -68,7 +68,19 @@ namespace FUEM.Web.Controllers
                     var principal = new ClaimsPrincipal(claimsIdentity);
                     await HttpContext.SignInAsync("Cookies", principal);
                     TempData[ToastType.InfoMessage.ToString()] = $"Login Successfully";
-                    return RedirectToAction("Index", "Home");
+
+                    if (role == Role.Admin)
+                    {
+                        return RedirectToAction("Dashboard", "Admin");
+                    } 
+                    else if (role == Role.Club)
+                    {
+                        return RedirectToAction("Dashboard", "Club");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
 
                 TempData[ToastType.ErrorMessage.ToString()] = $"Incorrect email or password. Please try again!";

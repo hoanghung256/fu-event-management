@@ -156,7 +156,6 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 .CountAsync();
 
             var items = await _context.Events
-                .Where(e => e.Status == EventStatus.END)
                 .OrderByDescending(e => e.DateOfEvent)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -213,6 +212,30 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 .Take(count)
                 .ToListAsync();
             return result;
+        }
+
+        public async Task<Page<Event>> GetUpcomingEventForAdminAsync(int page, int pageSize)
+        {
+            var query = _context.Events.Include(e => e.Category)
+                                       .Include(e => e.Organizer)
+                                       .Include(e => e.Location)
+                                       .Include(e => e.EventImages)
+                                       .Where(e => (e.Status == EventStatus.APPROVED || e.Status == EventStatus.ON_GOING) && e.DateOfEvent <= DateOnly.FromDateTime(DateTime.Now))
+                                       .AsQueryable();
+
+            var total = await query.CountAsync();
+            var items = await query.OrderByDescending(e => e.DateOfEvent)
+                                   .Skip((page - 1) * pageSize)
+                                   .Take(pageSize)
+                                   .ToListAsync();
+
+            return new Page<Event>
+            {
+                Items = items,
+                TotalItems = total,
+                PageNumber = page,
+                PageSize = pageSize
+            };
         }
     }
 }
