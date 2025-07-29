@@ -35,7 +35,7 @@ namespace FUEM.Web
             });
             builder.Services.AddScoped<IGetAttendedEvents, GetAttendedEvents>();
             builder.Services.AddScoped<FUEM.Domain.Interfaces.Repositories.IFeedbackRepository, FUEM.Infrastructure.Persistence.Repositories.FeedbackRepository>();
-            builder.Services.AddScoped<FUEM.Application.Interfaces.UserUseCases.IFeedback, FUEM.Application.UseCases.UserUseCases.FeedbackService>(); 
+            builder.Services.AddScoped<FUEM.Application.Interfaces.UserUseCases.IFeedback, FUEM.Application.UseCases.UserUseCases.FeedbackService>();
             // Get connection string  
             var connectionString = GetConnectionString(builder);
             //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
@@ -59,17 +59,17 @@ namespace FUEM.Web
                     options.SlidingExpiration = true;
                 });
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder
-                        .WithOrigins("https://fuem.azurewebsites.net") // 👈 your actual frontend domain
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials(); // 👈 needed for cookies or auth
-                });
-            });
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddDefaultPolicy(builder =>
+            //    {
+            //        builder
+            //            .WithOrigins("https://fuem.azurewebsites.net") // 👈 your actual frontend domain
+            //            .AllowAnyHeader()
+            //            .AllowAnyMethod()
+            //            .AllowCredentials(); // 👈 needed for cookies or auth
+            //    });
+            //});
 
             builder.Services.AddAuthorization();
 
@@ -102,7 +102,7 @@ namespace FUEM.Web
             //app.UseStatusCodePagesWithReExecute("/Error/{0}");
             app.UseWebSockets();
             app.UseSession();
-            app.UseCors();
+            //app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
 

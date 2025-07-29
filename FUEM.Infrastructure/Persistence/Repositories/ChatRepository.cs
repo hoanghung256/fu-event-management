@@ -21,9 +21,9 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<List<ChatMessage>> GetAllGroupMessagesAsync(string groupId)
+        public async Task<List<ChatMessage>> GetAllGroupMessagesAsync(string groupId, int skip = 0, int take = 5)
         {
-            return await _context.ChatMessages.Find(m => m.GroupId == groupId).ToListAsync();
+            return await _context.ChatMessages.Find(m => m.GroupId == groupId).SortByDescending(m => m.SentAt).Skip(skip).Limit(take).ToListAsync();
         }
 
         public async Task<List<ChatGroupMember>> GetChatGroupMembersAsync(string groupId)
