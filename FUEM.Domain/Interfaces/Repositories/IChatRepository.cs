@@ -10,7 +10,7 @@ namespace FUEM.Domain.Interfaces.Repositories
     public interface IChatRepository
     {
         Task<List<ChatGroup>> GetAllChatGroupsAsync(int id);
-        Task<List<ChatMessage>> GetAllGroupMessagesAsync(string groupId);
+        Task<List<ChatMessage>> GetAllGroupMessagesAsync(string groupId, int skip = 0, int take = 5);
         Task<List<ChatGroup>> GetStudentGroupChatAsync(int studentId);
         Task<ChatGroup> GetChatGroupByNameAsync(string groupName);
         Task<ChatGroup> GetChatGroupByEventIdAsync(int eventId);
