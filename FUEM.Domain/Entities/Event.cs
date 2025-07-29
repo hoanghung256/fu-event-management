@@ -3,6 +3,7 @@ using FUEM.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FUEM.Domain.Entities
 {
@@ -69,6 +70,8 @@ namespace FUEM.Domain.Entities
         public virtual Location? Location { get; set; }
 
         public virtual Organizer? Organizer { get; set; }
+        [NotMapped] 
+        public bool HasSubmittedFeedback { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
