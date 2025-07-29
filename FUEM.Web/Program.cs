@@ -11,6 +11,7 @@ using FUEM.Web.Hubs;
 using Microsoft.EntityFrameworkCore;
 
 using FUEM.Application.UseCases.EventUseCases;
+using FUEM.Infrastructure;
 
 namespace FUEM.Web
 {
@@ -33,7 +34,8 @@ namespace FUEM.Web
                 options.Cookie.IsEssential = true;
             });
             builder.Services.AddScoped<IGetAttendedEvents, GetAttendedEvents>();
-
+            builder.Services.AddScoped<FUEM.Domain.Interfaces.Repositories.IFeedbackRepository, FUEM.Infrastructure.Persistence.Repositories.FeedbackRepository>();
+            builder.Services.AddScoped<FUEM.Application.Interfaces.UserUseCases.IFeedback, FUEM.Application.UseCases.UserUseCases.FeedbackService>(); 
             // Get connection string  
             var connectionString = GetConnectionString(builder);
             //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
