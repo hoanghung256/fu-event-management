@@ -44,6 +44,13 @@ namespace FUEM.Infrastructure.Persistence.Configurations
             builder.Property(e => e.LocationId).HasColumnName("locationId");
             builder.Property(e => e.OrganizerId).HasColumnName("organizerId");
             builder.Property(e => e.StartTime).HasColumnName("startTime");
+            builder.Property(e => e.IsNeedTicketPayment)
+                .HasDefaultValue(false)
+                .HasColumnName("isNeedTicketPayment");
+            builder.Property(e => e.TicketPrice)
+                .HasDefaultValue(0)
+                .HasColumnName("ticketPrice");
+            builder.Property(e => e.StartTime).HasColumnName("startTime");
             builder.Property(e => e.Status)
                 .HasConversion<string>()
                 .HasMaxLength(15)
