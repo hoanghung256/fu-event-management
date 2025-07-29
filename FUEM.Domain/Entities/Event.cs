@@ -56,6 +56,10 @@ namespace FUEM.Domain.Entities
 
         public DateOnly? CollaboratorRegisterDeadline { get; set; }
 
+        public bool IsNeedTicketPayment { get; set; }
+
+        public int? TicketPrice { get; set; }
+
         public virtual Category? Category { get; set; }
 
         public virtual ICollection<EventCollaborator> EventCollaborators { get; set; } = new List<EventCollaborator>();
