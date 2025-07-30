@@ -11,6 +11,7 @@ namespace FUEM.Domain.Interfaces.Repositories
     {
         Task<Student?> GetStudentByEmailAsync(string email);
         Task<List<Student>> GetAllStudentsForCheckInAsync();
+        Task<Student?> GetStudentByIdAsync(int id);
         Task AddAsync(Student s);
         Task UpdatePasswordHashAsync(int studentId, string newPasswordHash);
         Task<string?> GetPasswordHashAsync(int studentId);

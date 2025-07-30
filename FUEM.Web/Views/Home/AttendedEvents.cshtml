@@ -1,0 +1,289 @@
+﻿@model FUEM.Domain.Common.Page<FUEM.Domain.Entities.Event>
+
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = "AttendedEvents";
+}
+
+<style>
+    /* CSS hiện tại cho tiêu đề và container vẫn giữ nguyên */
+    .attended-events-heading {
+        font-size: 2.5rem;
+        color: #28a745;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        text-transform: uppercase;
+        border-bottom: 3px solid #28a745;
+        padding-bottom: 0.5rem;
+    }
+
+    /* Thêm hoặc điều chỉnh CSS cho bảng */
+    .events-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .events-table th,
+        .events-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .events-table th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .events-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .events-table tbody tr:hover {
+            background-color: #e9ecef;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+    .no-events-message {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 1.1rem;
+        color: #777;
+    }
+
+    /* CSS TỪ JSP CHO POPUP */
+    .popup__overlay {
+        display: none; /* Rất quan trọng: Phải là 'none' theo mặc định */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .popup__content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 15px;
+        width: 700px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        position: relative;
+        animation: popupFadeIn 0.3s ease;
+    }
+
+    .popup__close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: #888;
+    }
+
+    .singel__input-field {
+        margin-bottom: 15px;
+    }
+
+    .input__btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        background-color: #007bff; 
+        color: white;
+        border: none;
+    }
+
+        .input__btn:hover {
+            background-color: #0056b3;
+        }
+
+    
+    .status__tag {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.9em;
+        font-weight: bold;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .bg-green {
+        background-color: #28a745; 
+        color: white;
+    }
+</style>
+
+
+<div class="breadcrumb__menu">
+    <nav>
+        <ul>
+            <li><span><a class="acolor" href="@Url.Action("Index", "Home")">Home</a></span></li>
+            <li class="active"><span>Attended Events</span></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="container mt-50">
+    <h2 class="text-center mb-4 attended-events-heading">Attended Events</h2>
+
+    @if (Model != null && Model.Items != null && Model.Items.Any())
+    {
+        <table class="events-table">
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var eventItem in Model.Items)
+                {
+                    <tr>
+                        <td>@eventItem.Fullname</td>
+                        <td>@eventItem.DateOfEvent?.ToString("dd/MM/yyyy")</td>
+                        <td>@eventItem.StartTime - @eventItem.EndTime</td>
+                        <td>@(eventItem.Location?.LocationName)</td>
+                        <td>
+                            @if (eventItem.HasSubmittedFeedback)
+                            {
+                                <span class="status__tag bg-green">Feedback Sent</span>
+                            }
+                            else
+                            {
+                                <button class="input__btn" data-event-id="@eventItem.Id" data-event-name="@eventItem.Fullname">Feedback</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @await Html.PartialAsync("_PaginationControl", Model)
+    }
+    else
+    {
+        <p class="no-events-message">Bạn chưa tham gia sự kiện nào.</p>
+    }
+</div>
+
+<div class="popup__overlay" id="feedback-form">
+    <div class="popup__content">
+        <span class="popup__close" id="closePopup">&times;</span>
+        <h3 id="feedback-event-fullname"></h3>
+        <form id="feedbackForm" method="POST">
+            <input hidden name="eventId" id="feedback-event-id">
+            <div class="singel__input-field mb-15 ">
+                <label class="input__field-text">Feedback content</label>
+                <textarea id="feedbackContent" name="content" class="form-control" rows="5" required></textarea>
+            </div>
+            <div id="feedbackMessage" style="margin-bottom: 15px;"></div>
+            <button class="input__btn" type="submit" id="submitFeedbackBtn">Send</button>
+            <button class="input__btn" type="button" id="cancelFeedbackBtn" style="background-color: #6c757d;">Cancel</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Xử lý khi nhấn nút "Feedback" trên bảng
+            $('.input__btn[data-event-id]').on('click', function () {
+                var eventId = $(this).data('event-id');
+                var eventName = $(this).data('event-name');
+
+                // Lưu trữ tham chiếu đến nút "Feedback" hiện tại
+                // Chúng ta sẽ dùng nó để thay thế sau khi submit thành công
+                $('#feedbackForm').data('currentButton', $(this));
+
+                $('#feedback-event-fullname').text('Feedback for ' + eventName);
+                $('#feedback-event-id').val(eventId);
+                $('#feedbackContent').val(''); // Clear any previous comment
+                $('#feedbackMessage').text('').hide(); // Clear and hide previous messages
+                $('#feedback-form').css('display', 'flex'); // Hiển thị modal
+            });
+
+            // Xử lý khi nhấn nút đóng (X) hoặc nút "Cancel"
+            $('#closePopup, #cancelFeedbackBtn').on('click', function () {
+                $('#feedback-form').css('display', 'none'); // Ẩn modal
+            });
+
+            // Xử lý khi nhấn nút "Send" trong modal (sử dụng AJAX)
+            $('#feedbackForm').on('submit', function (e) {
+                e.preventDefault(); // Ngăn chặn form gửi đi theo cách truyền thống
+
+                var eventId = $('#feedback-event-id').val();
+                var comment = $('#feedbackContent').val();
+                var $feedbackMessage = $('#feedbackMessage');
+                var $currentButton = $(this).data('currentButton'); // Lấy lại tham chiếu nút
+
+                // Vô hiệu hóa nút gửi để tránh gửi nhiều lần
+                $('#submitFeedbackBtn').prop('disabled', true).text('Sending...');
+
+                $.ajax({
+                    url: '@Url.Action("SubmitFeedback", "AttendedEvents")', // Đảm bảo đúng controller và action
+                    type: 'POST',
+                    data: {
+                        eventId: eventId,
+                        comment: comment
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $feedbackMessage.text(response.message).css('color', 'green').show();
+
+                           
+                            if ($currentButton) {
+                                // Thay thế nút bằng trạng thái "Đã gửi Feedback"
+                                $currentButton.replaceWith('<span class="status__tag bg-green">Feedback Sent</span>');
+                            }
+
+                            setTimeout(function() {
+                                $('#feedback-form').css('display', 'none'); // Ẩn modal
+                            }, 1500); // Ẩn modal sau 1.5 giây
+                        } else {
+                            $feedbackMessage.text(response.message).css('color', 'red').show();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $feedbackMessage.text("Đã xảy ra lỗi khi gửi feedback: " + error).css('color', 'red').show();
+                        console.error("AJAX Error: ", status, error, xhr.responseText);
+                    },
+                    complete: function() {
+                        // Kích hoạt lại nút gửi sau khi request hoàn tất (dù thành công hay thất bại)
+                        $('#submitFeedbackBtn').prop('disabled', false).text('Send');
+                    }
+                });
+            });
+
+            // JS cho đóng popup khi click bên ngoài overlay
+            window.addEventListener('click', function (event) {
+                const popup = document.getElementById('feedback-form');
+                if (event.target === popup) {
+                    popup.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}

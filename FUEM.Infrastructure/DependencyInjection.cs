@@ -19,6 +19,7 @@ namespace FUEM.Infrastructure
         {
             // Repositories
             builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddTransient<IChatRepository, ChatRepository>();
             builder.Services.AddTransient<IEventCollaboratorRepository, EventCollaboratorRepository>();
             builder.Services.AddTransient<IEventGuestRepository, EventGuestRepository>();
             builder.Services.AddTransient<IEventImageRepository, EventImageRepository>();
@@ -37,6 +38,8 @@ namespace FUEM.Infrastructure
             builder.Services.AddTransient<FirebaseStorageService>();
             builder.Services.AddTransient<FaceRecognizeService>();
             builder.Services.AddTransient<FacePreprocessor>();
+            builder.Services.AddTransient<MongoDBService>();
+            builder.Services.AddTransient<PayOSService>();
 
             return builder;
         }

@@ -14,7 +14,7 @@ namespace FUEM.Web.Controllers
                 case 403:
                     return View("403");
                 default:
-                    return View("404");
+                    return View("~/Shared/Error");
             }
         }
 

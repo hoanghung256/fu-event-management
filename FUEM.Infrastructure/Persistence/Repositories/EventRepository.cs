@@ -3,6 +3,7 @@ using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -100,6 +101,20 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
+        public async Task<List<Event>> GetRegisteredEventsForStudentAsysnc(int studentId, DateTime startDate, DateTime endDate)
+        {
+            DateOnly startOnly = DateOnly.FromDateTime(startDate);
+            DateOnly endOnly = DateOnly.FromDateTime(endDate);
+            var events = await _context.Events
+                .Include(e => e.EventGuests)
+                .Include(e => e.Category)
+                .Include(e => e.Organizer)
+                .Include(e => e.Location)
+                .Include(e => e.EventImages)
+                .Where(e => e.EventGuests.Any(eg => eg.GuestId == studentId) && e.DateOfEvent >= startOnly && e.DateOfEvent <= endOnly)
+                .ToListAsync();
+            return events;
+        }
 
         public async Task<Page<Event>> SearchEventAsync(SearchEventCriteria criteria, int page, int pageSize)
         {
@@ -191,6 +206,36 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
+        public async Task<Page<Event>> GetAttendedEventsForUserIdAsync(string userId, int pageNumber, int pageSize)
+        {
+            int guestId = int.Parse(userId);
+
+            int totalItems = await _context.EventGuests
+                .Where(eg => eg.GuestId == guestId && eg.IsAttended == true)
+                .CountAsync();
+
+            var eventIds = await _context.EventGuests
+                .Where(eg => eg.GuestId == guestId && eg.IsAttended == true)
+                .OrderByDescending(eg => eg.EventId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(eg => eg.EventId)
+                .ToListAsync();
+
+            var events = await _context.Events
+                .Include(e => e.Location) 
+                .Where(e => eventIds.Contains(e.Id))
+                .ToListAsync();
+
+            return new Page<Event>
+            {
+                Items = events,
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
 
 
         public async Task<bool> UpdateEventAsync(Event e)
@@ -237,5 +282,14 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
+        
+        public async Task<Event?> GetEventByNameAsync(string eventName)
+            => await _context.Events
+                .Include(e => e.Location)
+                .Include(e => e.Category)
+                .Include(e => e.Organizer)
+                .Include(e => e.EventImages)
+                .FirstOrDefaultAsync(e => e.Fullname == eventName);
     }
+
 }

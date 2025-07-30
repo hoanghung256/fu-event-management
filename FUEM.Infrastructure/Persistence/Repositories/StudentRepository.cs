@@ -27,6 +27,9 @@ namespace FUEM.Infrastructure.Persistence.Repositories
         public async Task<Student?> GetStudentByEmailAsync(string email)
             => await _context.Students.FirstOrDefaultAsync(s => s.Email == email);
 
+        public async Task<Student?> GetStudentByIdAsync(int id)
+            => await _context.Students.FirstOrDefaultAsync(s => s.Id == id);
+
         public async Task<string?> GetPasswordHashAsync(int studentId)
         {
             return (await _context.Students.FindAsync(studentId))?.Password;

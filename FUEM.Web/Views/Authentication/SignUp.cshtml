@@ -1,53 +1,325 @@
 ﻿@model Student
+@{
+    ViewData["Title"] = "Sign Up";
+    var error = TempData[ToastType.ErrorMessage.ToString()] as string;
+    Layout = ""; // Đảm bảo không sử dụng _Layout mặc định
+}
 
-<h2 class="text-center">Create An Account</h2>
-<p class="text-center text-muted">The faster you fill up, the faster you go to event</p>
+<link rel="icon" type="image/svg+xml" href="~/img/logo/logo-fpt.svg" />
+<link rel="stylesheet" href="~/css/flaticon_expovent.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" />
+<script src="/_framework/aspnetcore-browser-refresh.js"></script>
 
-<form asp-action="SignUp" method="post" class="w-50 mx-auto">
-    <div class="form-group mb-3">
-        <input asp-for="Fullname" class="form-control" placeholder="Full Name" />
-        <span asp-validation-for="Fullname" class="text-danger"></span>
+<style>
+    /* BẮT ĐẦU CSS NHÚNG TRỰC TIẾP VÀO FILE CSHTML */
+    html, body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif; /* Fallback font */
+        height: 100%; /* Ensure html and body take full height */
+        overflow: hidden; /* Prevent scrolling if content overflows */
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* Minimum height for vertical centering */
+        background-color: #f0f2f5; /* Light grey background */
+    }
+
+    /* Main container for login/signup forms */
+    .auth-container {
+        display: flex;
+        width: 900px; /* Fixed width for the entire card */
+        min-height: 500px; /* Minimum height for the card */
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden; /* Ensures no content spills outside rounded corners */
+    }
+
+    /* Left section: form and text content */
+    .auth-left {
+        flex: 1; /* Takes equal width with right section */
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+        .auth-left .logo {
+            margin-bottom: 20px;
+        }
+
+            .auth-left .logo img {
+                width: 80px; /* Adjust logo size */
+            }
+
+        .auth-left .title {
+            font-family: "Patrick Hand", cursive; /* Specific font for title */
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+            .auth-left .title .flip-letter {
+                display: inline-block;
+                transform: scaleX(-1); /* Mirror effect for FPT letters */
+            }
+
+        .auth-left .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .auth-left .error-message {
+            background-color: #f8d7da; /* Light red background */
+            color: #721c24; /* Dark red text */
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 100%; /* Full width within its container */
+            box-sizing: border-box; /* Include padding/border in width */
+        }
+
+        /* Form specific styles */
+        .auth-left form {
+            width: 100%;
+            max-width: 350px; /* Max width for the form itself */
+        }
+
+    .input-group {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+        .input-group input,
+        .input-group select {
+            width: calc(100% - 40px); /* Adjust width for icon padding */
+            padding: 12px 15px 12px 40px; /* Padding for text and icon */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            color: #333;
+            outline: none;
+            transition: border-color 0.3s;
+            box-sizing: border-box; /* Include padding/border in width */
+        }
+
+            .input-group input:focus,
+            .input-group select:focus {
+                border-color: #ee0979; /* Highlight color on focus */
+            }
+
+        .input-group .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            pointer-events: none; /* Allows clicks to pass through to input */
+        }
+
+        /* Specific styling for the select box arrow */
+        .input-group select {
+            appearance: none; /* Remove default browser styling */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23999" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Custom dropdown arrow */
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 1em;
+        }
+
+    .form-extra {
+        display: flex;
+        justify-content: flex-end; /
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        width: 100%;
+        max-width: 350px;
+    }
+
+        .form-extra a {
+            color: #ee0979; 
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+            .form-extra a:hover {
+                color: #ff6a00;
+            }
+
+    /* Common button styles */
+    .auth-btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        background: linear-gradient(to right, #ee0979, #ff6a00);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.3s;
+        margin-bottom: 15px;
+    }
+
+        .auth-btn:hover {
+            opacity: 0.9;
+        }
+
+    .google-btn {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #555;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        transition: background-color 0.3s;
+    }
+
+        .google-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+    .auth-text {
+        font-size: 0.9rem;
+        color: #777;
+    }
+
+        .auth-text a {
+            color: #ee0979;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+            .auth-text a:hover {
+                color: #ff6a00;
+            }
+
+    /* Right section: decorative image */
+    .auth-right {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #eee; /* Light background for the image section */
+        overflow: hidden;
+    }
+
+        .auth-right img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures image covers the area without distortion */
+        }
+
+    /* Validation messages */
+    .text-danger {
+        color: #dc3545; /* Bootstrap red for error messages */
+        font-size: 0.85em;
+        margin-top: 5px;
+        display: block; /* Ensures it breaks to a new line */
+        text-align: left; /* Align error text to the left of the input */
+        width: 100%; /* Take full width of parent */
+        box-sizing: border-box; /* Include padding in width */
+    }
+    
+</style>
+
+
+<div class="auth-container">
+    <div class="auth-left">
+        <div class="logo">
+            <img src="~/img/logo/logo-fpt.png" alt="FPT Logo" />
+        </div>
+        <h1 class="title">
+           FPT EVENT MANAGEMENT
+        </h1>
+        <p class="subtitle">The faster you fill up, the faster you go to event</p>
+
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <div class="error-message">@error</div>
+        }
+
+        <form asp-action="SignUp" method="post">
+            <div class="input-group">
+                <span class="input-icon"><i class="flaticon-user"></i></span>
+                <input asp-for="Fullname" placeholder="Full Name" />
+                <span asp-validation-for="Fullname" class="text-danger"></span>
+            </div>
+            <div class="input-group">
+                <span class="input-icon"><i class="fa-regular fa-id-badge"></i></span>
+                <input asp-for="StudentId" placeholder="Student ID" />
+                <span asp-validation-for="StudentId" class="text-danger"></span>
+            </div>
+            <div class="input-group">
+                <span class="input-icon"><i class="flaticon-mail"></i></span>
+                <input asp-for="Email" placeholder="Email Address" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="input-group">
+                <span class="input-icon"><i class="flaticon-password"></i></span>
+                <input id="password" asp-for="Password" type="password" placeholder="Enter Password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="input-group">
+                <span class="input-icon"><i class="flaticon-password"></i></span>
+                <input id="confirm-password" type="password" class="form-control" placeholder="Confirm Password" />
+                <span class="text-danger" id="confirmPasswordError"></span>
+            </div>
+            <div class="input-group">
+                <span class="input-icon"><i class="flaticon-gender"></i></span>
+                <select asp-for="Gender">
+                    <option value="">Select Gender</option>
+                    <option value="0">Male</option>
+                    <option value="1">Female</option>
+                    <option value="2">Other</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+        </form>
+
+        <p class="auth-text">
+            Already Have An Account?
+            <a asp-controller="Authentication" asp-action="Login">Sign in now</a>
+        </p>
     </div>
-    <div class="form-group mb-3">
-        <input asp-for="StudentId" class="form-control" placeholder="Student ID" />
-        <span asp-validation-for="StudentId" class="text-danger"></span>
+
+    <div class="auth-right">
+        <img src="~/img/decorate/sign-up.jpg" alt="Sign Up Image" />
     </div>
-    <div class="form-group mb-3">
-        <input asp-for="Email" class="form-control" placeholder="Email Address" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-3">
-        <input id="password" asp-for="Password" type="password" class="form-control" placeholder="Enter Password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-3">
-        <select asp-for="Gender" class="form-control">
-            <option value="">Select Gender</option>
-            <option value="0">Male</option>
-            <option value="1">Female</option>
-            <option value="2">Other</option>
-        </select>
-        <span asp-validation-for="Gender" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-4">
-        <input id="confirm-password" type="password" class="form-control" placeholder="Confirm Password" />
-    </div>
-    <button type="submit" class="btn btn-block text-white" style="background: linear-gradient(to right, #ee0979, #ff6a00);">
-        Sign up
-    </button>
-</form>
+</div>
 
 <script>
-	document.querySelector('form').addEventListener('submit', function (e) {
-		e.preventDefault();
+    document.querySelector('form').addEventListener('submit', function (e) {
+        document.getElementById('confirmPasswordError').innerText = '';
+
         const password = document.getElementById('password').value;
-		const confirmPassword = document.getElementById('confirm-password').value;
-		if (password !== confirmPassword) {
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            document.getElementById('confirmPasswordError').innerText = "Confirm password does not match.";
             toastr.error("Confirm password does not match");
-			return;
-		}
-		this.submit();
-	});
+            return;
+        }
+    });
 </script>
 
 @await Html.PartialAsync("_ToastSetUp")

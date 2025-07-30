@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="@Url.Content("~/theme/css/metisMenu.min.css")" />
     <link rel="stylesheet" href="@Url.Content("~/theme/css/fontawesome-pro.css")" />
     <link rel="stylesheet" href="@Url.Content("~/theme/css/main.css")" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' /> <!-- FullCalendar CSS -->
     <style>
         body {
             display: flex; /* Use flexbox for the entire layout */
@@ -334,13 +337,13 @@
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar" href="@Url.Action("AttendedEvents", "Student")" aria-expanded="false" style="text-decoration: none;">
+                        <a class="asidebar" href="@Url.Action("Index", "AttendedEvents")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-calendar-check"></i>
                             <span class="nav-text">Attended Events</span>
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar" href="@Url.Action("RegisteredEvent", "Student")" aria-expanded="false" style="text-decoration: none;">
+                        <a class="asidebar" href="@Url.Action("StudentCalendar", "Student")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-file-signature"></i>
                             <span class="nav-text">Registered Events</span>
                         </a>
@@ -359,7 +362,7 @@
                     </li>
                 </ul>
                 <div class="sidebar__copyright">
-                    <p>Copyright FUEM 2024</p>
+                    <p>Copyright FUEM 2025</p>
                 </div>
             </div>
         </div>
@@ -441,17 +444,19 @@
         </div>
     </div>
 
-    <script src="~/theme/js/jquery-3.6.0.min.js"></script>
-    <script src="~/theme/js/bootstrap.bundle.min.js"></script>
-    <script src="~/theme/js/metisMenu.min.js"></script>
-    <script src="~/theme/js/meanmenu.min.js"></script>
-    <script src="~/theme/js/swiper-bundle.min.js"></script>
-    <script src="~/theme/js/slick.min.js"></script>
-    <script src="~/theme/js/backtotop.js"></script>
-    <script src="~/theme/js/magnific-popup.min.js"></script>
-    <script src="~/theme/js/wow.min.js"></script>
-    <script src="~/theme/js/main.js"></script>
+    <script src="@Url.Content("~/theme/js/jquery-3.6.0.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/bootstrap.bundle.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/metisMenu.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/meanmenu.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/swiper-bundle.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/slick.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/backtotop.js")"></script>
+    <script src="@Url.Content("~/theme/js/magnific-popup.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/wow.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/main.js")"></script>
     @await Html.PartialAsync("_ToastSetUp")
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script> <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/vi.global.min.js'></script> <!-- Ngôn ngữ tiếng Việt -->
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
