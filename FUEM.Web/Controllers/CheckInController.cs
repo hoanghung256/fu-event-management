@@ -75,26 +75,41 @@ namespace FUEM.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConfirmCheckIn(int eventId, int studentId)
+        public async Task<IActionResult> ConfirmCheckIn([FromBody] int eventId, [FromBody] int studentId)
         {
             try
             {
                 var result = await _checkInUseCase.CheckInAsync(eventId, studentId);
                 if (result == true)
                 {
-                    TempData[ToastType.SuccessMessage.ToString()] = "✅ Check-in successful!";
+                    return Json(new
+                    {
+                        success = true,
+                        toastType = ToastType.SuccessMessage.ToString(),
+                        message = "✅ Check-in successful!"
+                    });
                 }
                 else
                 {
-                    TempData[ToastType.ErrorMessage.ToString()] = "⚠️ Already checked in or invalid request!";
+                    return Json(new
+                    {
+                        success = false,
+                        toastType = ToastType.ErrorMessage.ToString(),
+                        message = "⚠️ Already checked in or invalid request!"
+                    });
                 }
             }
             catch (Exception ex)
             {
-                TempData[ToastType.ErrorMessage.ToString()] = $"❌ Error: {ex.Message}";
+                return Json(new
+                {
+                    success = false,
+                    toastType = ToastType.ErrorMessage.ToString(),
+                    message = $"❌ Error: {ex.Message}"
+                });
             }
-            return RedirectToAction("Index", "CheckIn", new { eventId = eventId });
         }
+
 
     }
 }

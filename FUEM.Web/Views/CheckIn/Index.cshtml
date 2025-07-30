@@ -205,16 +205,14 @@
 
         <!-- Footer -->
         <div class="custom-modal-footer">
-            <form asp-controller="CheckIn" asp-action="ConfirmCheckIn" method="post">
-                <input type="hidden" name="EventId" id="formEventId" value="@Model.Id" />
-                <input type="hidden" name="StudentId" id="formStudentId" />
+            <form id="checkinForm">
+                <input type="hidden" name="eventId" id="formEventId" value="@Model.Id" />
+                <input type="hidden" name="studentId" id="formStudentId" />
 
-                <button type="submit" class="custom-btn success" style="display: none;">Check-in</button>
-                <button type="button" class="custom-btn warning" onclick="closeModal()">Not Me?</button>
+                <button type="button" class="custom-btn success" onclick="checkIn(@Model.Id)">Check-in</button>
+                <button id="notMeBtn"  type="button" class="custom-btn warning" onclick="closeModal()">Not Me?</button>
                 <button id="retryBtn" type="button" class="custom-btn warning" style="display: none;" onclick="closeModal()">Retry!</button>
-
             </form>
-
         </div>
     </div>
 </div>
@@ -265,6 +263,7 @@
 
                     $('#formStudentId').val("");
                     $('.custom-btn.success').hide(); 
+                    $('#notMeBtn').hide();
                     $('#retryBtn').show();
                 } else {
                     $('#studentName').text(data.student.fullname);
@@ -292,6 +291,39 @@
             }
         });
     };
+
+    async function checkIn(eventId) {
+        const studentId = document.getElementById('formStudentId').value;
+        console.log(studentId);
+        const response = await fetch('/CheckIn/ConfirmCheckIn', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() 
+            },
+            body: JSON.stringify({ eventId, studentId })
+        });
+
+        const result = await response.json();
+
+        if (result.toastType === "SuccessMessage") {
+            showToast("success", result.message); 
+            closeModal(); 
+        } else if (result.toastType === "ErrorMessage") {
+            showToast("error", result.message);
+        }
+    }
+
+    function showToast(type, message) {
+        if (type === "success") {
+            toastr.success(message);
+        } else if (type === "error") {
+            toastr.error(message);
+        } else {
+            console.log(message);
+        }
+    }
+
 
     function showModal() {
         document.getElementById('studentInfoModal').style.display = 'flex';
