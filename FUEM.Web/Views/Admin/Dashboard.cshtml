@@ -137,10 +137,10 @@
                                 @if (eventItem.Organizer.Id == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value))
                                 {
                                     <div class="card__header-right">
-                                        <div class="element__btn yellow-bg pl-5 small-btn">
+                                        <div class="element__btn yellow-bg pl-5 small-btn" style="padding: 0 10px;">
                                             <a href="@Url.Action("Index", "CheckIn", new { eventId = eventItem.Id })">Check-in Page</a>
                                         </div>
-                                        <div class="element__btn yellow-bg pl-5 small-btn">
+                                        <div class="element__btn yellow-bg pl-5 small-btn" style="padding: 0 10px;">
                                             <a href="@Url.Action("OnGoingEvent", "Admin", new { action = "access", eventId = eventItem.Id })">Landing Page</a>
                                         </div>
                                     </div>

@@ -19,17 +19,14 @@ namespace FUEM.Application.UseCases.StudentUseCases
         private readonly IStudentRepository _studentRepository;
         private readonly FaceRecognizeService _faceRecognizeService;
         private readonly IFaceEmbeddingRepository _faceEmbeddingRepository;
+        private readonly IEventGuestRepository _eventGuestRepository;
 
-        public CheckInUseCase(IFaceEmbeddingRepository faceEmbeddingRepository,IStudentRepository studentRepository, FaceRecognizeService faceRecognizeService) 
+        public CheckInUseCase(IFaceEmbeddingRepository faceEmbeddingRepository,IStudentRepository studentRepository, FaceRecognizeService faceRecognizeService, IEventGuestRepository eventGuestRepository) 
         {
             _studentRepository = studentRepository;
             _faceRecognizeService = faceRecognizeService;
             _faceEmbeddingRepository = faceEmbeddingRepository;
-        }
-
-        public Task<bool> CheckInAsync(int eventId, int studentId)
-        {
-            throw new NotImplementedException();
+            _eventGuestRepository = eventGuestRepository;
         }
 
         public async Task<Student?> GetStudentByFaceAsync(FaceInput faceInput)
@@ -55,6 +52,11 @@ namespace FUEM.Application.UseCases.StudentUseCases
             return null;
         }
 
-        public Task SaveFaceEmbeddingAsync(List<FaceEmbedding> faceEmbeddingList) => _faceEmbeddingRepository.SaveEmbeddingsAsync(faceEmbeddingList);
+        public Task SaveFaceEmbeddingAsync(List<FaceEmbedding> faceEmbeddingList) 
+            => _faceEmbeddingRepository.SaveEmbeddingsAsync(faceEmbeddingList);
+
+        public async Task<bool?> CheckInAsync(int eventId, int studentId)
+            => await _eventGuestRepository.CheckInAsync(eventId, studentId);
+
     }
 }

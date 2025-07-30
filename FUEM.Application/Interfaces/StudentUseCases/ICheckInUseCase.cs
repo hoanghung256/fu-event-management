@@ -12,6 +12,6 @@ namespace FUEM.Application.Interfaces.StudentUseCases
     {
         Task SaveFaceEmbeddingAsync(List<FaceEmbedding> faceEmbeddingList);
         Task<Student?> GetStudentByFaceAsync(FaceInput faceInput);
-        Task<bool> CheckInAsync(int eventId, int studentId);
+        Task<bool?> CheckInAsync(int eventId, int studentId);
     }
 }

@@ -17,13 +17,27 @@ namespace FUEM.Web.Controllers
     public class CheckInController : Controller
     {
         private readonly ICheckInUseCase _checkInUseCase;
+        private readonly IGetStudent _student;
+        private readonly IGetEventForGuest _getEventForGuest;
 
-        public CheckInController(ICheckInUseCase checkInUseCase)
+        public CheckInController(ICheckInUseCase checkInUseCase, IGetStudent student, IGetEventForGuest getEventForGuest)
         {
             _checkInUseCase = checkInUseCase;
+            _student = student;
+            _getEventForGuest = getEventForGuest;
         }
 
-        public IActionResult Index(int eventId) => View();
+        public async Task<IActionResult> Index(int eventId)
+        {
+            Console.WriteLine($"id {eventId}");
+            Event e = await _getEventForGuest.GetEventByIdAsync(eventId);
+            return View(e);
+        }
+
+        public IActionResult Test()
+        {
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> VerifyFace([FromBody] FaceInput input)
@@ -59,5 +73,30 @@ namespace FUEM.Web.Controllers
                 });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmCheckIn(int eventId, int studentId)
+        {
+            try
+            {
+                var result = await _checkInUseCase.CheckInAsync(eventId, studentId);
+                if (result == true)
+                {
+                    TempData[ToastType.SuccessMessage.ToString()] = "✅ Check-in successful!";
+                }
+                else
+                {
+                    TempData[ToastType.ErrorMessage.ToString()] = "⚠️ Already checked in or invalid request!";
+                }
+
+                return RedirectToAction("Index", "CheckIn", new { eventId = eventId });
+            }
+            catch (Exception ex)
+            {
+                TempData[ToastType.ErrorMessage.ToString()] = $"❌ Error: {ex.Message}";
+                return RedirectToAction("Index", "CheckIn", new { eventId = eventId });
+            }
+        }
+
     }
 }

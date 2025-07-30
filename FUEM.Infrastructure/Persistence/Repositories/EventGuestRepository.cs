@@ -26,5 +26,39 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             _context.EventGuests.Add(guest);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<EventGuest?> GetGuestByEventIdAsync(int eventId, int studentId)
+            => await _context.EventGuests.FirstOrDefaultAsync(eg => eg.EventId == eventId && eg.GuestId == studentId);
+
+        public async Task<bool> CheckInAsync(int eventId, int studentId)
+        {
+            var existingRecord = await GetGuestByEventIdAsync(eventId, studentId);
+
+            if (existingRecord != null)
+            {
+                if (existingRecord.IsAttended == false)
+                {
+                    existingRecord.IsAttended = true;
+                    _context.EventGuests.Update(existingRecord);
+                    await _context.SaveChangesAsync();
+                }
+                return true; 
+            }
+
+            var newRecord = new EventGuest
+            {
+                EventId = eventId,
+                GuestId = studentId,
+                IsRegistered = false,
+                IsAttended = true,
+                IsCancelRegister = false,
+            };
+
+            _context.EventGuests.Add(newRecord);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
     }
 }
