@@ -187,7 +187,7 @@
 
 	connection.on("ReceiveMessage", function (user, message, sentAt) {
 		const currentUserName = document.getElementById("currentUserName").value;
-		appendMessage(user, message, user === currentUserName, formatTime(msg.sentAt));
+		appendMessage(user, message, user === currentUserName, formatTime(sentAt));
 	});
 
 	connection.start().catch(err => console.error(err.toString()));
