@@ -293,13 +293,12 @@
     };
 
     async function checkIn(eventId) {
-        const studentId = document.getElementById('formStudentId').value;
+        const studentId = parseInt(document.getElementById('formStudentId').value);
         console.log(studentId);
         const response = await fetch('/CheckIn/ConfirmCheckIn', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() 
             },
             body: JSON.stringify({ eventId, studentId })
         });

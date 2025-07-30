@@ -75,11 +75,11 @@ namespace FUEM.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConfirmCheckIn([FromBody] int eventId, [FromBody] int studentId)
+        public async Task<IActionResult> ConfirmCheckIn([FromBody] CheckInRequestViewModel requestBody)
         {
             try
             {
-                var result = await _checkInUseCase.CheckInAsync(eventId, studentId);
+                var result = await _checkInUseCase.CheckInAsync(requestBody.EventId, requestBody.StudentId);
                 if (result == true)
                 {
                     return Json(new
