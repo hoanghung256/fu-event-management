@@ -99,7 +99,8 @@ namespace FUEM.Web.Controllers
                 return new
                 {
                     user,
-                    text = g.Content
+                    text = g.Content,
+                    sentAt = g.SentAt
                 };
             }).ToList();
             var message = await Task.WhenAll(messageTasks);
