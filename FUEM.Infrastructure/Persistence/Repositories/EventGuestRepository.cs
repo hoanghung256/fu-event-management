@@ -42,7 +42,10 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                     _context.EventGuests.Update(existingRecord);
                     await _context.SaveChangesAsync();
                 }
-                return true; 
+                else if (existingRecord.IsAttended == true)
+                {
+                    throw new Exception("You have checked in!");
+                }
             }
 
             var newRecord = new EventGuest
@@ -59,6 +62,5 @@ namespace FUEM.Infrastructure.Persistence.Repositories
 
             return true;
         }
-
     }
 }

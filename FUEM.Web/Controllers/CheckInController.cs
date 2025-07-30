@@ -88,14 +88,12 @@ namespace FUEM.Web.Controllers
                 {
                     TempData[ToastType.ErrorMessage.ToString()] = "⚠️ Already checked in or invalid request!";
                 }
-
-                return RedirectToAction("Index", "CheckIn", new { eventId = eventId });
             }
             catch (Exception ex)
             {
                 TempData[ToastType.ErrorMessage.ToString()] = $"❌ Error: {ex.Message}";
-                return RedirectToAction("Index", "CheckIn", new { eventId = eventId });
             }
+            return RedirectToAction("Index", "CheckIn", new { eventId = eventId });
         }
 
     }
