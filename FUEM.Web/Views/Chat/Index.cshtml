@@ -1,9 +1,308 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@* @model List<ChatMessage> *@
+﻿@*@await Html.PartialAsync("_ChatPopup")  *@
+
 @{
+	//int? currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null ? int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value) : null;
+	string? currentUserName = User.FindFirst(System.Security.Claims.ClaimTypes.GivenName) != null ? User.FindFirst(System.Security.Claims.ClaimTypes.GivenName).Value : null;
+	ViewData["Title"] = "Chat";
 }
-@* <h2>Chat Room</h2> *@
-@* @await Html.PartialAsync("_ChatPopup", Model) *@
-@await Html.PartialAsync("_ChatPopup")
+<style>
+	.chat-widget {
+	  position: fixed; bottom: 1rem; right: 1rem;
+	  width: 90vw; max-width: 700px; height: 80vh;
+	  background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+	  border-radius: 8px; overflow: hidden;
+	  display: flex; flex-direction: row; z-index: 1050;
+	}
+	.chat-sidebar {
+	  width: 35%; background: #f8f9fa; border-right: 1px solid #dee2e6;
+	  display: flex; flex-direction: column;
+	}
+	.sidebar-header {
+	  padding: 1rem; background: #007bff; color: white;
+	  font-weight: bold; text-align: center;
+	}
+	.sidebar-list li {
+	  padding: 0.75rem 1rem; border-bottom: 1px solid #dee2e6;
+	  cursor: pointer; transition: background .2s ease;
+	}
+	.sidebar-list li:hover { background: #e9ecef; }
+
+	.chat-panel { width: 65%; display: flex; flex-direction: column; }
+	.chat-header {
+	  background: #28a745; color: white; padding: 1rem;
+	  font-size: 1rem; text-align: center; font-weight: 600;
+	}
+	.chat-area {
+	  flex: 1; background: #f0f2f5; padding: 0.75rem;
+	  display: flex; flex-direction: column; overflow-y: auto;
+	}
+	.chat-loading { display: none; text-align: center; margin-bottom: 0.5rem; }
+	.spinner-sm { width: 1.5rem; height: 1.5rem; }
+
+	.chat-messages { display: flex; flex-direction: column; gap: 0.5rem; }
+
+	.chat-message { display: flex; }
+	.chat-message.sent { justify-content: flex-end; }
+	.chat-message.received { justify-content: flex-start; }
+
+	.chat-bubble {
+	  background: #e4e6eb; color: #212529;
+	  padding: 0.625rem 0.75rem; border-radius: 1rem;
+	  max-width: 70%; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+	  font-size: 0.95rem; line-height: 1.3;
+	  position: relative;
+	}
+	.chat-message.sent .chat-bubble { background: #dcf8c6; }
+
+	.chat-bubble strong { display: block; margin-bottom: 0.25rem; }
+	.chat-bubble small {
+	  display: block; color: #6c757d; font-size: 0.75rem; margin-top: 0.25rem;
+	}
+
+	.chat-input {
+	  display: flex; padding: 0.75rem; background: #fff; border-top: 1px solid #dee2e6;
+	}
+	.chat-input input { flex: 1; font-size: 1rem; }
+
+	.chat-date-divider {
+	  text-align: center; color: #6c757d; font-size: 0.8rem; margin: 1rem 0;
+	}
+
+</style>
+  <section id="chat-section">  
+	 <div id="chatWidget" class="position-fixed bottom-0 end-0 m-3 bg-light border rounded shadow"  
+  		 style="z-index: 1050; width: 700px; max-width: 100%; height: 400px; display: flex; flex-direction: row;">  
+
+  		<!-- Group List -->  
+  		<div id="groupListWrapper" class="h-100 border-end" style="width: 40%; overflow-y: auto;">  
+  			<div class="p-2 bg-primary text-white fw-bold">Chat Groups</div>  
+  			<ul class="list-group list-group-flush" id="groupList" style="cursor: pointer;"></ul>  
+  		</div>  
+
+  		<!-- Chat Section (initially hidden) -->  
+  		<div id="chatPanelWrapper" class="h-100 d-none flex-grow-1 d-flex flex-column">  
+  			<div class="bg-success text-white p-2 fw-bold" id="groupTitle">Select a group</div>  
+  			<input type="hidden" id="currentUserName" value="@currentUserName" />  
+  			<!-- Chat display area -->  
+  			<div class="flex-grow-1 overflow-auto p-2 d-flex flex-column" style="height: 0; position: relative;">  
+  				<!-- Chat messages container -->  
+  				<div id="chatMessages" class="flex-grow-1 overflow-auto" style="overflow-anchor: none;"></div> 
+
+				<!-- Loading spinner absolutely positioned at the top -->
+				<div id="chatLoading" style="position: absolute; top: 0.5rem; left: 50%; transform: translateX(-50%); display: none; z-index: 10;">
+					<div class="spinner-border text-secondary" role="status" style="width: 1.5rem; height: 1.5rem;">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+				</div>
+  			</div>  
+  			<div class="p-2 border-top d-flex">  
+  				<input type="text" id="messageInput" class="form-control me-2" placeholder="Type your message..." />  
+  				<button id="sendButton" class="btn btn-success">  
+  					<i class="bi bi-send-fill"></i>  
+  				</button>  
+  			</div>  
+  		</div>  
+  	</div>  
+  </section> 
+
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
+
+<script>
+    let skipCount = 0;
+    const pageSize = 5;
+    let loadingOldMessages = false;
+    let hasMoreMessages = true;
+    let isFirstLoad = true;
+    let lastRenderedDateBottom = null;
+    let lastRenderedDateTop = null;
+
+
+	function insertDateDivider(text, before = false) {
+	  const divider = document.createElement("div");
+	  divider.className = "chat-date-divider";
+	  divider.innerHTML = `<small>${text}</small>`;
+	  const container = document.getElementById("chatMessages");
+	  if (before) container.insertBefore(divider, container.firstChild);
+	  else container.appendChild(divider);
+	}
+
+	function formatTime(dateStr) {
+		const date = new Date(dateStr);
+		return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+	}
+
+	function formatDateHeader(dateStr) {
+		const date = new Date(dateStr);
+		const today = new Date();
+		const yesterday = new Date();
+		yesterday.setDate(today.getDate() - 1);
+
+		if (date.toDateString() === today.toDateString()) return "Today";
+		if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+
+		return date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+	}
+
+	// Unified message renderer (used for both append and prepend)
+	function renderMessage(user, message, isOwnMessage, sentAt, prepend = false) {
+		const msgDiv = document.createElement("div");
+		msgDiv.className = "mb-1 d-flex";
+		msgDiv.style.justifyContent = isOwnMessage ? "flex-end" : "flex-start";
+
+		const bubble = document.createElement("div");
+		bubble.innerHTML = `<strong>${user}</strong><br>${message}<br><small>${sentAt}</small>`;
+		bubble.className = "p-2 rounded";
+		bubble.style.maxWidth = "70%";
+		bubble.style.backgroundColor = isOwnMessage ? "#DCF8C6" : "#E4E6EB";
+		bubble.style.textAlign = "left";
+
+		msgDiv.appendChild(bubble);
+
+		const chatMessages = document.getElementById("chatMessages");
+		if (prepend) chatMessages.insertBefore(msgDiv, chatMessages.firstChild);
+		else chatMessages.appendChild(msgDiv);
+	}
+
+	function appendMessage(user, message, isOwnMessage, sentAt) {
+		renderMessage(user, message, isOwnMessage, sentAt, false);
+		scrollToBottom();
+	}
+
+	function prependMessage(user, message, isOwnMessage, sentAt) {
+		renderMessage(user, message, isOwnMessage, sentAt, true);
+	}
+
+	function scrollToBottom() {
+		const chatBox = document.getElementById("chatMessages");
+		chatBox.scrollTop = chatBox.scrollHeight;
+	}
+
+	const connection = new signalR.HubConnectionBuilder()
+		.withUrl("/chatHub", { withCredentials: true })
+		.configureLogging(signalR.LogLevel.Information)
+		.withAutomaticReconnect()
+		.build();
+
+	connection.on("ReceiveMessage", function (user, message) {
+		const currentUserName = document.getElementById("currentUserName").value;
+		appendMessage(user, message, user === currentUserName);
+	});
+
+	connection.start().catch(err => console.error(err.toString()));
+
+	document.getElementById("sendButton").addEventListener("click", function (event) {
+		event.preventDefault();
+		const message = document.getElementById("messageInput").value.trim();
+		if (message !== "") {
+			connection.invoke("SendMessage", currentGroup, currentGroupEvent, message)
+				.then(() => {
+					document.getElementById("messageInput").value = "";
+				})
+				.catch(err => console.error(err.toString()));
+		}
+	});
+
+	
+
+	fetch('/Chat/GetUserGroups')
+		.then(res => res.json())
+		.then(groups => {
+			const ul = document.getElementById('groupList');
+			groups.forEach(group => {
+				const li = document.createElement('li');
+				li.className = "list-group-item list-group-item-action";
+				li.style.cursor = "pointer";
+				li.textContent = `${group.name} - ${group.eventName}`;
+				li.onclick = () => loadGroupChat(group.name, group.eventName);
+				ul.appendChild(li);
+			});
+		});
+
+	async function loadGroupChat(groupName, eventName) {
+		currentGroup = groupName;
+		currentGroupEvent = eventName;
+		skipCount = 0;
+		isFirstLoad = true;
+		hasMoreMessages = true;
+		loadingOldMessages = false;
+
+		document.getElementById("groupTitle").innerText = `${groupName} - ${eventName}`;
+		document.getElementById("chatMessages").innerHTML = "";
+
+		document.getElementById("chatPanelWrapper").classList.remove("d-none");
+
+		await connection.invoke("JoinGroup", groupName, eventName);
+
+		await loadMessages();
+	}
+
+	async function loadMessages() {
+		if (loadingOldMessages || !hasMoreMessages) return;
+		loadingOldMessages = true;
+
+		const chatLoading = document.getElementById("chatLoading");
+		chatLoading.style.display = "block";
+
+		const chatBox = document.getElementById("chatMessages");
+		const scrollBefore = chatBox.scrollHeight;
+
+		const res = await fetch(`/Chat/GetGroupMessages?groupName=${currentGroup}&eventName=${currentGroupEvent}&skip=${skipCount}&take=${pageSize}`);
+		const messages = await res.json();
+
+		if (!messages || messages.length === 0) {
+			hasMoreMessages = false;
+			loadingOldMessages = false;
+			chatLoading.style.display = "none";
+			insertDateDivider(lastRenderedDateTop, true);
+			return;
+		}
+
+		const currentUserName = document.getElementById("currentUserName").value;
+		const reversed = messages.reverse();
+
+		if (isFirstLoad) {
+			reversed.forEach((msg, index) => {
+				const messageDate = new Date(msg.sentAt).toDateString();
+				if (index===0){
+					lastRenderedDateTop = messageDate;
+					lastRenderedDateBottom = messageDate;
+				}
+				if (lastRenderedDateBottom !== messageDate) {
+					lastRenderedDateBottom = messageDate;
+					insertDateDivider(formatDateHeader(msg.sentAt));
+				}
+
+				appendMessage(msg.user, msg.text, msg.user === currentUserName, formatTime(msg.sentAt));
+			});
+			scrollToBottom();
+			isFirstLoad = false;
+		} else {
+			reversed.reverse().forEach(msg => {
+				const messageDate = new Date(msg.sentAt).toDateString();	
+
+				if (lastRenderedDateTop !== messageDate) {
+					insertDateDivider(lastRenderedDateTop, true);
+					lastRenderedDateTop = messageDate;
+				}
+
+				prependMessage(msg.user, msg.text, msg.user === currentUserName, formatTime(msg.sentAt));
+			});
+			chatBox.scrollTop = chatBox.scrollHeight - scrollBefore;
+		}
+
+		skipCount += messages.length;
+		loadingOldMessages = false;
+
+		chatLoading.style.display = "none";
+	}
+
+	document.getElementById("chatMessages").addEventListener("scroll", async () => {
+		const chatBox = document.getElementById("chatMessages");
+		if (chatBox.scrollTop === 0) {
+			await loadMessages();
+		}
+	});
+
+</script>
