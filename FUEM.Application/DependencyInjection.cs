@@ -64,6 +64,9 @@ namespace FUEM.Application
             //Admin
             builder.Services.AddTransient<ICompareEventUseCase, CompareEventUseCase>();
 
+            builder.Services.AddScoped<IGetAttendedEvents, GetAttendedEvents>();
+            builder.Services.AddScoped<IFeedback, FeedbackService>();
+
             return builder;
         }
     }

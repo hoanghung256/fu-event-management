@@ -19,8 +19,8 @@
                         <div class="breadcrumb__menu">
                             <nav>
                                 <ul>
-                                    <li><span><a asp-controller="Admin" asp-action="Dashboard">Dashboard</a></span></li>
-                                    <li><span><a asp-controller="Admin" asp-action="OrganizedEvent">Organized Event</a></span></li>
+                                    <li><span><a asp-controller="Club" asp-action="Dashboard">Dashboard</a></span></li>
+                                    <li><span><a asp-controller="Club" asp-action="OrganizedEvent">Organized Event</a></span></li>
                                     <li class="active"><span>Details</span></li>
                                 </ul>
                             </nav>
@@ -133,13 +133,13 @@
                                                     }
                                                     else
                                                     {
-                                                        foreach (var e in recentEvents )
+                                                        foreach (var e in recentEvents)
                                                         {
                                                             <div class="news__item">
                                                                 <div class="news__item-inner">
                                                                     <div class="news__content">
                                                                         <div class="news__title">
-                                                                            <a href="@Url.Action("CompareEvents", "Admin", new { eventId = mainEvent.Id, comparedId = e.Id })">@e.Fullname</a>
+                                                                            <a href="@Url.Action("CompareEvents", "Club", new { eventId = mainEvent.Id, comparedId = e.Id })">@e.Fullname</a>
                                                                         </div>
                                                                         <div class="news__meta">
                                                                             <div class="news__meta-status">
@@ -181,10 +181,10 @@
                 {
                     label: "@Html.Raw(mainEvent.Fullname ?? "")",
                     data: [
-        @mainEvent.GuestRegisterCount,
-        @mainEvent.GuestAttendedCount,
-        @mainEvent.CollaboratorRegisterCount,
-        @mainEvent.GuestRegisterCancelCount
+                        @mainEvent.GuestRegisterCount,
+                        @mainEvent.GuestAttendedCount,
+                        @mainEvent.CollaboratorRegisterCount,
+                        @mainEvent.GuestRegisterCancelCount
                     ],
                     backgroundColor: 'rgba(64,81,137,0.5)',
                     borderColor: 'rgba(64,81,137,1)',
@@ -193,13 +193,13 @@
         @if (compareEvent != null)
         {
             <text>
-                            {
-                            label: "@Html.Raw(compareEvent.Fullname ?? "")",
-                            data: [@compareEvent.GuestRegisterCount, @compareEvent.GuestAttendedCount, @compareEvent.CollaboratorRegisterCount, @compareEvent.GuestRegisterCancelCount],
-                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
-                            borderColor: 'rgba(255, 159, 64, 1)',
-                            borderWidth: 1
-                                }
+                        {
+                            label: @compareEvent.Fullname,
+                        data: [@compareEvent.GuestRegisterCount, @compareEvent.GuestAttendedCount, @compareEvent.CollaboratorRegisterCount, @compareEvent.GuestRegisterCancelCount],
+                        backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                            }
             </text>
         }
                     ]
