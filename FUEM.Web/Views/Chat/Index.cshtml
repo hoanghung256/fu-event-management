@@ -185,9 +185,9 @@
 		.withAutomaticReconnect()
 		.build();
 
-	connection.on("ReceiveMessage", function (user, message) {
+	connection.on("ReceiveMessage", function (user, message, sentAt) {
 		const currentUserName = document.getElementById("currentUserName").value;
-		appendMessage(user, message, user === currentUserName);
+		appendMessage(user, message, user === currentUserName, sentAt);
 	});
 
 	connection.start().catch(err => console.error(err.toString()));

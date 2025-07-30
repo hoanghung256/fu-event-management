@@ -134,7 +134,7 @@ namespace FUEM.Web.Hubs
                     student = await _studentRepository.GetStudentByIdAsync(userId.Value);
                 }
                 await _chatUseCase.AddGroupMessageAsync(chatMessage);
-                await Clients.Group(groupChat.Name).SendAsync("ReceiveMessage", role.Value == Role.Student.ToString() ? student.Fullname : organizer.Acronym, message);
+                await Clients.Group(groupChat.Name).SendAsync("ReceiveMessage", role.Value == Role.Student.ToString() ? student.Fullname : organizer.Acronym, message, DateTime.UtcNow);
             }
         }
     }
