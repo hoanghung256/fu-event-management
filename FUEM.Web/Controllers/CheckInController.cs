@@ -84,6 +84,7 @@ namespace FUEM.Web.Controllers
                 return Json(new {
                     success = false,
                     message = $"Error: {ex.Message}",
+                    stackTrace = ex.StackTrace,
                     size = size
                 });
             }
