@@ -35,7 +35,7 @@ jobs:
           $json.PayOS.ClientId = "${{ secrets.PAYOS_CLIENT_ID }}"
           $json.PayOS.ApiKey = "${{ secrets.PAYOS_API_KEY }}"
           $json.PayOS.ChecksumKey = "${{ secrets.PAYOS_CHECKSUM_KEY }}"
-          $json.Authentication.Google.ClientId. = "${{ secrets.GG_CLIENT_ID }}"
+          $json.Authentication.Google.ClientId = "${{ secrets.GG_CLIENT_ID }}"
           $json.Authentication.Google.ClientSecret = "${{ secrets.GG_CLIENT_SECRET }}"
           $json | ConvertTo-Json -Depth 10 | Set-Content 'FUEM.Web/appsettings.Production.json'
 
