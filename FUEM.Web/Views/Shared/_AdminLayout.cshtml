@@ -492,7 +492,7 @@
             // Đăng ký phương thức để nhận tin nhắn chung (nếu có)
             connection.on("ReceiveMessage", function (user, message) {
                 console.log(`Tin nhắn từ ${user}: ${message}`);
-                toastr.success(message, user, { timeOut: 5000, positionClass: 'toast-top-right' });
+                // toastr.success(message, user, { timeOut: 5000, positionClass: 'toast-top-right' });
             });
 
             // Bắt đầu kết nối
