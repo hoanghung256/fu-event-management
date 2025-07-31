@@ -47,8 +47,7 @@ namespace FUEM.Infrastructure.Common.FaceRecognization
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Failed to load CascadeClassifier: " + ex.Message);
-                throw;
+                throw new Exception("❌ Failed to load CascadeClassifier: " + ex.Message);
             }
 
             var faces = cascade.DetectMultiScale(gray, 1.1, 3);
