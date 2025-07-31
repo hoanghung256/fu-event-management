@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using FUEM.Application.UseCases.EventUseCases;
 using Net.payOS;
 using FUEM.Infrastructure;
+using System.Text.Json.Serialization;
 
 namespace FUEM.Web
 {
@@ -21,6 +22,14 @@ namespace FUEM.Web
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        // Cấu hình để xử lý tham chiếu vòng tròn bằng cách bỏ qua chúng
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        // Tùy chọn: Định dạng JSON đẹp hơn (chỉ nên dùng trong phát triển)
+        // options.JsonSerializerOptions.WriteIndented = true;
+    });
 
             // PAYOS
             builder.Services.AddHttpClient<PayOSService>();

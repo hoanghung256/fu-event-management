@@ -25,14 +25,14 @@ namespace FUEM.Application.UseCases.NotificationUseCases
         {
             var notifications = await _notificationRepository.GetNotificationsByReceiverIdAndTypeAsync(studentId, false);
 
-            return notifications.Select(n => new Notification
+            foreach (var notification in notifications)
             {
-                Id = n.Id,
-                SenderId = n.SenderId,
-                Title = n.Title,
-                Content = n.Content,
-                SendingTime = n.SendingTime,
-            }).ToList();
+                if (string.IsNullOrEmpty(notification.Title))
+                {
+                    notification.Title = "Notification without title";
+                }
+            }
+            return notifications;
         }
     }
 }
