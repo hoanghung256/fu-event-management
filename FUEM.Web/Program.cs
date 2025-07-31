@@ -66,7 +66,7 @@ namespace FUEM.Web
 
             builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
 
-            builder.Services.AddHostedService<CreateGroupChatService>();
+            //builder.Services.AddHostedService<CreateGroupChatService>();
 
             builder.AddRepositories();
 
