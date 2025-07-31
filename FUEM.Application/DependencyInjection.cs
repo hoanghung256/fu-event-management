@@ -74,6 +74,8 @@ namespace FUEM.Application
             builder.Services.AddTransient<IStudentNotification, StudentNotification>();
             builder.Services.AddScoped<IGetAttendedEvents, GetAttendedEvents>();
             builder.Services.AddScoped<IFeedback, FeedbackService>();
+            //ClubNotifications
+            builder.Services.AddTransient<IClubNotification, ClubNotification>();
 
             return builder;
         }

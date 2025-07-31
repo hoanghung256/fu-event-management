@@ -40,13 +40,14 @@ namespace FUEM.Infrastructure.Persistence.Repositories
 
         public async Task<List<Notification>> GetNotificationsByReceiverIdAndTypeAsync(int receiverId, bool isOrganizer)
         {
-            return await (from nr in _context.NotificationReceivers
-                          join n in _context.Notifications on nr.NotificationId equals n.Id
-                            where nr.ReceiverId == receiverId && nr.IsOrganizer == isOrganizer
-                            orderby n.SendingTime descending
-                            select n)
+            var notifications = await (from nr in _context.NotificationReceivers
+                                       join n in _context.Notifications on nr.NotificationId equals n.Id
+                                       where nr.ReceiverId == receiverId && nr.IsOrganizer == isOrganizer
+                                       orderby n.SendingTime descending
+                                       select n)
                           .Include(n => n.Sender)
                            .ToListAsync();
+            return notifications;
         }
     }
 }
