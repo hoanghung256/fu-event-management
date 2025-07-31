@@ -76,7 +76,7 @@ namespace FUEM.Web.Controllers
                     if (role == Role.Admin)
                     {
                         return RedirectToAction("Dashboard", "Admin");
-                    } 
+                    }
                     else if (role == Role.Club)
                     {
                         return RedirectToAction("Dashboard", "Club");
@@ -169,20 +169,8 @@ namespace FUEM.Web.Controllers
         [HttpGet]
         public IActionResult ResetPassword()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login");
-        }
-
-        // Helper method để xử lý logic đăng nhập chung
-        private async Task AuthenticateUser(object user)
-        {
-            int userId = 0;
-            Role? role = Role.Student;
-            string displayName = "Guest";
-            string avatarPath = "";
-            string email = "";
-
-            if (user is Student student)
+            string? email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email))
             {
                 TempData[ToastType.ErrorMessage.ToString()] = "You need to enter an email to reset the password.";
                 return RedirectToAction("ForgotPassword");

@@ -119,7 +119,7 @@
                 @foreach (var eventItem in Model.Items)
                 {
                    
-                    <tr>
+                    <tr style="cursor: pointer;" onclick="window.location.href='@Url.Action("CompareEvents", "Admin", new { eventId = eventItem.Id })'">
                         <td>@eventItem.Fullname</td>
                         <td>@eventItem.DateOfEvent?.ToString("dd/MM/yyyy")</td>
                         <td>@eventItem.GuestRegisterCount / @eventItem.GuestRegisterLimit</td>
