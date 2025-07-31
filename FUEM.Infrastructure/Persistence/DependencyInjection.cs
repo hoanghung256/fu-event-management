@@ -34,6 +34,7 @@ namespace FUEM.Infrastructure.Persistence
 
             builder.Services.AddTransient<FirebaseStorageService>();
             builder.Services.AddTransient<MongoDBService>();
+            builder.Services.AddTransient<PayOSService>();
 
             return builder;
         }

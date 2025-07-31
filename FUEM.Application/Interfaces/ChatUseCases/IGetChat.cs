@@ -11,7 +11,7 @@ namespace FUEM.Application.Interfaces.ChatUseCases
 {
     public interface IGetChat
     {
-        Task<List<ChatMessage>> GetAllGroupMessagesAsync(string groupId);
+        Task<List<ChatMessage>> GetAllGroupMessagesAsync(string groupId, int skip, int take);
 
         Task<List<ChatGroup>> GetAllChatGroupsAsync(int id);
 

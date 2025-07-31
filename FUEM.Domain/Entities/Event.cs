@@ -3,6 +3,7 @@ using FUEM.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FUEM.Domain.Entities
 {
@@ -56,6 +57,10 @@ namespace FUEM.Domain.Entities
 
         public DateOnly? CollaboratorRegisterDeadline { get; set; }
 
+        public bool IsNeedTicketPayment { get; set; }
+
+        public int? TicketPrice { get; set; }
+
         public virtual Category? Category { get; set; }
 
         public virtual ICollection<EventCollaborator> EventCollaborators { get; set; } = new List<EventCollaborator>();
@@ -69,6 +74,8 @@ namespace FUEM.Domain.Entities
         public virtual Location? Location { get; set; }
 
         public virtual Organizer? Organizer { get; set; }
+        [NotMapped] 
+        public bool HasSubmittedFeedback { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

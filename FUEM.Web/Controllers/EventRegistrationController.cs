@@ -9,9 +9,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Net.payOS.Types;
+using Net.payOS;
 using System.Data;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using FUEM.Infrastructure.Common;
+using static FUEM.Infrastructure.Common.PayOSService;
 
 namespace FUEM.Web.Controllers
 {
@@ -23,8 +28,12 @@ namespace FUEM.Web.Controllers
         private readonly IGetEventForGuest _getEventForGuestUseCase;
         private readonly IGetAllCategories _getAllCategoriesUseCase;
         private readonly IGetAllLocation _getAllLocationUseCase;
+        private readonly IGetEvent _getEventUseCase;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
+        private readonly PayOSService _payOSService;
 
-        public EventRegistrationController(ILogger<EventRegistrationController> logger, ICreateEvent createEventUseCase, IRegisterIntoEvent registerEventUseCase, IGetEventForGuest getEventForGuestUseCase, IGetAllCategories getAllCategoriesUseCase, IGetAllOrganizers getAllOrganizersUseCase, IGetAllLocation getAllLocationUseCase)
+        public EventRegistrationController(ILogger<EventRegistrationController> logger, ICreateEvent createEventUseCase, IRegisterIntoEvent registerEventUseCase, IGetEventForGuest getEventForGuestUseCase, IGetAllCategories getAllCategoriesUseCase, IGetAllOrganizers getAllOrganizersUseCase, IGetAllLocation getAllLocationUseCase, IGetEvent getEventUseCase, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, PayOSService payOSService)
         {
             _logger = logger;
             _createEventUseCase = createEventUseCase;
@@ -32,6 +41,10 @@ namespace FUEM.Web.Controllers
             _getEventForGuestUseCase = getEventForGuestUseCase;
             _getAllCategoriesUseCase = getAllCategoriesUseCase;
             _getAllLocationUseCase = getAllLocationUseCase;
+            _getEventUseCase = getEventUseCase;
+            _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
+            _payOSService = payOSService;
         }
 
         [HttpGet]
@@ -47,7 +60,7 @@ namespace FUEM.Web.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Student")]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> Register([FromForm]int eventId, [FromForm] bool isGuest)
         {
             try
@@ -55,9 +68,18 @@ namespace FUEM.Web.Controllers
                 var studentId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
                 if (isGuest)
+                {
+                    Event registeringEvent = await _getEventUseCase.GetEventById(eventId);
+                    if (registeringEvent.IsNeedTicketPayment == true)
+                    {
+                        return RedirectToAction("TicketCheckOut", "EventRegistration", new { eventId });
+                    }
                     await _registerEventUseCase.RegisterGuestAsync(eventId, studentId);
+                }
                 else
+                {
                     await _registerEventUseCase.RegisterCollaboratorAsync(eventId, studentId);
+                }
 
                 string role = isGuest ? "Guest" : "Collaborator";
 
@@ -125,6 +147,56 @@ namespace FUEM.Web.Controllers
                 //_logger.
             }
             return RedirectToAction(nameof(Create));
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> TicketCheckOut([FromQuery] int eventId)
+        {
+            try
+            {
+                Event? registeringEvent = await _getEventUseCase.GetEventById(eventId);
+
+                string checkOutUrl = await _payOSService.CreatePaymentUrlForEventTicket(registeringEvent);
+
+                HttpContext.Session.SetInt32("TicketCheckOutEventId", registeringEvent.Id);
+                return Redirect(checkOutUrl);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                TempData[ToastType.ErrorMessage.ToString()] = "Ticket checkout failed";
+                return RedirectToAction("Detail", new { id = eventId });
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> TicketCheckoutCallback([FromQuery] string id)
+        {
+            int eventId = (int)HttpContext.Session.GetInt32("TicketCheckOutEventId");
+            HttpContext.Session.Remove("TicketCheckOutEventId");
+            try
+            {
+                PayOSJsonResponse? res =  await _payOSService.VerifyPayment(id);
+
+                if (res.Data.Status == "CANCELLED")
+                {
+                    TempData[ToastType.InfoMessage.ToString()] = "Payment canceled";
+                }
+                else if (res.Data.Status == "PAID")
+                {
+                    int studentId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                    await _registerEventUseCase.RegisterGuestAsync(eventId, studentId);
+                    TempData[ToastType.SuccessMessage.ToString()] = "Payment successfully";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                TempData[ToastType.ErrorMessage.ToString()] = ex.Message;
+            }
+            return RedirectToAction("Detail", new { id = eventId });
         }
 
         // GET: EventRegistrationController/Edit/5

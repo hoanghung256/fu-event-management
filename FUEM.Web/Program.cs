@@ -11,6 +11,8 @@ using FUEM.Web.Hubs;
 using Microsoft.EntityFrameworkCore;
 
 using FUEM.Application.UseCases.EventUseCases;
+using Net.payOS;
+using FUEM.Infrastructure;
 
 namespace FUEM.Web
 {
@@ -19,12 +21,23 @@ namespace FUEM.Web
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddHttpContextAccessor(); // ✅ Đăng ký
+
+            // PAYOS
+            builder.Services.AddHttpClient<PayOSService>();
+            PayOSSettings payOSSettings = builder.Configuration.GetSection("PayOS").Get<PayOSSettings>();
+            builder.Services.AddSingleton<PayOS>(
+                new PayOS(
+                    payOSSettings.ClientId,
+                    payOSSettings.ApiKey,
+                    payOSSettings.ChecksumKey
+                )
+            );
+
+            builder.Services.AddHttpContextAccessor();
 
             // Register controllers and views  
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddSession(options =>
             {
@@ -32,11 +45,13 @@ namespace FUEM.Web
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+            
             builder.Services.AddScoped<IGetAttendedEvents, GetAttendedEvents>();
-
+            builder.Services.AddScoped<FUEM.Domain.Interfaces.Repositories.IFeedbackRepository, FUEM.Infrastructure.Persistence.Repositories.FeedbackRepository>();
+            builder.Services.AddScoped<FUEM.Application.Interfaces.UserUseCases.IFeedback, FUEM.Application.UseCases.UserUseCases.FeedbackService>();
             // Get connection string  
             var connectionString = GetConnectionString(builder);
-            //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
+            //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");   
 
             // Register DbContext  
             builder.Services.AddDbContextPool<FUEMDbContext>(options => options.UseSqlServer(connectionString));
@@ -57,26 +72,26 @@ namespace FUEM.Web
                     options.SlidingExpiration = true;
                 });
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder
-                        .WithOrigins("https://fuem.azurewebsites.net") // 👈 your actual frontend domain
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials(); // 👈 needed for cookies or auth
-                });
-            });
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddDefaultPolicy(builder =>
+            //    {
+            //        builder
+            //            .WithOrigins("https://fuem.azurewebsites.net") // 👈 your actual frontend domain
+            //            .AllowAnyHeader()
+            //            .AllowAnyMethod()
+            //            .AllowCredentials(); // 👈 needed for cookies or auth
+            //    });
+            //});
 
             builder.Services.AddAuthorization();
 
             //builder.Services.AddScoped<InsertSignedFirebaseUrl>();
 
-            builder.Services.AddControllers(options =>
-            {
-                options.Filters.Add<InsertSignedFirebaseUrl>();
-            });
+            //builder.Services.AddControllers(options =>
+            //{
+            //    options.Filters.Add<InsertSignedFirebaseUrl>();
+            //});
 
             builder.Services.AddSignalR();
 
@@ -100,7 +115,7 @@ namespace FUEM.Web
             //app.UseStatusCodePagesWithReExecute("/Error/{0}");
             app.UseWebSockets();
             app.UseSession();
-            app.UseCors();
+            //app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -116,8 +131,6 @@ namespace FUEM.Web
             app.Run();
         }
 
-
-
         private static string GetConnectionString(WebApplicationBuilder builder)
         {
             string server = builder.Configuration.GetConnectionString("Server");
@@ -126,6 +139,13 @@ namespace FUEM.Web
             string password = builder.Configuration.GetConnectionString("Password");
 
             return $"Server={server};Database={database};User ID={username};Password={password};TrustServerCertificate=True;";
+        }
+
+        private class PayOSSettings()
+        {
+            public string ClientId { get; set; }
+            public string ApiKey { get; set; }
+            public string ChecksumKey { get; set; }
         }
     }
 }

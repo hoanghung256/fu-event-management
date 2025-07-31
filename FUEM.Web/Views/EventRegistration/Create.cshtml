@@ -2,11 +2,19 @@
 
 <style>
     .input__btn w-20 input__btn-fixed{
-    padding-right: 50px;
+        padding-right: 50px;
     }
 
     #editor {
-    min-height: 1000rem;
+        min-height: 1000rem;
+    }
+
+    .ck {
+        max-width: 31vw !important;
+    }
+
+    .ck-editor__editable {
+        min-height: 30rem !important;
     }
 </style>
 
@@ -185,6 +193,20 @@
                                                     <span asp-validation-for="CollaboratorRegisterDeadline" class="text-danger"></span>
                                                 </div>
                                             </div>
+                                            <div class="col-xxl-6 col-xl-6 col-lg-6">
+                                                <div class=" mb-15">
+                                                    <label class="">Has Ticket</label>
+                                                    <input type="checkbox" asp-for="IsNeedTicketPayment" class="d-block" onchange="activeInputForTicketPrice(this)" />
+                                                    <span asp-validation-for="IsNeedTicketPayment" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div id="ticket-price-input" class="d-none col-xxl-6 col-xl-6 col-lg-6">
+                                                <div class="singel__input-field is-color-change mb-15">
+                                                    <label class="input__field-text">TicketPrice</label>
+                                                    <input type="number" asp-for="TicketPrice" class="form-control" />
+                                                    <span asp-validation-for="TicketPrice" class="text-danger"></span>
+                                                </div>
+                                            </div>
                                         </div>
                                         <br />
                                         <button class="input__btn w-100" type="submit">Register</button>
@@ -253,4 +275,15 @@
             previewWrapper.append(divWrapper);
         }
     };
+
+    function activeInputForTicketPrice(checkbox) {
+        const ticketPriceInput = document.getElementById('ticket-price-input');
+        console.log('11', checkbox);
+        console.log('12', ticketPriceInput);
+        if (checkbox.checked) {
+            ticketPriceInput.classList.remove('d-none');
+        } else {
+            ticketPriceInput.classList.add('d-none');
+        }
+    }
 </script>

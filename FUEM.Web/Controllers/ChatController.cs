@@ -14,25 +14,28 @@ namespace FUEM.Web.Controllers
         private readonly IGetStudent _getStudentUseCase;
         private readonly IGetOrganizer _getOrganizerUseCase;
         private readonly IGetEvent _getEventUseCase;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ChatController(IGetChat getChatUseCase, IGetStudent getStudentUseCase, IGetOrganizer getOrganizerUseCase, IGetEvent getEventUseCase)
+        public ChatController(IGetChat getChatUseCase, IGetStudent getStudentUseCase, IGetOrganizer getOrganizerUseCase, IGetEvent getEventUseCase, IServiceProvider serviceProvider)
         {
             _getChatUseCase = getChatUseCase;
             _getStudentUseCase = getStudentUseCase;
             _getOrganizerUseCase = getOrganizerUseCase;
             _getEventUseCase = getEventUseCase;
+            _serviceProvider = serviceProvider;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetUserGroups()
         {
             int? userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null ? int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value) : null;
+            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value;
             List<ChatGroup> groups = new List<ChatGroup>();
-            if (userId != null && (User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Club.ToString() || User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Admin.ToString()))
+            if (userId != null && (role == Role.Club.ToString() || role == Role.Admin.ToString()))
             {
                 groups = await _getChatUseCase.GetAllChatGroupsAsync(userId.Value);
             }
-            else if (userId != null && User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value == Role.Student.ToString())
+            else if (userId != null && role == Role.Student.ToString())
             {
                 groups = await _getChatUseCase.GetStudentGroupChat(userId.Value);
             }
@@ -42,72 +45,91 @@ namespace FUEM.Web.Controllers
             //}
             //var groupTasks = groups.Select(async g => new { name = g.Name, eventName = await _getEventUseCase.GetEventById(g.EventId) }).ToList();
             //var group = await Task.WhenAll(groupTasks);
-            var groupList = new List<object>();
-            foreach (var item in groups)
+            var groupTasks = groups.Select(async group =>
             {
                 string eventName = null;
 
-                if (item.EventId != null)
+                if (group.EventId != null)
                 {
-                    //Console.WriteLine(item.EventId);
-                    var eve = await _getEventUseCase.GetEventById(item.EventId);
-                    eventName = eve.Fullname;
+                    using var scope = _serviceProvider.CreateScope();
+                    var eventUseCase = scope.ServiceProvider.GetRequiredService<IGetEvent>();
+                    var ev = await eventUseCase.GetEventById(group.EventId);
+                    eventName = ev?.Fullname;
                 }
 
-                groupList.Add(new
+                return new
                 {
                     eventName,
-                    name = item.Name
-                });
-            }
+                    name = group.Name
+                };
+            });
+
+            var groupList = await Task.WhenAll(groupTasks);
+
             return Json(groupList);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetGroupMessages(string groupName, string eventName)
+        public async Task<IActionResult> GetGroupMessages(string groupName, string eventName, int skip = 0, int take = 5)
         {
             int? userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null ? int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value) : null;
-            //List<ChatMessage> messages = new List<ChatMessage>();
-            //if (User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null)
-            //{
-            //Console.WriteLine("Group Name: " + groupName);
             Event? eve = await _getEventUseCase.GetEventByName(eventName);
             ChatGroup groupChat = await _getChatUseCase.GetChatGroupByEventId(eve.Id);
-            List<ChatMessage> messages = await _getChatUseCase.GetAllGroupMessagesAsync(groupChat.Id);
-            //var messageTasks = messages.Select(async g => new
-            //{
-            //    //user = g.SenderOrganizerId ?? g.SenderStudentId,
-            //    user = g.SenderOrganizerId != null ? (await _getOrganizerUseCase.GetOrganizerByIdAsync(g.SenderOrganizerId.Value)).Acronym : g.SenderStudentId != null ? (await _getStudentUseCase.GetStudentById(g.SenderStudentId.Value)).Fullname : null,
-            //    text = g.Content,
-            //}).ToList();
-            //var message = await Task.WhenAll(messageTasks);
-            var messageList = new List<object>();
-            if (userId != null)
+            List<ChatMessage> messages = await _getChatUseCase.GetAllGroupMessagesAsync(groupChat.Id, skip, take);
+            var messageTasks = messages.Select(async g =>
             {
-                foreach (var g in messages)
+                using var scope = _serviceProvider.CreateScope();
+
+                var organizerUseCase = scope.ServiceProvider.GetRequiredService<IGetOrganizer>();
+                var studentUseCase = scope.ServiceProvider.GetRequiredService<IGetStudent>();
+
+                string user = null;
+
+                if (g.SenderOrganizerId != null)
                 {
-                    string user = null;
-
-                    if (g.SenderOrganizerId != null)
-                    {
-                        var organizer = await _getOrganizerUseCase.GetOrganizerByIdAsync(g.SenderOrganizerId.Value);
-                        user = organizer.Acronym;
-                    }
-                    else if (g.SenderStudentId != null)
-                    {
-                        var student = await _getStudentUseCase.GetStudentById(g.SenderStudentId.Value);
-                        user = student.Fullname;
-                    }
-
-                    messageList.Add(new
-                    {
-                        user,
-                        text = g.Content
-                    });
+                    var organizer = await organizerUseCase.GetOrganizerByIdAsync(g.SenderOrganizerId.Value);
+                    user = organizer?.Acronym;
                 }
-            }
+                else if (g.SenderStudentId != null)
+                {
+                    var student = await studentUseCase.GetStudentById(g.SenderStudentId.Value);
+                    user = student?.Fullname;
+                }
+
+                return new
+                {
+                    user,
+                    text = g.Content,
+                    sentAt = g.SentAt
+                };
+            }).ToList();
+            var message = await Task.WhenAll(messageTasks);
+            //var messageList = new List<object>();
+            //if (userId != null)
+            //{
+            //    foreach (var g in messages)
+            //    {
+            //        string user = null;
+
+            //        if (g.SenderOrganizerId != null)
+            //        {
+            //            var organizer = await _getOrganizerUseCase.GetOrganizerByIdAsync(g.SenderOrganizerId.Value);
+            //            user = organizer.Acronym;
+            //        }
+            //        else if (g.SenderStudentId != null)
+            //        {
+            //            var student = await _getStudentUseCase.GetStudentById(g.SenderStudentId.Value);
+            //            user = student.Fullname;
+            //        }
+
+            //        messageList.Add(new
+            //        {
+            //            user,
+            //            text = g.Content
+            //        });
+            //    }
             //}
-            return Json(messageList);
+            return Json(message);
         }
 
         public async Task<IActionResult> Index()

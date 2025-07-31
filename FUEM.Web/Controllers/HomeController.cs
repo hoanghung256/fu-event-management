@@ -61,7 +61,6 @@ namespace FUEM.Web.Controllers
                 ViewData["PreviousSearchEventCriteria"] = criteria;
                 ViewData["IsSearch"] = isFind;
 
-                TempData[ToastType.InfoMessage.ToString()] = "Welcome to FUEM!";
                 return View(viewModel);
             }
             catch (Exception ex)
