@@ -11,6 +11,7 @@ namespace FUEM.Domain.Interfaces.Repositories
     {
         Task<List<ChatGroup>> GetAllChatGroupsAsync(int id);
         Task<List<ChatMessage>> GetAllGroupMessagesAsync(string groupId, int skip = 0, int take = 5);
+        Task<List<ChatGroupMember>> GetChatGroupMembersAsync(string groupId);
         Task<List<ChatGroup>> GetStudentGroupChatAsync(int studentId);
         Task<ChatGroup> GetChatGroupByNameAsync(string groupName);
         Task<ChatGroup> GetChatGroupByEventIdAsync(int eventId);

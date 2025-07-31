@@ -5,6 +5,7 @@ using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using MimeKit;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace FUEM.Web.Controllers
 {
@@ -73,63 +74,102 @@ namespace FUEM.Web.Controllers
         public async Task<IActionResult> GetGroupMessages(string groupName, string eventName, int skip = 0, int take = 5)
         {
             int? userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null ? int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value) : null;
-            Event? eve = await _getEventUseCase.GetEventByName(eventName);
-            ChatGroup groupChat = await _getChatUseCase.GetChatGroupByEventId(eve.Id);
-            List<ChatMessage> messages = await _getChatUseCase.GetAllGroupMessagesAsync(groupChat.Id, skip, take);
-            var messageTasks = messages.Select(async g =>
+            if (userId != null)
             {
-                using var scope = _serviceProvider.CreateScope();
-
-                var organizerUseCase = scope.ServiceProvider.GetRequiredService<IGetOrganizer>();
-                var studentUseCase = scope.ServiceProvider.GetRequiredService<IGetStudent>();
-
-                string user = null;
-
-                if (g.SenderOrganizerId != null)
+                Event? eve = await _getEventUseCase.GetEventByName(eventName);
+                ChatGroup groupChat = await _getChatUseCase.GetChatGroupByEventId(eve.Id);
+                List<ChatMessage> messages = await _getChatUseCase.GetAllGroupMessagesAsync(groupChat.Id, skip, take);
+                var messageTasks = messages.Select(async g =>
                 {
-                    var organizer = await organizerUseCase.GetOrganizerByIdAsync(g.SenderOrganizerId.Value);
-                    user = organizer?.Acronym;
-                }
-                else if (g.SenderStudentId != null)
-                {
-                    var student = await studentUseCase.GetStudentById(g.SenderStudentId.Value);
-                    user = student?.Fullname;
-                }
+                    using var scope = _serviceProvider.CreateScope();
 
-                return new
+                    var organizerUseCase = scope.ServiceProvider.GetRequiredService<IGetOrganizer>();
+                    var studentUseCase = scope.ServiceProvider.GetRequiredService<IGetStudent>();
+
+                    string user = null;
+
+                    if (g.SenderOrganizerId != null)
+                    {
+                        var organizer = await organizerUseCase.GetOrganizerByIdAsync(g.SenderOrganizerId.Value);
+                        user = organizer?.Acronym;
+                    }
+                    else if (g.SenderStudentId != null)
+                    {
+                        var student = await studentUseCase.GetStudentById(g.SenderStudentId.Value);
+                        user = student?.Fullname;
+                    }
+
+                    return new
+                    {
+                        user,
+                        text = g.Content,
+                        sentAt = g.SentAt
+                    };
+                }).ToList();
+                var message = await Task.WhenAll(messageTasks);
+                //var messageList = new List<object>();
+                //if (userId != null)
+                //{
+                //    foreach (var g in messages)
+                //    {
+                //        string user = null;
+
+                //        if (g.SenderOrganizerId != null)
+                //        {
+                //            var organizer = await _getOrganizerUseCase.GetOrganizerByIdAsync(g.SenderOrganizerId.Value);
+                //            user = organizer.Acronym;
+                //        }
+                //        else if (g.SenderStudentId != null)
+                //        {
+                //            var student = await _getStudentUseCase.GetStudentById(g.SenderStudentId.Value);
+                //            user = student.Fullname;
+                //        }
+
+                //        messageList.Add(new
+                //        {
+                //            user,
+                //            text = g.Content
+                //        });
+                //    }
+                //}
+                return Json(message);
+            }
+            return Json(Array.Empty<object>());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetGroupDetails(string groupName, string eventName)
+        {
+            int? userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null ? int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value) : null;
+            if (userId != null)
+            {
+                Event? eve = await _getEventUseCase.GetEventByName(eventName);
+                ChatGroup groupChat = await _getChatUseCase.GetChatGroupByEventId(eve.Id);
+                var organizer = await _getOrganizerUseCase.GetOrganizerByIdAsync(groupChat.CreatorId);
+                List<ChatGroupMember> chatGroupMembers = await _getChatUseCase.GetChatGroupMembers(groupChat.Id);
+                var studentTasks = chatGroupMembers.Select(async g =>
                 {
-                    user,
-                    text = g.Content,
-                    sentAt = g.SentAt
+                    using var scope = _serviceProvider.CreateScope();
+                    var studentUseCase = scope.ServiceProvider.GetRequiredService<IGetStudent>();
+                    var student = await studentUseCase.GetStudentById(g.StudentId);
+                    return new
+                    {
+                        avatar = student.AvatarPath,
+                        name = student.Fullname
+                    };
+                });
+                var membersArray = await Task.WhenAll(studentTasks);
+                var result = new
+                {
+                    members = membersArray.Append(new
+                    {
+                        avatar = organizer.AvatarPath,
+                        name = organizer?.Acronym
+                    }).ToList()
                 };
-            }).ToList();
-            var message = await Task.WhenAll(messageTasks);
-            //var messageList = new List<object>();
-            //if (userId != null)
-            //{
-            //    foreach (var g in messages)
-            //    {
-            //        string user = null;
-
-            //        if (g.SenderOrganizerId != null)
-            //        {
-            //            var organizer = await _getOrganizerUseCase.GetOrganizerByIdAsync(g.SenderOrganizerId.Value);
-            //            user = organizer.Acronym;
-            //        }
-            //        else if (g.SenderStudentId != null)
-            //        {
-            //            var student = await _getStudentUseCase.GetStudentById(g.SenderStudentId.Value);
-            //            user = student.Fullname;
-            //        }
-
-            //        messageList.Add(new
-            //        {
-            //            user,
-            //            text = g.Content
-            //        });
-            //    }
-            //}
-            return Json(message);
+                return Json(result);
+            }
+            return Json(Array.Empty<object>());
         }
 
         public async Task<IActionResult> Index()

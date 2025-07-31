@@ -25,6 +25,9 @@ namespace FUEM.Application.UseCases.ChatUseCases
         public async Task<List<ChatGroup>> GetAllChatGroupsAsync(int id)
            => await _repository.GetAllChatGroupsAsync(id);
 
+        public async Task<List<ChatGroupMember>> GetChatGroupMembers(string groupId)
+            => await _repository.GetChatGroupMembersAsync(groupId);
+
         public async Task<List<ChatGroup>> GetStudentGroupChat(int studentId)
             => await _repository.GetStudentGroupChatAsync(studentId);
 
