@@ -261,15 +261,12 @@
             }
 
             .app-notification-time .status strong {
-                color: white;
+                color: #ff8f00;
                 font-size: 0.75rem;
-                background: linear-gradient(135deg, #ff6f00, #ff8f00);
-                padding: 4px 10px;
                 border-radius: 12px;
                 font-weight: 500;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
-                box-shadow: 0 2px 8px rgba(255, 111, 0, 0.3);
             }
 
         /* --- Enhanced Notification Detail Modal --- */
@@ -428,6 +425,72 @@
                 padding: 14px 20px;
             }
         }
+
+                .notification-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.notification-avatar {
+    flex-shrink: 0;
+}
+
+.notification-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e1e8ed;
+    transition: all 0.3s ease;
+}
+
+.notification-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-title {
+    margin: 0 0 4px 0 !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    color: #2c3e50 !important;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notification-message {
+    margin: 0 0 8px 0 !important;
+    font-size: 14px !important;
+    color: #495057 !important;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notification-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ff6f00;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-left: auto;
+    margin-top: 4px;
+}
+
+.app-notification-item:hover .notification-avatar img {
+    border-color: #ff6f00;
+    transform: scale(1.05);
+}
+
+.app-notification-item hr {
+    display: none;
+}
 
         /* General Layout CSS (kept from your original) */
         body {
@@ -998,29 +1061,35 @@
             }
 
             // Function to add a notification to the popup list
-            window.appendNotificationToPopup = function(noti) {
-                const senderName = noti.sender && noti.sender.acronym ? noti.sender.acronym  : "System1";
-                const senderAvt = noti.sender && noti.sender.avatarPath ? noti.sender.avatarPath : "Avatar";
-                console.log('Hello', noti);
-                const formattedTime = new Date(noti.sendingTime).toLocaleString('vi-VN');
+window.appendNotificationToPopup = function (noti) {
+    const senderName = noti.sender && noti.sender.acronym ? noti.sender.acronym : "System";
+    const senderAvt = noti.sender && noti.sender.avatarPath ? noti.sender.avatarPath : "/img/user/default-avatar.jpg";
+    console.log('Hello', noti);
+    const formattedTime = new Date(noti.sendingTime).toLocaleString('vi-VN');
 
-                const notificationHtml = `
-                    <li class="app-notification-item" data-id="${noti.id}">
-                        <p class="notification-title">${noti.title}</p>
-                        <p>${noti.content}</p>
-                        <div class="app-notification-time">
-                            <span>${formattedTime}</span>
-                            <span class="status"><strong>${senderName}</strong></span>
-                        </div>
-                        <div>
-                            <p>${senderAvt}</p>
-                        </div>
-                        <hr/>
-                    </li>
-                `;
-                appNotificationPopupList.prepend(notificationHtml);
-                appNoPopupNotificationsMessage.hide();
-            };
+    const avatarHtml = `<img src="${senderAvt}" alt="Avatar" onerror="this.src='/img/user/default-avatar.jpg'">`;
+
+    const notificationHtml = `
+        <li class="app-notification-item" data-id="${noti.id}">
+            <div class="notification-content">
+                <div class="notification-avatar">
+                    ${avatarHtml}
+                </div>
+                <div class="notification-text">
+                    <p class="notification-title">${noti.title}</p>
+                    <p class="notification-message">${noti.content}</p>
+                    <div class="app-notification-time">
+                        <span>${formattedTime}</span>
+                        <span class="status"><strong>${senderName}</strong></span>
+                    </div>
+                </div>
+                <div class="notification-dot"></div>
+            </div>
+        </li>
+    `;
+    appNotificationPopupList.prepend(notificationHtml);
+    appNoPopupNotificationsMessage.hide();
+    };
 
             // Function to update the notification bell count
             window.updateNotificationBellCount = function () {
