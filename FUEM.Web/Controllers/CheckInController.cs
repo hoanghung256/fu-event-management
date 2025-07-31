@@ -42,20 +42,20 @@ namespace FUEM.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> VerifyFace([FromBody] FaceInput input)
         {
-            if (string.IsNullOrEmpty(input.ImageBase64))
-            {
-                return Json(new { success = false, message = "Empty image data" });
-            }
-
-            // Tính kích thước ảnh base64 (đơn vị byte)
-            var base64Data = input.ImageBase64.Split(',')[1];
-            var imageBytes = Convert.FromBase64String(base64Data);
-            var sizeInKb = imageBytes.Length / 1024.0;
-
-            string size = $"Image size received: {imageBytes.Length} bytes (~{sizeInKb:F2} KB)";
+            string size = "";
 
             try
             {
+                if (string.IsNullOrEmpty(input.ImageBase64))
+                {
+                    return Json(new { success = false, message = "Empty image data" });
+                }
+
+                var base64Data = input.ImageBase64.Split(',')[1];
+                var imageBytes = Convert.FromBase64String(base64Data);
+                var sizeInKb = imageBytes.Length / 1024.0;
+
+                size = $"Image size received: {imageBytes.Length} bytes (~{sizeInKb:F2} KB)";
                 Student? s = await _checkInUseCase.GetStudentByFaceAsync(input);
 
                 if (s != null)
