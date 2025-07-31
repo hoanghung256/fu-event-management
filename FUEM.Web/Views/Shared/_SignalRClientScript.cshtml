@@ -1,0 +1,90 @@
+﻿@using System.Security.Claims
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var currentUserId = HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+}
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var currentUserId = @Html.Raw(Json.Serialize(currentUserId));
+        console.log("Student Layout - Current User ID (from partial):", currentUserId);
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
+            .withAutomaticReconnect()
+            .build();
+
+        // Đăng ký phương thức để nhận thông báo từ server
+        connection.on("ReceiveNotification", function (title, message, notificationId) {
+            toastr.info(`${message}`, `${title}`, { timeOut: 10000, positionClass: 'toast-top-right' });
+            console.log(`Thông báo: ${title} - ${message}, ID: ${notificationId}`);
+
+            // Nếu sinh viên đang ở trang danh sách thông báo, thêm thông báo mới vào
+            if (window.location.pathname.includes("/Student/Notifications")) {
+                if (typeof window.addRealtimeNotificationToPage === 'function') {
+                    // Tạo một đối tượng Notification entity giả định để truyền đi
+                    // Lưu ý: Sender object sẽ không có sẵn đầy đủ từ SignalR,
+                    // bạn có thể truyền thêm hoặc fetch lại từ API nếu cần chi tiết hơn
+                    window.addRealtimeNotificationToPage({
+                        id: notificationId,
+                        title: title,
+                        content: message,
+                        sendingTime: new Date().toISOString(), // Thời gian hiện tại
+                        sender: { fullName: "Admin" } // Giả định người gửi là Admin/System
+                    });
+                }
+            }
+            // Cập nhật số lượng thông báo trên chuông
+            if (typeof window.incrementNotificationBellCount === 'function') {
+                window.incrementNotificationBellCount();
+            }
+        });
+
+        // Đăng ký phương thức để nhận tin nhắn chung (nếu bạn dùng ReceiveMessage cho thông báo chung)
+        connection.on("ReceiveMessage", function (title, message, notificationId) {
+            toastr.success(`${message}`, `${title}`, { timeOut: 5000, positionClass: 'toast-top-right' });
+            console.log(`Tin nhắn chung: ${title} - ${message}, ID: ${notificationId}`);
+
+            // Nếu sinh viên đang ở trang danh sách thông báo, thêm thông báo mới vào
+            if (window.location.pathname.includes("/Student/Notifications")) {
+                if (typeof window.addRealtimeNotificationToPage === 'function') {
+                    window.addRealtimeNotificationToPage({
+                        id: notificationId,
+                        title: title,
+                        content: message,
+                        sendingTime: new Date().toISOString(),
+                        sender: { fullName: "Admin" } // Giả định người gửi là Admin/System
+                    });
+                }
+            }
+            // Cập nhật số lượng thông báo trên chuông
+            if (typeof window.incrementNotificationBellCount === 'function') {
+                window.incrementNotificationBellCount();
+            }
+        });
+
+        connection.start()
+            .then(() => {
+                console.log("Student Layout - SignalR Connected!");
+                if (currentUserId) {
+                    connection.invoke("JoinGroup", `User_${currentUserId}`)
+                        .then(() => console.log(`Student Layout - Joined group: User_${currentUserId}`))
+                        .catch(err => console.error(`Student Layout - Error joining group: ${err.toString()}`));
+                }
+                // Sau khi kết nối, cập nhật số lượng thông báo trên chuông
+                // Hàm này được định nghĩa trong Views/Student/Notifications/Index.cshtml
+                if (typeof window.updateNotificationBellCount === 'function') {
+                    window.updateNotificationBellCount();
+                }
+            })
+            .catch(err => {
+                console.error("Student Layout - Error connecting to SignalR:", err.toString());
+                toastr.error("Không thể kết nối đến dịch vụ thông báo real-time.", "", { positionClass: 'toast-top-right' });
+            });
+
+        connection.onclose(function(error) {
+            console.log("SignalR disconnected:", error);
+        });
+    });
+</script>

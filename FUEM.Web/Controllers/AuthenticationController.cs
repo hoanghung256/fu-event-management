@@ -43,11 +43,13 @@ namespace FUEM.Web.Controllers
                     int userId = 0;
                     Role? role = Role.Student;
                     string displayName = "Guest";
+                    string avatarPath = "";
                     HttpContext.Session.SetString("Email", email);
                     if (user is Student)
                     {
                         userId = ((Student)user).Id;
                         displayName = ((Student)user).Fullname;
+                        avatarPath = ((Student)user).AvatarPath;
                     }
                     else if (user is Organizer)
                     {
@@ -55,6 +57,7 @@ namespace FUEM.Web.Controllers
                         bool isAdmin = ((Organizer)user).IsAdmin ?? false;
                         role = isAdmin ? Role.Admin : Role.Club;
                         displayName = ((Organizer)user).Acronym;
+                        avatarPath = ((Organizer)user).AvatarPath;
                     }
 
                     var claims = new List<Claim>
@@ -62,8 +65,9 @@ namespace FUEM.Web.Controllers
                         new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                         new Claim(ClaimTypes.Email, email),
                         new Claim(ClaimTypes.Role, role.ToString()),
-                        new Claim(ClaimTypes.GivenName, displayName)
+                        new Claim(ClaimTypes.GivenName, displayName),
                     };
+                    HttpContext.Session.SetString("avatarPath", avatarPath);
                     var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
                     var principal = new ClaimsPrincipal(claimsIdentity);
                     await HttpContext.SignInAsync("Cookies", principal);

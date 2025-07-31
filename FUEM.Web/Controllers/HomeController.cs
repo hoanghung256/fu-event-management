@@ -1,4 +1,4 @@
-using Firebase.Storage;
+﻿using Firebase.Storage;
 using FUEM.Application.Interfaces.CategoryUseCases;
 using FUEM.Application.Interfaces.OrganizerUseCases;
 using FUEM.Domain.Common;
@@ -12,10 +12,8 @@ using FUEM.Web.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Client.Extensions.Msal;
 using System.Diagnostics.Tracing;
+using System.Security.Claims;
 
-
-//using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace FUEM.Web.Controllers
 {
@@ -123,6 +121,5 @@ namespace FUEM.Web.Controllers
 
             return RedirectToAction(nameof(Test));
         }
-
     }
 }

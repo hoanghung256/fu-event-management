@@ -33,6 +33,8 @@ namespace FUEM.Infrastructure
             builder.Services.AddTransient<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddTransient<IStudentRepository, StudentRepository>();
             builder.Services.AddTransient<IFaceEmbeddingRepository, FaceEmbeddingRepository>();
+            builder.Services.AddTransient<INotificationReceiverRepository, NotificationReceiverRepository>();
+            builder.Services.AddTransient<INotificationRepository, NotificationRepository>();
 
             // Utils
             builder.Services.AddTransient<FirebaseStorageService>();

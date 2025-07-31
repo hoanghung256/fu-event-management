@@ -344,6 +344,28 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
-    }
 
+        public async Task<Page<Event>> GetEventsByOrganizerIdAsync(int organizerId, int page, int pageSize)
+        {
+            if(page < 1) page = 1;
+            if(pageSize < 1) pageSize = 10;
+            var query =  _context.Events
+                .Where(e => e.OrganizerId ==  organizerId)
+                .Include(e => e.Category)
+                .Include(e => e.Location)
+                .OrderBy(e => e.DateOfEvent);
+
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            return new Page<Event>
+            {
+                Items = items,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalItems = totalCount
+            };
+        }
+    }
 }

@@ -25,12 +25,12 @@ namespace FUEM.Web
 
             // PAYOS
             builder.Services.AddHttpClient<PayOSService>();
-            PayOSSettings payOSSettings = builder.Configuration.GetSection("PayOS").Get<PayOSSettings>();
+            PayOSSettings? payOSSettings = builder.Configuration.GetSection("PayOS").Get<PayOSSettings>();
             builder.Services.AddSingleton<PayOS>(
                 new PayOS(
-                    payOSSettings.ClientId,
-                    payOSSettings.ApiKey,
-                    payOSSettings.ChecksumKey
+                    payOSSettings.ClientId ?? throw new Exception("Missing PayOS ClientKey"),
+                    payOSSettings.ApiKey ?? throw new Exception("Missing PayOS Api Key"),
+                    payOSSettings.ChecksumKey ?? throw new Exception("Missing PayOS Checksum Key")
                 )
             );
 
@@ -47,9 +47,6 @@ namespace FUEM.Web
                 options.Cookie.IsEssential = true;
             });
             
-            builder.Services.AddScoped<IGetAttendedEvents, GetAttendedEvents>();
-            builder.Services.AddScoped<FUEM.Domain.Interfaces.Repositories.IFeedbackRepository, FUEM.Infrastructure.Persistence.Repositories.FeedbackRepository>();
-            builder.Services.AddScoped<FUEM.Application.Interfaces.UserUseCases.IFeedback, FUEM.Application.UseCases.UserUseCases.FeedbackService>();
             // Get connection string  
             var connectionString = GetConnectionString(builder);
             //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
@@ -126,6 +123,7 @@ namespace FUEM.Web
 
             app.MapHub<ChatHub>("/chatHub");
             //app.MapHub<ChatHub>("/chatHub").RequireCors("AllowFrontend");
+            app.MapHub<NotificationHub>("/notificationHub");
 
 
             app.Run();
@@ -143,9 +141,9 @@ namespace FUEM.Web
 
         private class PayOSSettings()
         {
-            public string ClientId { get; set; }
-            public string ApiKey { get; set; }
-            public string ChecksumKey { get; set; }
+            public string? ClientId { get; set; }
+            public string? ApiKey { get; set; }
+            public string? ChecksumKey { get; set; }
         }
     }
 }

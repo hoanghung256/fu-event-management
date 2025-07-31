@@ -21,8 +21,9 @@ namespace FUEM.Web.Controllers
         private readonly IGetEventForGuest _getEvent;
         private readonly IProcessEvent _processEventUseCase;
         private readonly IGetOrganizedEvents _getOrganizedEvents;
+        private readonly ICompareEventUseCase _compareEventUseCase;
 
-        public ClubController(IGetOrganizer getOrganizerUseCase, IGetRecentEvents getRecentEventsUseCase, IFollowUseCase followUseCase, IGetStudent getStudentUseCase, IEditOrganizer editOrganizerUseCase, IGetEventForGuest getEvent, IProcessEvent processEventUseCase, IGetOrganizedEvents getOrganizedEvents)
+        public ClubController(IGetOrganizer getOrganizerUseCase, IGetRecentEvents getRecentEventsUseCase, IFollowUseCase followUseCase, IGetStudent getStudentUseCase, IEditOrganizer editOrganizerUseCase, ICompareEventUseCase compareEventUseCase, IGetEventForGuest getEvent, IProcessEvent processEventUseCase, IGetOrganizedEvents getOrganizedEvents)
         {
             _getOrganizerUseCase = getOrganizerUseCase;
             _getRecentEventsUseCase = getRecentEventsUseCase;
@@ -32,7 +33,10 @@ namespace FUEM.Web.Controllers
             _getEvent = getEvent;
             _processEventUseCase = processEventUseCase;
             _getOrganizedEvents = getOrganizedEvents;
+            _compareEventUseCase = compareEventUseCase;
         }
+        
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
@@ -130,6 +134,16 @@ namespace FUEM.Web.Controllers
             };
 
             return View(adminDashboardViewModel);
+        }
+
+        [HttpGet("Club/CompareEvents")]
+        public async Task<IActionResult> CompareEvents(int eventId, int? comparedId)
+        {
+            string organizerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var recentOrganizedEvents = await _compareEventUseCase.GetRemainEventAsync(organizerIdStr, eventId, comparedId);
+            ViewBag.RecentOrganizedEvents = recentOrganizedEvents;
+            var eventList = await _compareEventUseCase.CompareEvent(eventId, comparedId);
+            return View(eventList);
         }
     }
 }

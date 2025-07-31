@@ -1,0 +1,125 @@
+﻿@{
+    ViewData["Title"] = "Thông báo của tôi";
+    Layout = "_StudentLayout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Notification List</h4>
+                </div>
+                <div class="card-body">
+                    <div id="notificationsList" class="list-group">
+                        <!-- Thông báo sẽ được tải và hiển thị ở đây -->
+                        <p class="text-center text-muted" id="loadingMessage">Đang tải thông báo...</p>
+                    </div>
+                    <p class="text-center text-muted mt-3" id="noNotificationsMessage" style="display: none;">Bạn chưa có thông báo nào.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            loadNotifications();
+            // Sau khi trang tải, gọi hàm cập nhật số lượng thông báo trên chuông
+            // Hàm này được định nghĩa trong _Layout.cshtml
+            if (typeof window.updateNotificationBellCount === 'function') {
+                window.updateNotificationBellCount();
+            }
+        });
+
+        // Hàm để tải danh sách thông báo từ API
+        function loadNotifications() {
+            $('#loadingMessage').show();
+            $('#noNotificationsMessage').hide();
+            $.ajax({
+                url: "/api/student/notifications", // Gọi API endpoint của StudentNotificationController
+                method: "GET",
+                success: function (data) {
+                    $('#loadingMessage').hide();
+                    if (data && data.length > 0) {
+                        renderNotifications(data);
+                    } else {
+                        $('#noNotificationsMessage').show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#loadingMessage').hide();
+                    console.error("Lỗi khi tải thông báo:", xhr.responseText);
+                    toastr.error("Không thể tải danh sách thông báo.", "Lỗi");
+                    $('#noNotificationsMessage').text("Đã xảy ra lỗi khi tải thông báo.").show();
+                }
+            });
+        }
+
+        // Hàm để render danh sách thông báo ban đầu
+        function renderNotifications(notifications) {
+            var listContainer = $('#notificationsList');
+            listContainer.empty();
+
+            notifications.forEach(function (noti) {
+                appendNotificationToList(noti);
+            });
+        }
+
+        // Hàm để thêm một thông báo vào danh sách (dùng cho cả tải ban đầu và real-time)
+        function appendNotificationToList(noti) {
+            // noti là một đối tượng Notification entity
+            var senderName = noti.sender && noti.sender.fullName ? noti.sender.fullName : "Hệ thống";
+            var sendingTime = new Date(noti.sendingTime).toLocaleString('vi-VN'); // Định dạng thời gian
+
+            var notificationHtml = `
+                <div class="list-group-item list-group-item-action flex-column align-items-start notification-item" data-id="${noti.id}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">${noti.title} <small class="text-muted">(${senderName})</small></h5>
+                        <small class="text-muted">${sendingTime}</small>
+                    </div>
+                    <p class="mb-1">${noti.content}</p>
+                </div>
+            `;
+            $('#notificationsList').prepend(notificationHtml);
+            $('#noNotificationsMessage').hide();
+        }
+
+        window.addRealtimeNotificationToPage = function(notificationData) {
+            // notificationData sẽ là một object Notification entity
+            appendNotificationToList(notificationData);
+            // Có thể thêm hiệu ứng nhấp nháy hoặc highlight nhẹ cho thông báo mới
+        };
+
+        // Hàm cập nhật số lượng thông báo trên biểu tượng chuông (sẽ được gọi từ _Layout.cshtml)
+        // Chúng ta sẽ định nghĩa nó ở đây để nó có thể truy cập được từ _Layout
+        window.updateNotificationBellCount = function() {
+            $.ajax({
+                url: "/api/student/notifications/count",
+                method: "GET",
+                success: function (count) {
+                    var bellSpan = $('#notificationBellCount'); // ID của span hiển thị số lượng trên chuông
+                    if (bellSpan.length > 0) {
+                        if (count > 0) {
+                            bellSpan.text(count).show();
+                        } else {
+                            bellSpan.hide();
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Lỗi khi lấy số lượng thông báo:", xhr.responseText);
+                }
+            });
+        };
+
+        // Hàm này sẽ được gọi từ _Layout.cshtml khi có thông báo real-time
+        // để tăng số lượng trên chuông
+        window.incrementNotificationBellCount = function() {
+            var bellSpan = $('#notificationBellCount');
+            var currentCount = parseInt(bellSpan.text()) || 0;
+            bellSpan.text(currentCount + 1).show();
+        };
+    </script>
+}
