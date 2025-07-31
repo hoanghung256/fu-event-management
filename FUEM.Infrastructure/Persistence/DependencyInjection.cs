@@ -29,6 +29,8 @@ namespace FUEM.Infrastructure.Persistence
             //builder.Services.AddTransient<INotificationReceiverRepository, NotificationRepository>();
             builder.Services.AddTransient<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddTransient<IStudentRepository, StudentRepository>();
+            builder.Services.AddTransient<INotificationReceiverRepository, NotificationReceiverRepository>();
+            builder.Services.AddTransient<INotificationRepository, NotificationRepository>();
 
             builder.Services.AddTransient<FirebaseStorageService>();
             builder.Services.AddTransient<MongoDBService>();

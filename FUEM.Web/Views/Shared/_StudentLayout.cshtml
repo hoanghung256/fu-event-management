@@ -1,5 +1,8 @@
 ﻿@using System.Security.Claims
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewBag.CurrentUserId = HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+}
 <!DOCTYPE html>
 <html class="no-js" lang="en" style="--clr-theme-1: #ff6f00 !important;">
 <head>
@@ -17,66 +20,317 @@
     <link rel="stylesheet" href="@Url.Content("~/theme/css/fontawesome-pro.css")" />
     <link rel="stylesheet" href="@Url.Content("~/theme/css/main.css")" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' /> <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
     <style>
-        body {
-            display: flex; /* Use flexbox for the entire layout */
-            min-height: 100vh; /* Ensure body takes full viewport height */
+        /* --- Custom CSS for Notification Popup --- */
+        .app-notification-bell {
+            position: relative;
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+            .app-notification-bell i {
+                font-size: 24px;
+                color: #333;
+            }
+
+            .app-notification-bell .badge {
+                position: absolute;
+                top: -5px;
+                right: -10px;
+                padding: 5px 8px;
+                border-radius: 50%;
+                background-color: red;
+                color: white;
+                font-size: 12px;
+            }
+
+        .app-notification-popup {
+            position: absolute;
+            top: 100%; /* Position right below the bell icon */
+            right: 0;
+            width: 380px; /* Wider for better readability */
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            max-height: 450px; /* Max height for scrollable content */
+            overflow: scroll; /* Hide overflow */
+            transform-origin: top right;
+            animation: fadeInScale 0.2s ease-out;
+        }
+
+        @@keyframes fadeInScale {
+            from
+
+        {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        }
+
+        .app-notification-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Ensure it takes full height of popup */
+            overflow-x: hidden;
+        }
+
+        .app-notification-detail-modal .modal-body p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #555;
+            /* THÊM CÁC THUỘC TÍNH NÀY ĐỂ VĂN BẢN XUỐNG DÒNG */
+            word-wrap: break-word; /* Đối với các từ dài không có khoảng trắng */
+            overflow-wrap: break-word; /* Tiêu chuẩn hơn cho word-wrap */
+            white-space: normal; /* Đảm bảo văn bản xuống dòng bình thường */
+        }
+
+        /* Đảm bảo span chứa nội dung cũng xuống dòng */
+        .app-notification-detail-modal .modal-body span {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            display: inline-block; /* Đôi khi cần để word-wrap hoạt động trên span */
+            max-width: 100%; /* Đảm bảo span không tràn ra ngoài cha */
+        }
+
+        .app-notification-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0; /* Prevent header from shrinking */
+        }
+
+            .app-notification-header h5 {
+                margin: 0;
+                font-size: 1.1rem;
+                color: #333;
+            }
+
+            .app-notification-header .view-all-link {
+                font-size: 0.9rem;
+                color: #007bff;
+                text-decoration: none;
+            }
+
+                .app-notification-header .view-all-link:hover {
+                    text-decoration: underline;
+                }
+
+        .app-notification-scroll {
+            flex-grow: 1; /* Allow it to take remaining space */
+            overflow-y: auto; /* Enable scrolling for notification list */
+            padding: 0;
+            min-height: 0; /* Crucial for flex items with overflow */
+        }
+
+        .app-notification-list {
+            list-style: none;
+            padding: 0;
             margin: 0;
-            flex-direction: row; /* Sidebar and main content side-by-side */
+        }
+
+        .app-notification-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+            display: block; /* Ensure it behaves like a block for full click area */
+            text-decoration: none; /* Remove underline from link */
+            color: inherit; /* Inherit text color */
+        }
+
+            .app-notification-item:last-child {
+                border-bottom: none;
+            }
+
+            .app-notification-item:hover {
+                background-color: #f5f5f5;
+            }
+
+            .app-notification-item p {
+                margin-bottom: 5px;
+                font-size: 0.95rem;
+                color: #444;
+                /* Truncate long content */
+                display: -webkit-box;
+                -webkit-line-clamp: 2; /* Show maximum 2 lines */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+                .app-notification-item p.notification-title {
+                    font-weight: bold;
+                    color: #333;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+        .app-notification-time {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+            .app-notification-time strong {
+                color: #555;
+            }
+
+        /* --- Notification Detail Modal (New) --- */
+        .app-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            backdrop-filter: blur(3px); /* Blur effect */
+            z-index: 1000; /* Below the modal, above other content */
+            display: none; /* Hidden by default */
+        }
+
+        .app-notification-detail-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1001; /* Above the overlay */
+            width: 90%;
+            max-width: 500px; /* Max width for readability */
+            max-height: 80vh; /* Max height for scrollability */
+            overflow-y: auto; /* Enable scrolling for long content */
+            display: none; /* Hidden by default */
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @@keyframes modalFadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translate(-50%, -45%) scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        }
+
+        .app-notification-detail-modal .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+            .app-notification-detail-modal .modal-header h4 {
+                margin: 0;
+                font-size: 1.4rem;
+                color: #333;
+            }
+
+            .app-notification-detail-modal .modal-header .close-button {
+                background: none;
+                border: none;
+                font-size: 1.8rem;
+                cursor: pointer;
+                color: #666;
+                transition: color 0.2s;
+            }
+
+                .app-notification-detail-modal .modal-header .close-button:hover {
+                    color: #ff6f00;
+                }
+
+        .app-notification-detail-modal .modal-body p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .app-notification-detail-modal .modal-body strong {
+            color: #333;
+        }
+
+        /* General Layout CSS (kept from your original) */
+        body {
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: row;
         }
 
         .expovent__sidebar .logo-details {
             text-align: center;
             margin-bottom: 20px;
-            display: flex; /* Ensure it's a flex container */
-            align-items: center; /* IMPORTANT: Vertically center child items (logo) */
-            justify-content: center; /* Horizontally center child items */
-            min-height: 50px; /* Ensure enough space */
-            /* Add small adjustments to fix misalignment */
-            padding-top: 5px; /* Adjust to push up slightly if needed */
-            padding-bottom: 5px; /* Adjust to push up slightly if needed */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            padding-top: 5px;
+            padding-bottom: 5px;
         }
 
-            /* Ensure small logo and text logo are vertically centered in .logo-details */
             .expovent__sidebar .logo-details .logo__white,
             .expovent__sidebar .logo-details .log__smnall {
-                vertical-align: middle; /* Ensure vertical centering if not flex */
-                /* If still misaligned, consider margin-top/bottom or transform */
+                vertical-align: middle;
             }
 
-            /* Adjust margin for logo__white to prevent misalignment with text logo */
             .expovent__sidebar .logo-details .logo__white {
-                max-width: 60px; /* Size for small logo (fpt icon) */
+                max-width: 60px;
                 height: auto;
                 transition: opacity 0.3s ease, margin-right 0.3s ease;
-                /* Add or adjust margin-right if a small gap is needed between the two logos */
-                margin-right: 5px; /* Small gap between FPT icon and FPT University text */
+                margin-right: 5px;
             }
 
         .expovent__sidebar.collapsed .logo-details .logo__white {
-            margin-right: 0; /* Remove margin when collapsed so icon is centered */
+            margin-right: 0;
         }
 
         .expovent__sidebar.collapsed .logo-details .logo__white {
-            margin-right: 0; /* Remove margin when collapsed so icon is centered */
+            margin-right: 0;
         }
 
-
-        .expovent__sidebar .logo-details .log__smnall { /* "FPT UNIVERSITY" text logo */
-            max-width: 140px; /* Original width */
+        .expovent__sidebar .logo-details .log__smnall {
+            max-width: 140px;
             margin-left: 1rem;
             transition: opacity 0.3s ease, width 0.3s ease, margin-left 0.3s ease;
         }
 
         .expovent__sidebar.collapsed .logo-details .log__smnall {
-            opacity: 0; /* Hide text logo */
-            width: 0; /* Collapse width */
-            margin-left: 0; /* Remove margin */
+            opacity: 0;
+            width: 0;
+            margin-left: 0;
         }
 
         .expovent__sidebar .sidebar__inner {
-            flex-grow: 1; /* Allow menu to take remaining space */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
@@ -85,7 +339,7 @@
             list-style: none;
             padding-left: 0;
             margin: 0;
-            flex-grow: 1; /* Allow menu to push copyright to the bottom */
+            flex-grow: 1;
         }
 
             .expovent__sidebar ul li {
@@ -100,15 +354,14 @@
                     text-decoration: none;
                     border-radius: 8px;
                     transition: background-color 0.3s ease, padding 0.3s ease;
-                    white-space: nowrap; /* Prevent text from wrapping */
-                    overflow: hidden; /* Hide text when collapsed */
-                    justify-content: flex-start; /* Default align left */
+                    white-space: nowrap;
+                    overflow: hidden;
+                    justify-content: flex-start;
                 }
 
-        /* Center icon when sidebar is collapsed */
         .expovent__sidebar.collapsed ul li a {
-            justify-content: center; /* Center icon */
-            padding: 10px 0; /* Adjust horizontal padding when collapsed */
+            justify-content: center;
+            padding: 10px 0;
         }
 
         .expovent__sidebar ul li a i {
@@ -118,49 +371,45 @@
         }
 
         .expovent__sidebar.collapsed ul li a i {
-            margin-right: 0; /* Remove margin to fully center icon */
+            margin-right: 0;
         }
 
         .expovent__sidebar ul li a:hover {
             background-color: #ff6f00;
-            padding-left: 18px; /* Padding effect on hover */
+            padding-left: 18px;
         }
 
         .expovent__sidebar.collapsed ul li a:hover {
-            padding-left: 0; /* No extra padding when collapsed and hovered */
+            padding-left: 0;
         }
-
 
         .expovent__sidebar.collapsed .nav-text {
             opacity: 0;
             width: 0;
-            display: none; /* Fully hide text */
+            display: none;
         }
 
-        /* --- Footer (Copyright) Alignment Fix --- */
         .sidebar__copyright {
             text-align: center;
-            padding-top: 20px; /* Space above copyright */
+            padding-top: 20px;
             padding-bottom: 10px;
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.7);
-            width: 100%; /* Ensure it takes full width of sidebar */
-            background-color: #000; /* Ensure background matches sidebar */
-            margin-top: auto; /* Push copyright to the bottom of the flex container (sidebar__inner) */
-            transition: opacity 0.3s ease, height 0.3s ease, padding 0.3s ease; /* Transition effect */
-            box-sizing: border-box; /* Ensure padding doesn't overflow width */
+            width: 100%;
+            background-color: #000;
+            margin-top: auto;
+            transition: opacity 0.3s ease, height 0.3s ease, padding 0.3s ease;
+            box-sizing: border-box;
         }
 
         .expovent__sidebar.collapsed .sidebar__copyright {
-            opacity: 0; /* Hide copyright when collapsed */
-            height: 0; /* Collapse height */
-            overflow: hidden; /* Prevent content overflow when height = 0 */
-            padding-top: 0; /* Remove padding when hidden */
-            padding-bottom: 0; /* Remove padding when hidden */
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
         }
 
-
-        /* --- Main Content Area --- */
         .page__body-wrapper {
             flex-grow: 1;
             display: flex;
@@ -169,7 +418,6 @@
             overflow-x: hidden;
         }
 
-        /* --- Header Styling --- */
         .app__header__area {
             background: white;
             padding: 10px 20px;
@@ -211,7 +459,6 @@
                 transform: scale(1.1);
             }
 
-
         .bar-icon-2 span {
             display: block;
             width: 25px;
@@ -221,11 +468,9 @@
             transition: 0.3s;
         }
 
-        /* --- Right alignment for profile --- */
         .app__header-right {
-            display: flex; /* Ensure it's a flex container */
-            align-items: center; /* Vertically center items inside */
-            /* margin-left: auto; */ /* Usually not needed if justify-content: space-between works well */
+            display: flex;
+            align-items: center;
         }
 
         .user__portfolio {
@@ -235,13 +480,12 @@
             padding: 5px 10px;
             border-radius: 5px;
             transition: background-color 0.2s;
-            position: relative; /* Important for dropdown positioning */
+            position: relative;
         }
 
             .user__portfolio:hover {
                 background-color: #f1f1f1;
             }
-
 
         .user__portfolio-thumb img {
             width: 40px;
@@ -332,40 +576,41 @@
                     <li>
                         <a class="asidebar" href="@Url.Action("Index", "Home")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-house"></i>
-                            <span class="nav-text ">Home</span>
+                            <span class="nav-text">Home</span>
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar" href="@Url.Action("Index", "AttendedEvents")" aria-expanded="false" style="text-decoration: none;">
-                            <i class="fa-solid fa-calendar-check"></i>
-                            <span class="nav-text">Attended Events</span>
+                        <a class="asidebar" href="@Url.Action("MyCalendar", "Student")" aria-expanded="false" style="text-decoration: none;">
+                            <i class="fa-solid fa-calendar"></i>
+                            <span class="nav-text">My Calendar</span>
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar" href="@Url.Action("StudentCalendar", "Student")" aria-expanded="false" style="text-decoration: none;">
-                            <i class="fa-solid fa-file-signature"></i>
-                            <span class="nav-text">Registered Events</span>
+                        <a class="asidebar" href="@Url.Action("Index", "EventRegistration")" aria-expanded="false" style="text-decoration: none;">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <span class="nav-text">Events</span>
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar" href="@Url.Action("Profile", "Student")" aria-expanded="false" style="text-decoration: none;">
-                            <i class="fa-solid fa-user"></i>
-                            <span class="nav-text">Profile</span>
+                        <a class="asidebar" href="@Url.Action("Index", "Club")" aria-expanded="false" style="text-decoration: none;">
+                            <i class="fa-solid fa-users"></i>
+                            <span class="nav-text">Clubs</span>
                         </a>
                     </li>
                     <li>
                         <a class="asidebar" href="@Url.Action("SignOut", "Authentication")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-right-from-bracket"></i>
-                            <span class="nav-text">Log out</span>
+                            <span class="nav-text">Logout</span>
                         </a>
                     </li>
                 </ul>
-                <div class="sidebar__copyright">
-                    <p>Copyright FUEM 2025</p>
-                </div>
             </div>
         </div>
+        <div class="sidebar__copyright">
+            <p>Copyright FUEM 2025</p>
+        </div>
     </div>
+
     <div class="page__body-wrapper">
         <div class="app__header__area">
             <div class="app__header-left">
@@ -373,12 +618,35 @@
                     <i class="fa-solid fa-bars"></i>
                 </a>
             </div>
-
             <div class="app__header-right">
+                <div class="app-notification-bell">
+                    <a href="javascript:void(0);" id="appNotificationBellLink" style="text-decoration: none; color: inherit;">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="badge badge-danger" id="appNotificationBellCount" style="display: none;">0</span>
+                    </a>
+
+                    <!-- Notification Popup HTML (using new classes) -->
+                    <div class="app-notification-popup" id="appNotificationPopup">
+                        <div class="app-notification-card">
+                            <div class="app-notification-header">
+                                <div class="app-notification-inner">
+                                    <h5>Notifications</h5>
+                                </div>
+                                <a href="@Url.Action("Index", "StudentNotification")" class="view-all-link">View All</a>
+                            </div>
+                            <div class="app-notification-scroll">
+                                <ul id="appNotificationPopupList">
+                                    <!-- Notifications will be loaded here -->
+                                    <p class="text-center text-muted p-3" id="appLoadingPopupMessage">Đang tải thông báo...</p>
+                                    <p class="text-center text-muted p-3" id="appNoPopupNotificationsMessage" style="display: none;">Bạn chưa có thông báo nào.</p>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="nav-item p-relative">
                     <div class="dropdown">
-                        <!-- Trigger -->
                         <a id="userportfolio"
                            href="#"
                            class="user__portfolio dropdown-toggle"
@@ -397,7 +665,6 @@
                             </div>
                         </a>
 
-                        <!-- Dropdown Menu -->
                         <ul class="dropdown-menu">
                             <li>
                                 <a class="dropdown-item" href="@Url.Action("Profile", "Student")" style="text-decoration: none;">
@@ -443,42 +710,326 @@
         </div>
     </div>
 
-    <script src="~/theme/js/jquery-3.6.0.min.js"></script>
-    <script src="~/theme/js/bootstrap.bundle.min.js"></script>
-    <script src="~/theme/js/metisMenu.min.js"></script>
-    <script src="~/theme/js/meanmenu.min.js"></script>
-    <script src="~/theme/js/swiper-bundle.min.js"></script>
-    <script src="~/theme/js/slick.min.js"></script>
-    <script src="~/theme/js/backtotop.js"></script>
-    <script src="~/theme/js/magnific-popup.min.js"></script>
-    <script src="~/theme/js/wow.min.js"></script>
-    <script src="~/theme/js/main.js"></script>
+    <!-- Notification Detail Modal HTML -->
+    <div class="app-modal-overlay" id="appModalOverlay"></div>
+    <div class="app-notification-detail-modal" id="appNotificationDetailModal">
+        <div class="modal-header">
+            <h4 id="detailTitle"></h4>
+            <button type="button" class="close-button" id="detailCloseButton">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p><strong>Content:</strong> <span id="detailContent"></span></p>
+            <p><strong>Sender:</strong> <span id="detailSender"></span></p>
+            <p><strong>Time:</strong> <span id="detailTime"></span></p>
+        </div>
+    </div>
+
+    <script src="@Url.Content("~/theme/js/jquery-3.6.0.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/bootstrap.bundle.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/metisMenu.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/meanmenu.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/swiper-bundle.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/slick.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/backtotop.js")"></script>
+    <script src="@Url.Content("~/theme/js/magnific-popup.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/wow.min.js")"></script>
+    <script src="@Url.Content("~/theme/js/main.js")"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     @await Html.PartialAsync("_ToastSetUp")
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script> <!-- FullCalendar JS -->
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/vi.global.min.js'></script> <!-- Ngôn ngữ tiếng Việt -->
+
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/vi.global.min.js'></script>
+
+    @* Render các section Scripts từ các View con trước *@
     @await RenderSectionAsync("Scripts", required: false)
 
+    <!-- SignalR Client JS -->
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+
+    <!-- SignalR Client Setup Script (Consolidated) -->
     <script>
         $(document).ready(function () {
+            // Khởi tạo metisMenu
             $('#menu').metisMenu();
 
-            // Toggle sidebar
+            // Toggle thu gọn sidebar
             $('#sidebar__active').on('click', function () {
                 $('.expovent__sidebar').toggleClass('collapsed');
             });
 
-            // Handle user dropdown
+            // Dropdown user
             $('#userportfolio').on('click', function (e) {
-                e.preventDefault(); // Prevent default link behavior
-                e.stopPropagation(); // Prevent event propagation to avoid immediate closing
-                $('.user__dropdown').toggle(); // Toggle dropdown visibility
+                e.preventDefault();
+                e.stopPropagation();
+                $('.user__dropdown').toggle();
             });
 
-            // Close dropdown when clicking outside
             $(document).on('click', function (e) {
                 if (!$(e.target).closest('.nav-item.p-relative').length) {
                     $('.user__dropdown').hide();
                 }
+            });
+
+            // --- Logic cho Notification Popup ---
+            const appNotificationBellLink = $('#appNotificationBellLink');
+            const appNotificationPopup = $('#appNotificationPopup');
+            const appNotificationPopupList = $('#appNotificationPopupList');
+            const appLoadingPopupMessage = $('#appLoadingPopupMessage');
+            const appNoPopupNotificationsMessage = $('#appNoPopupNotificationsMessage');
+
+            let cachedNotifications = []; // To store notifications for detail view
+
+            console.log("Notification elements selected:", {
+                bellLinkExists: appNotificationBellLink.length > 0,
+                popupExists: appNotificationPopup.length > 0,
+                isPopupInitiallyHidden: appNotificationPopup.is(':hidden')
+            });
+
+            appNotificationBellLink.on('click', async function(e) {
+                console.log("Notification bell clicked!");
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (appNotificationPopup.is(':visible')) {
+                    console.log("Popup is visible, hiding it.");
+                    appNotificationPopup.hide();
+                } else {
+                    console.log("Popup is hidden, showing it and loading notifications.");
+                    appNotificationPopup.show();
+                    await loadNotificationsForPopup();
+                    $('#appNotificationBellCount').hide().text('0');
+                }
+            });
+
+            // Close popup when clicking outside (excluding the detail modal and its overlay)
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.app-notification-bell').length &&
+                    !$(e.target).closest('.app-notification-detail-modal').length &&
+                    !$(e.target).closest('.app-modal-overlay').length) {
+                    if (appNotificationPopup.is(':visible')) {
+                        console.log("Click outside, hiding popup.");
+                        appNotificationPopup.hide();
+                    }
+                }
+            });
+
+            async function loadNotificationsForPopup() {
+                appLoadingPopupMessage.show();
+                appNoPopupNotificationsMessage.hide();
+                appNotificationPopupList.empty(); // Clear existing content
+
+                try {
+                    const response = await fetch("/api/student/notifications", {
+                        method: "GET",
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const data = await response.json();
+                    cachedNotifications = data; // Store fetched data
+
+                    appLoadingPopupMessage.hide();
+                    data.reverse();
+                    if (data && data.length > 0) {
+                        data.forEach(function(noti) { // for(let i = data.length - 1)
+                            appendNotificationToPopup(noti);
+                        });
+                    } else {
+                        appNoPopupNotificationsMessage.show();
+                    }
+                } catch (error) {
+                    appLoadingPopupMessage.hide();
+                    console.error("Lỗi khi tải thông báo cho popup:", error);
+                    toastr.error("Đã xảy ra lỗi khi tải thông báo.");
+                    appNoPopupNotificationsMessage.text("Đã xảy ra lỗi khi tải thông báo.").show();
+                }
+            }
+
+            // Function to add a notification to the popup list
+            window.appendNotificationToPopup = function(noti) {
+                const senderName = noti.sender && noti.sender.fullName ? noti.sender.fullName : "System";
+                const formattedTime = new Date(noti.sendingTime).toLocaleString('vi-VN');
+
+                const notificationHtml = `
+                    <li class="app-notification-item" data-id="${noti.id}">
+                        <p class="notification-title">${noti.title}</p>
+                        <p>${noti.content}</p>
+                        <div class="app-notification-time">
+                            <span>${formattedTime}</span>
+                            <span class="status"><strong>${senderName}</strong></span>
+                        </div>
+                        <hr/>
+                    </li>
+                `;
+                appNotificationPopupList.prepend(notificationHtml);
+                appNoPopupNotificationsMessage.hide();
+            };
+
+            // Function to update the notification bell count
+            window.updateNotificationBellCount = function() {
+                $.ajax({
+                    url: "/api/student/notifications/count",
+                    method: "GET",
+                    success: function (count) {
+                        var bellSpan = $('#appNotificationBellCount');
+                        if (bellSpan.length > 0) {
+                            if (count > 0) {
+                                bellSpan.text(count).show();
+                            } else {
+                                bellSpan.hide();
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Lỗi khi lấy số lượng thông báo:", xhr.responseText);
+                    }
+                });
+            };
+
+            // This function will be called by SignalR to increment the bell count
+            window.incrementNotificationBellCount = function() {
+                var bellSpan = $('#appNotificationBellCount');
+                var currentCount = parseInt(bellSpan.text()) || 0;
+                bellSpan.text(currentCount + 1).show();
+            };
+
+            // --- Notification Detail Modal Logic (New) ---
+            const appNotificationDetailModal = $('#appNotificationDetailModal');
+            const appModalOverlay = $('#appModalOverlay');
+            const detailCloseButton = $('#detailCloseButton');
+
+            // Event listener for clicking on a notification item in the popup
+            appNotificationPopupList.on('click', '.app-notification-item', function() {
+                console.log("Notification item clicked. Data ID:", $(this).data('id'));
+                const notificationId = $(this).data('id');
+                const clickedNotification = cachedNotifications.find(noti => {
+                    // Ensure comparison is type-safe if IDs might be different types (e.g., number vs string)
+                    console.log(`Comparing clicked ID ${notificationId} (type ${typeof notificationId}) with cached ID ${noti.id} (type ${typeof noti.id})`);
+                    return String(noti.id) === String(notificationId); // Use String() to ensure consistent comparison
+                });
+
+                if (clickedNotification) {
+                    console.log("Found clicked notification:", clickedNotification);
+                    showNotificationDetail(clickedNotification);
+                } else {
+                    console.warn("Clicked notification not found in cache for ID:", notificationId);
+                    toastr.error("Không tìm thấy chi tiết thông báo.");
+                }
+            });
+
+            function showNotificationDetail(notification) {
+                console.log("Attempting to show detail modal for notification:", notification);
+                $('#detailTitle').text(notification.title);
+                $('#detailContent').text(notification.content);
+                $('#detailSender').text(notification.sender && notification.sender.fullName ? notification.sender.fullName : "Hệ thống");
+                $('#detailTime').text(new Date(notification.sendingTime).toLocaleString('vi-VN'));
+
+                appModalOverlay.show();
+                appNotificationDetailModal.show();
+                console.log("Detail modal and overlay show commands executed.");
+            }
+
+            // Close detail modal when clicking on overlay or close button
+            appModalOverlay.on('click', function() {
+                console.log("Overlay clicked, hiding detail modal.");
+                appNotificationDetailModal.hide();
+                appModalOverlay.hide();
+            });
+
+            detailCloseButton.on('click', function() {
+                console.log("Close button clicked, hiding detail modal.");
+                appNotificationDetailModal.hide();
+                appModalOverlay.hide();
+            });
+
+
+            // --- SignalR Client Setup ---
+            var currentUserId = @Html.Raw(Json.Serialize(ViewBag.CurrentUserId));
+            console.log("Student Layout - Current User ID (from layout script):", currentUserId);
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notificationHub")
+                .withAutomaticReconnect()
+                .build();
+
+            // Register method to receive notifications from the server
+            connection.on("ReceiveNotification", function (title, message, notificationId) {
+                toastr.info(`${message}`, `${title}`, { timeOut: 10000, positionClass: 'toast-top-right' });
+                console.log(`Thông báo real-time: ${title} - ${message}, ID: ${notificationId}`);
+
+                const newNotificationData = {
+                    id: notificationId,
+                    title: title,
+                    content: message,
+                    sendingTime: new Date().toISOString(),
+                    sender: { fullName: "Admin" }
+                };
+
+                // Add to cached notifications
+                cachedNotifications.unshift(newNotificationData); // Add to the beginning
+
+                if (appNotificationPopup.is(':visible')) {
+                    console.log("Popup hiển thị, thêm thông báo real-time vào popup.");
+                    if (typeof window.appendNotificationToPopup === 'function') {
+                        window.appendNotificationToPopup(newNotificationData);
+                    }
+                } else {
+                    console.log("Popup ẩn, tăng số lượng chuông.");
+                    if (typeof window.incrementNotificationBellCount === 'function') {
+                        window.incrementNotificationBellCount();
+                    }
+                }
+            });
+
+            // Register method to receive general messages
+            connection.on("ReceiveMessage", function (title, message, notificationId) {
+                toastr.success(`${message}`, `${title}`, { timeOut: 5000, positionClass: 'toast-top-right' });
+                console.log(`Tin nhắn chung real-time: ${title} - ${message}, ID: ${notificationId}`);
+
+                const newNotificationData = {
+                    id: notificationId,
+                    title: title,
+                    content: message,
+                    sendingTime: new Date().toISOString(),
+                    sender: { fullName: "Admin" }
+                };
+
+                // Add to cached notifications
+                cachedNotifications.unshift(newNotificationData); // Add to the beginning
+
+                if (appNotificationPopup.is(':visible')) {
+                    console.log("Popup hiển thị, thêm tin nhắn real-time vào popup.");
+                    if (typeof window.appendNotificationToPopup === 'function') {
+                        window.appendNotificationToPopup(newNotificationData);
+                    }
+                } else {
+                    console.log("Popup ẩn, tăng số lượng chuông cho tin nhắn.");
+                    if (typeof window.incrementNotificationBellCount === 'function') {
+                        window.incrementNotificationBellCount();
+                    }
+                }
+            });
+
+            connection.start()
+                .then(() => {
+                    console.log("Student Layout - SignalR Connected!");
+                    if (currentUserId) {
+                        connection.invoke("JoinGroup", `User_${currentUserId}`)
+                            .then(() => console.log(`Student Layout - Joined group: User_${currentUserId}`))
+                            .catch(err => console.error(`Student Layout - Error joining group: ${err.toString()}`));
+                    }
+                    if (typeof window.updateNotificationBellCount === 'function') {
+                        window.updateNotificationBellCount();
+                    }
+                })
+                .catch(err => {
+                    console.error("Student Layout - Error connecting to SignalR:", err.toString());
+                    toastr.error("Không thể kết nối đến dịch vụ thông báo real-time.", "", { positionClass: 'toast-top-right' });
+                });
+
+            connection.onclose(function(error) {
+                console.log("SignalR disconnected:", error);
             });
         });
     </script>

@@ -110,6 +110,7 @@ namespace FUEM.Web
 
             app.MapHub<ChatHub>("/chatHub");
             //app.MapHub<ChatHub>("/chatHub").RequireCors("AllowFrontend");
+            app.MapHub<NotificationHub>("/notificationHub");
 
 
             app.Run();
