@@ -37,7 +37,7 @@ namespace FUEM.Web.Controllers
                 eventsPage = await _getOrganizedEventsUseCase.GetOrganizedEventsForOrganizerAsync(organizedId, pageNumber, 10);
             }
 
-            return View("~/Views/Home/OrganizedEvent.cshtml", eventsPage);
+            return View($"~/Views/{User.FindFirstValue(ClaimTypes.Role)}/OrganizedEvent.cshtml", eventsPage);
         }
     }
 }

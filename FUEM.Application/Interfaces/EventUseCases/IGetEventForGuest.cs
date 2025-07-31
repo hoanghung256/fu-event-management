@@ -14,5 +14,8 @@ namespace FUEM.Application.Interfaces.EventUseCases
         Task<Page<Event>> GetEventForGuestAsync(int page = 1, int pageSize = 10);
         Task<Page<Event>> SearchEventAsync(SearchEventCriteria? criteria, int page = 1, int pageSize = 10);
         Task<Event?> GetEventByIdAsync(int id);
+        Task<Page<Event>> GetUpcomingEventForAdminAsync(int page = 1, int pageSize = 10);
+
+        Task<Page<Event>> GetUpcomingEventForOrganizerAsync(int organizerId, int page = 1, int pageSize = 10);
     }
 }

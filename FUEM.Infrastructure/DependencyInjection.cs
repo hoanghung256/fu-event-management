@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using FUEM.Infrastructure.Common;
+using FUEM.Domain.Entities;
+using FUEM.Infrastructure.Common.FaceRecognization;
 
-namespace FUEM.Infrastructure.Persistence
+namespace FUEM.Infrastructure
 {
     public static class DependencyInjection
     {
         public static IHostApplicationBuilder AddRepositories(this IHostApplicationBuilder builder)
         {
+            // Repositories
             builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
             builder.Services.AddTransient<IChatRepository, ChatRepository>();
             builder.Services.AddTransient<IEventCollaboratorRepository, EventCollaboratorRepository>();
@@ -29,8 +32,25 @@ namespace FUEM.Infrastructure.Persistence
             //builder.Services.AddTransient<INotificationReceiverRepository, NotificationRepository>();
             builder.Services.AddTransient<IOrganizerRepository, OrganizerRepository>();
             builder.Services.AddTransient<IStudentRepository, StudentRepository>();
+            builder.Services.AddTransient<IFaceEmbeddingRepository, FaceEmbeddingRepository>();
+            builder.Services.AddTransient<INotificationReceiverRepository, NotificationReceiverRepository>();
+            builder.Services.AddTransient<INotificationRepository, NotificationRepository>();
 
+            // Utils
             builder.Services.AddTransient<FirebaseStorageService>();
+            builder.Services.AddSingleton<FaceRecognizeService>(provider =>
+            {
+                try
+                {
+                    return new FaceRecognizeService();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ONNX model failed to load: " + ex.Message);
+                    return null;
+                }
+            });
+            builder.Services.AddTransient<FacePreprocessor>();
             builder.Services.AddTransient<MongoDBService>();
             builder.Services.AddTransient<PayOSService>();
 

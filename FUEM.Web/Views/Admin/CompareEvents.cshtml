@@ -50,7 +50,7 @@
                                                         <div class="tab-pane fade show active">
                                                             <div class="about__content mt-30">
                                                                 <h4>About This Event</h4>
-                                                                <p>@mainEvent.Description</p>
+                                                                <p>@Html.Raw(mainEvent.Description ?? "")</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -123,7 +123,7 @@
                                             </div>
                                         </div>
                                         <div class="card-body">
-                                            <div class="scroll-w-3 card__scroll">
+                                            <div class="scroll-w-3 card__scroll" style="max-height: 400px; overflow-y: auto;">
                                                 <div class="card__inner">
                                                     @if (!recentEvents.Any())
                                                     {
@@ -143,12 +143,12 @@
                                                                         </div>
                                                                         <div class="news__meta">
                                                                             <div class="news__meta-status">
-                                                                                <span><i class="flaticon-clock"></i></span>
-                                                                                <span>@e.DateOfEvent?.ToString("yyyy-MM-dd")</span>
+                                                                                <span><i class="fa fa-clock"></i></span>
+                                                                                <span>@e.DateOfEvent?.ToString("MM-dd-yyyy")</span>
                                                                             </div>
                                                                             <div class="news__meta-status">
-                                                                                <span><i class="flaticon-placeholder-1"></i></span>
-                                                                                <span>@e.Location?.LocationDescription</span>
+                                                                                <span><i class="fa-solid fa-location-dot"></i></span>
+                                                                                <span>@e.Location?.LocationName</span>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -168,6 +168,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </section>
 
 @section Scripts {
@@ -178,8 +179,13 @@
             labels: ['Total Registered', 'Total Guest', 'Total Collaborator', 'Total Cancel Guest'],
             datasets: [
                 {
-                    label: @mainEvent.Fullname,
-                    data: [@mainEvent.GuestRegisterCount, @mainEvent.GuestAttendedCount, @mainEvent.CollaboratorRegisterCount, @mainEvent.GuestRegisterCancelCount],
+                    label: "@Html.Raw(mainEvent.Fullname ?? "")",
+                    data: [
+        @mainEvent.GuestRegisterCount,
+        @mainEvent.GuestAttendedCount,
+        @mainEvent.CollaboratorRegisterCount,
+        @mainEvent.GuestRegisterCancelCount
+                    ],
                     backgroundColor: 'rgba(64,81,137,0.5)',
                     borderColor: 'rgba(64,81,137,1)',
                     borderWidth: 1
@@ -187,13 +193,13 @@
         @if (compareEvent != null)
         {
             <text>
-                        {
-                            label: @compareEvent.Fullname,
-                        data: [@compareEvent.GuestRegisterCount, @compareEvent.GuestAttendedCount, @compareEvent.CollaboratorRegisterCount, @compareEvent.GuestRegisterCancelCount],
-                        backgroundColor: 'rgba(255, 159, 64, 0.5)',
-                        borderColor: 'rgba(255, 159, 64, 1)',
-                        borderWidth: 1
-                            }
+                            {
+                            label: "@Html.Raw(compareEvent.Fullname ?? "")",
+                            data: [@compareEvent.GuestRegisterCount, @compareEvent.GuestAttendedCount, @compareEvent.CollaboratorRegisterCount, @compareEvent.GuestRegisterCancelCount],
+                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            borderWidth: 1
+                                }
             </text>
         }
                     ]

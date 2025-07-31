@@ -1,0 +1,167 @@
+﻿@using FUEM.Web.Controllers;
+@using FUEM.Domain.Common;
+@model dynamic
+@{
+    ViewData["Title"] = "Send Notification";
+    Layout = "_AdminLayout";
+}
+<div class="container-fluid">
+    <div class="breadcrumb__area">
+        <div class="breadcrumb__wrapper mb-35">
+            <div class="breadcrumb__main">
+                <div class="breadcrumb__inner">
+                    <div class="breadcrumb__icon">
+                        <i class="flaticon-home"></i>
+                    </div>
+                    <div class="breadcrumb__menu">
+                        <nav>
+                            <ul>
+                                <li><span><a href="">Dashboard</a></span></li>
+                                <li class="active"><span>Send Notification</span></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Send new notification</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
+
+                    <form id="notificationForm" class="p-4 border rounded shadow-sm bg-white">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title of Notification:</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="messageContent" class="form-label">Content of notification:</label>
+                            <textarea class="form-control" id="messageContent" name="message" rows="3" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="targetType" class="form-label">Gửi tới:</label>
+                            <select class="form-select" id="targetType" name="targetType" required>
+                                <option value="">-- Choose recipents --</option>
+                                <option value="AllStudents">All Students</option>
+                                <option value="SpecificEvent">Guest of an event</option>
+                                <option value="ClubPresidents">All club presidents</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="eventSelectContainer" style="display: none;">
+                            <label for="eventId" class="form-label">Choose event:</label>
+                            <select class="form-select" id="eventId" name="eventId">
+                                <option value="">-- Select Event --</option>
+                                @{
+                                    var eventsPage = ViewBag.Events;
+                                }
+                                @if (eventsPage != null && eventsPage != null)
+                                {
+                                    foreach (var ev in eventsPage)
+                                    {
+                                        <option value="@ev.Id">@ev.Fullname</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-outline-warning search-btn">Send Notification</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            const targetTypeSelect = document.getElementById('targetType');
+            const eventSelectContainer = document.getElementById('eventSelectContainer');
+            const notificationForm = document.getElementById('notificationForm');
+            const eventIdSelect = document.getElementById('eventId'); // Lấy element select eventId
+
+            // Ẩn/hiện dropdown chọn sự kiện dựa trên lựa chọn "Gửi đến"
+            targetTypeSelect.addEventListener('change', function() {
+                if (this.value === 'SpecificEvent') {
+                    eventSelectContainer.style.display = 'block';
+                    eventIdSelect.setAttribute('required', 'required');
+                } else {
+                    eventSelectContainer.style.display = 'none';
+                    eventIdSelect.removeAttribute('required');
+                    eventIdSelect.value = '';
+                }
+            });
+
+            // Xử lý khi form được gửi
+            notificationForm.addEventListener('submit', async function(event) {
+                event.preventDefault(); // Ngăn chặn hành vi submit mặc định của form
+
+                const title = document.getElementById('title').value; // Lấy giá trị title
+                const message = document.getElementById('messageContent').value;
+                const targetType = targetTypeSelect.value;
+                let eventId = null;
+
+                if (targetType === 'SpecificEvent') {
+                    eventId = eventIdSelect.value; // Lấy giá trị từ select eventId
+                    if (!eventId) {
+                        toastr.error('Vui lòng chọn một sự kiện.');
+                        return;
+                    }
+                }
+
+                if (!title || !message) { // Kiểm tra cả title và message
+                    toastr.error('Tiêu đề và nội dung thông báo không được để trống.');
+                    return;
+                }
+                if (!targetType) {
+                    toastr.error('Vui lòng chọn đối tượng nhận thông báo.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/AdminNotification/SendNotification', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            title: title, // Thêm title vào body
+                            message: message,
+                            targetType: targetType,
+                            eventId: eventId
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        toastr.success(result.message);
+                        notificationForm.reset(); // Reset form sau khi gửi thành công
+                        eventSelectContainer.style.display = 'none'; // Ẩn lại dropdown sự kiện
+                        eventIdSelect.value = ''; // Reset giá trị select eventId
+                    } else {
+                        toastr.error(result.message || 'Có lỗi xảy ra khi gửi thông báo.');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi gửi thông báo:', error);
+                    toastr.error('Lỗi kết nối hoặc server. Vui lòng thử lại.');
+                }
+            });
+        });
+    </script>
+}

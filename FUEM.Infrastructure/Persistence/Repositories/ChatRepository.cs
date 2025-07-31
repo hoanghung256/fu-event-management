@@ -40,7 +40,7 @@ namespace FUEM.Infrastructure.Persistence.Repositories
         {
             var chatGroup = await _context.ChatGroupMembers.Find(g => g.StudentId == studentId).ToListAsync();
             var groupIds = chatGroup.Select(g => g.GroupId).ToList();
-            return await _context.ChatGroups.Find(g => groupIds.Contains(g.Id)).ToListAsync();
+            return await _context.ChatGroups.Find(g => groupIds.Contains(g.Id) && !g.IsHidden).ToListAsync();
         }
 
         public async Task<ChatGroup> GetChatGroupByNameAsync(string groupName)

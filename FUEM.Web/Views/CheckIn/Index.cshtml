@@ -1,0 +1,343 @@
+﻿@model Event;
+
+<style>
+    body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        background-color: #f3f4f6;
+        color: #1f2937;
+    }
+
+    .header-text h2 {
+        font-size: 3rem;
+        font-weight: 800;
+        font-family: "DynaPuff", cursive;
+        color: #f2711f;
+        animation: pulse 2s infinite;
+    }
+
+    .event-info {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        padding: 25px 30px;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        color: #1f2937;
+    }
+
+        .event-info p {
+            margin: 10px 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+    #video {
+        margin-top: 20px;
+        border-radius: 12px;
+        border: 2px solid rgba(30, 64, 175, 0.3);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 10px 5px;
+        transition: background 0.3s ease, transform 0.2s;
+    }
+
+    .btn-check-in {
+        background-color: #f2711f;
+        color: white;
+    }
+
+        .btn-check-in:hover {
+            background-color: #f2711f;
+            color: white;
+            transform: scale(1.05);
+        }
+
+    /* --- MODAL --- */
+    .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .custom-modal {
+        background: #ffffff;
+        color: #1f2937;
+        padding: 30px;
+        width: 90%;
+        max-width: 500px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        animation: fadeInUp 0.4s ease forwards;
+    }
+
+    .custom-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .custom-modal-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .custom-close-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        color: #ef4444;
+        cursor: pointer;
+    }
+
+    .custom-modal-body p {
+        margin: 10px 0;
+        font-size: 1.1rem;
+    }
+
+    .custom-modal-footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .custom-btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .custom-btn.success {
+            background-color: #10b981;
+            color: #fff;
+        }
+
+        .custom-btn.warning {
+            background-color: #fe6f00;
+            color: #fff;
+        }
+
+        .custom-btn:hover {
+            opacity: 0.95;
+            transform: scale(1.03);
+        }
+
+    #checkInMessage {
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+
+    @@keyframes fadeInUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @@keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+</style>
+
+
+<section>
+    <div class="container d-flex align-items-center justify-content-center min-vh-100">
+        <div class="card shadow-lg p-4" style="max-width: 800px; width: 100%; background-color: rgba(255, 255, 255, 0.95); border-radius: 20px;">
+            <div class="card-body text-center">
+                <h2 class="fw-bold mb-4 animate__animated animate__fadeInDown" style="color: #f2711f;">Face Check-in</h2>
+                <div class="d-flex flex-column align-items-center">
+                    <video id="video" width="100%" autoplay playsinline muted></video>
+                    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+                    <button id="snap" class="btn btn-check-in mb-3 px-4 py-2">Verify</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Student Modal -->
+<div class="custom-modal-overlay" id="studentInfoModal" aria-labelledby="studentInfoLabel" aria-hidden="true">
+    <div class="custom-modal">
+        <!-- Header -->
+        <div class="custom-modal-header">
+            <h5 class="custom-modal-title" id="studentInfoLabel">Student Information</h5>
+            <button type="button" class="custom-close-btn" onclick="closeModal()">×</button>
+        </div>
+        <!-- Body -->
+        <div class="custom-modal-body">
+            <p><strong>Name:</strong> <span id="studentName"></span></p>
+            <p><strong>Email:</strong> <span id="studentEmail"></span></p>
+            <p><strong>Check-in Time:</strong> <span id="checkInTime"></span></p>
+        </div>
+
+        <!-- Footer -->
+        <div class="custom-modal-footer">
+            <form id="checkinForm">
+                <input type="hidden" name="eventId" id="formEventId" value="@Model.Id" />
+                <input type="hidden" name="studentId" id="formStudentId" />
+
+                <button type="button" class="custom-btn success" onclick="checkIn(@Model.Id)">Check-in</button>
+                <button id="notMeBtn"  type="button" class="custom-btn warning" onclick="closeModal()">Not Me?</button>
+                <button id="retryBtn" type="button" class="custom-btn warning" style="display: none;" onclick="closeModal()">Retry!</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    setInterval(displayDate, 1000);
+
+    function displayDate() {
+        const currentdate = new Date();
+        const datetime = formatValue(currentdate.getHours()) + ":" + formatValue(currentdate.getMinutes()) + ":" + formatValue(currentdate.getSeconds());
+        document.getElementById("clock").innerHTML = datetime;
+    }
+
+    function formatValue(value) {
+        return value < 10 ? "0" + value : value;
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            document.getElementById('video').srcObject = stream;
+        });
+
+    document.getElementById('snap').onclick = function () {
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const now = new Date();
+        const formattedTime = now.toLocaleString();
+        const video = document.getElementById('video');
+        context.drawImage(video, 0, 0, 320, 240);
+
+        const dataUrl = canvas.toDataURL('image/png');
+
+        // Tính kích thước ảnh base64 tính theo byte
+        const base64Length = dataUrl.length - 'data:image/png;base64,'.length;
+        const padding = (dataUrl.endsWith('==') ? 2 : (dataUrl.endsWith('=') ? 1 : 0));
+        const fileSizeInBytes = (base64Length * 3 / 4) - padding;
+
+        console.log(`Image size (approx): ${fileSizeInBytes} bytes`);
+
+        $.ajax({
+            url: '/CheckIn/VerifyFace',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ imageBase64: dataUrl }),
+            success: function (data) {
+                const now = new Date();
+                const formattedTime = now.toLocaleString();
+
+                $('#checkInMessage').text('');
+
+                if (!data.student) {
+                    $('#studentName').text("N/A");
+                    $('#studentEmail').text("N/A");
+                    $('#checkInTime').text(formattedTime);
+
+                    $('#formStudentId').val("");
+                    $('.custom-btn.success').hide(); 
+                    $('#notMeBtn').hide();
+                    $('#retryBtn').show();
+                } else {
+                    $('#studentName').text(data.student.fullname);
+                    $('#studentEmail').text(data.student.email);
+                    $('#checkInTime').text(formattedTime);
+
+                    $('#formStudentId').val(data.student.id);
+                    $('.custom-btn.success').show(); 
+                    $('#retryBtn').hide();
+                }
+
+                showModal();
+            },
+            error: function () {
+                const now = new Date();
+                $('#studentName').text("N/A");
+                $('#studentEmail').text("N/A");
+                $('#checkInTime').text(now.toLocaleString());
+
+                $('.custom-btn.success').hide();
+                $('#notMeBtn').hide();
+                $('#retryBtn').show();
+
+                showModal();
+            }
+        });
+    };
+
+    async function checkIn(eventId) {
+        const studentId = parseInt(document.getElementById('formStudentId').value);
+        const response = await fetch('/CheckIn/ConfirmCheckIn', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ eventId, studentId })
+        });
+
+        const result = await response.json();
+
+        if (result.toastType === "SuccessMessage") {
+            showToast("success", result.message); 
+            closeModal(); 
+        } else if (result.toastType === "ErrorMessage") {
+            showToast("error", result.message);
+        }
+    }
+
+    function showToast(type, message) {
+        if (type === "success") {
+            toastr.success(message);
+        } else if (type === "error") {
+            toastr.error(message);
+        } else {
+            console.log(message);
+        }
+    }
+
+
+    function showModal() {
+        document.getElementById('studentInfoModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('studentInfoModal').style.display = 'none';
+    }
+</script>
+
+
+

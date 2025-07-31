@@ -1,0 +1,220 @@
+﻿@model List<Event>;
+
+@{
+    ViewData["Title"] = "Organized Event Report";
+    var mainEvent = Model != null && Model.Count > 0 ? Model[0] : null;
+    var compareEvent = Model != null && Model.Count > 1 ? Model[1] : null;
+    var recentEvents = ViewBag.RecentOrganizedEvents as List<FUEM.Domain.Entities.Event>;
+}
+
+<section>
+    <div class="app__slide-wrapper">
+        <div class="breadcrumb__area">
+            <div class="breadcrumb__wrapper mb-35">
+                <div class="breadcrumb__main">
+                    <div class="breadcrumb__inner">
+                        <div class="breadcrumb__icon">
+                            <i class="flaticon-home"></i>
+                        </div>
+                        <div class="breadcrumb__menu">
+                            <nav>
+                                <ul>
+                                    <li><span><a asp-controller="Club" asp-action="Dashboard">Dashboard</a></span></li>
+                                    <li><span><a asp-controller="Club" asp-action="OrganizedEvent">Organized Event</a></span></li>
+                                    <li class="active"><span>Details</span></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pb-20">
+                <div>
+                    <div id="myTabContent">
+                        <div class="event__details-area">
+                            <div class="row">
+                                <div class="col-xxl-7 col-xl-6 p-1">
+                                    <div class="event__details-left">
+                                        <div class="body__card-wrapper mb-20">
+                                            <div class="card__header-top">
+                                                <div class="card__title-inner">
+                                                    <h4 class="event__information-title">
+                                                        @mainEvent.Fullname
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="review__main-wrapper pt-25">
+                                                <div class="review__tab">
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active">
+                                                            <div class="about__content mt-30">
+                                                                <h4>About This Event</h4>
+                                                                <p>@Html.Raw(mainEvent.Description ?? "")</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-5 col-xl-6 p-1">
+                                    <div class="event__details-right">
+                                        <div class="body__card-wrapper mb-20">
+                                            <div class="event__meta-time">
+                                                <ul>
+                                                    <li><span> Date: </span><span class="fw-normal">@mainEvent.DateOfEvent?.ToString("yyyy-MM-dd")</span></li>
+                                                    <li><span>Location :</span> @mainEvent.Location?.LocationName</li>
+                                                    <li><span>Category :</span> @mainEvent.Category?.CategoryName</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @{
+                                var statCards = new List<(int? value, string label, string icon)>
+                                {
+                                    (mainEvent.GuestRegisterCount, "Total Registered", "fa fa-users"),
+                                    (mainEvent.GuestAttendedCount, "Total Guest", "fa fa-check"),
+                                    (mainEvent.CollaboratorRegisterCount, "Total Collaborator", "fa fa-users"),
+                                    (mainEvent.GuestRegisterCancelCount, "Total Cancel Guest", "fa fa-ban")
+                                };
+                            }
+
+                            <div class="row g-20" style="margin: 2%;">
+                                @foreach (var card in statCards)
+                                {
+                                    <div class="col-md-3">
+                                        <div class="card stat-card">
+                                            <div class="card-body d-flex align-items-center">
+                                                <div class="icon me-3" style="color:#f1711f;">
+                                                    <i class="@card.icon fs-3"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="stat-value fw-bold fs-4" style="color:#f1711f;">@card.value</div>
+                                                    <div class="stat-label text-muted">@card.label</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+
+                            <div class="row g-20">
+                                <div class="col-8">
+                                    <canvas id="eventStatisticsChart" width="400" height="250"></canvas>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card__wrapper">
+                                        <div class="card__header">
+                                            <div class="card__header-top">
+                                                <div class="card__title-inner">
+                                                    <div class="card__header-icon">
+                                                        <i class="flaticon-calendar-3"></i>
+                                                    </div>
+                                                    <div class="card__header-title">
+                                                        <h4>Events To Compared</h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="scroll-w-3 card__scroll" style="max-height: 400px; overflow-y: auto;">
+                                                <div class="card__inner">
+                                                    @if (!recentEvents.Any())
+                                                    {
+                                                        <div class="no-events">
+                                                            <span>No events organized yet</span>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        foreach (var e in recentEvents)
+                                                        {
+                                                            <div class="news__item">
+                                                                <div class="news__item-inner">
+                                                                    <div class="news__content">
+                                                                        <div class="news__title">
+                                                                            <a href="@Url.Action("CompareEvents", "Club", new { eventId = mainEvent.Id, comparedId = e.Id })">@e.Fullname</a>
+                                                                        </div>
+                                                                        <div class="news__meta">
+                                                                            <div class="news__meta-status">
+                                                                                <span><i class="fa fa-clock"></i></span>
+                                                                                <span>@e.DateOfEvent?.ToString("MM-dd-yyyy")</span>
+                                                                            </div>
+                                                                            <div class="news__meta-status">
+                                                                                <span><i class="fa-solid fa-location-dot"></i></span>
+                                                                                <span>@e.Location?.LocationName</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('eventStatisticsChart').getContext('2d');
+        const chartData = {
+            labels: ['Total Registered', 'Total Guest', 'Total Collaborator', 'Total Cancel Guest'],
+            datasets: [
+                {
+                    label: "@Html.Raw(mainEvent.Fullname ?? "")",
+                    data: [
+                        @mainEvent.GuestRegisterCount,
+                        @mainEvent.GuestAttendedCount,
+                        @mainEvent.CollaboratorRegisterCount,
+                        @mainEvent.GuestRegisterCancelCount
+                    ],
+                    backgroundColor: 'rgba(64,81,137,0.5)',
+                    borderColor: 'rgba(64,81,137,1)',
+                    borderWidth: 1
+                },
+        @if (compareEvent != null)
+        {
+            <text>
+                        {
+                            label: "@Html.Raw(compareEvent.Fullname ?? "")",
+                        data: [@compareEvent.GuestRegisterCount, @compareEvent.GuestAttendedCount, @compareEvent.CollaboratorRegisterCount, @compareEvent.GuestRegisterCancelCount],
+                        backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                            }
+            </text>
+        }
+                    ]
+        };
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}
