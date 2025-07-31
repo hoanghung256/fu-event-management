@@ -568,6 +568,8 @@
         isFirstLoad = true;
         hasMoreMessages = true;
         loadingOldMessages = false;
+        lastRenderedDateBottom = null;
+        lastRenderedDateTop = null;
 
         document.getElementById("groupTitle").innerHTML = `<i class="bi bi-people-fill me-2"></i>${groupName} - ${eventName}`;
         document.getElementById("chatMessages").innerHTML = "";
