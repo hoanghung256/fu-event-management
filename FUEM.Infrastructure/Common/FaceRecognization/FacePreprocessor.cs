@@ -1,4 +1,5 @@
 ﻿using OpenCvSharp;
+using SharpCompress.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,28 +12,64 @@ namespace FUEM.Infrastructure.Common.FaceRecognization
     {
         public static Mat CropAndResize(Mat inputImage)
         {
-            // Chuyển xám
+            // Convert to grayscale
             var gray = new Mat();
             Cv2.CvtColor(inputImage, gray, ColorConversionCodes.BGR2GRAY);
 
-            // Load cascade face detect
+            // Construct full path to cascade file
             string path = Path.Combine(AppContext.BaseDirectory, "wwwroot", "models", "haarcascade_frontalface_default.xml");
-            Console.WriteLine($"XML PATH: {path}");
-            var cascade = new CascadeClassifier(path);
+
+            if (!File.Exists(path))
+            {
+                Console.WriteLine("❌ File does not exist: " + path);
+                throw new FileNotFoundException($"Haarcascade XML file not found at: {path}");
+            }
+
+            Console.WriteLine("✅ File found at: " + path);
+
+            // Optional: Try reading manually to verify
+            try
+            {
+                var xmlContent = File.ReadAllText(path);
+                Console.WriteLine("✅ File read OK.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ Failed to read file: " + ex.Message);
+            }
+
+            // Now load the cascade
+            CascadeClassifier cascade = null;
+            try
+            {
+                cascade = new CascadeClassifier(path);
+                Console.WriteLine("✅ Cascade loaded successfully.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("❌ Failed to load CascadeClassifier: " + ex.Message);
+            }
+
             var faces = cascade.DetectMultiScale(gray, 1.1, 3);
 
             if (faces.Length == 0)
+            {
+                Console.WriteLine("❌ No faces detected.");
                 throw new Exception("No face detected!");
+            }
 
             var faceRect = faces[0];
             var face = new Mat(inputImage, faceRect);
 
-            // Resize
+            // Resize face
             Mat resizedFace = new Mat();
             Cv2.Resize(face, resizedFace, new OpenCvSharp.Size(112, 112));
 
+            Console.WriteLine("✅ Face cropped and resized successfully.");
+
             return resizedFace;
         }
+
 
         public static float[] Normalize(Mat image)
         {

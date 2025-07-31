@@ -1,4 +1,5 @@
 ﻿using FUEM.Domain.Entities;
+using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -43,6 +44,14 @@ namespace FUEM.Infrastructure.Persistence.Repositories
             return await _context.Feedbacks
                                  .AnyAsync(f => f.GuestId == guestId && f.EventId == eventId);
         }
-    
-}
+        public async Task<IEnumerable<Feedback>> GetFeedbacksByEventIdAsync(int eventId)
+        {
+            return await _context.Feedbacks
+                                 .Include(f => f.Event) 
+                                 .Include(f => f.Guest)
+                                 .Where(f => f.EventId == eventId && f.Event.Status == EventStatus.END)
+                                 .ToListAsync();
+        }
+
+    }
 }
