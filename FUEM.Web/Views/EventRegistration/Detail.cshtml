@@ -6,7 +6,21 @@
     var isRegisteredAsCollaborator = TempData["isRegisteredAsCollaborator"] as bool?;
     var isGuest = TempData["IsGuest"] as bool?;
 }
+<style>
+  
+    .carousel-inner {
+        height: 700px; 
+        overflow: hidden; 
+    }
 
+   
+    .carousel-item img {
+        width: 100%;
+        height: 100%; 
+        object-fit: cover; 
+       
+    }
+</style>
 <section>
     <div class="app__slide-wrapper">
         <div class="breadcrumb__area">
@@ -200,5 +214,19 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var images = document.querySelectorAll('#myCarousel img');
+            images.forEach(function(img) {
+                if (img.complete) {
+                    img.classList.add('loaded');
+                } else {
+                    img.addEventListener('load', function() {
+                        this.classList.add('loaded');
+                    });
+                }
+            });
+        });
+    </script>
 }
