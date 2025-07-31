@@ -173,19 +173,20 @@ namespace FUEM.Infrastructure.Common.MailSender
             return Path.Combine(assemblyPath, "Common", "MailSender", "Templates", templateName);
         }
 
-        //public static async Task GuestRegisterEventSuccess(string email, string guestName, Event e)
-        //{
-        //    var g = new MailSender(email)
-        //        .SetContentType("text/html; charset=UTF-8")
-        //        .SetSubject("Guest Register Successfully!")
-        //        .InitMacro()
-        //        .AppendMacro("GuestName", guestName)
-        //    .AppendMacro("EventName", e.FullName)
-        //    .AppendMacro("Date", DateTimeConvertter.DateToString(e.DateOfEvent))
-        //    .AppendMacro("StartTime", DateTimeConvertter.TimeToString(e.StartTime))
-        //        .AppendMacro("EndTime", DateTimeConvertter.TimeToString(e.EndTime))
-        //        .AppendMacro("Location", e.Location.Name);
+        public static async Task SendGuestRegisterEventSuccessAsync(string email, string guestName, Event e)
+        {
+            var g = new MailSender(email)
+                .SetContentType("text/html; charset=UTF-8")
+                .SetSubject("Guest Register Successfully!")
+                .InitMacro()
+                .AppendMacro("GuestName", guestName)
+                .AppendMacro("EventName", e.Fullname)
+                .AppendMacro("Date", e.DateOfEvent?.ToString("dd/MM/yyyy"))
+                .AppendMacro("StartTime", e.StartTime?.ToString("HH:mm"))
+                .AppendMacro("EndTime", e.EndTime?.ToString("HH:mm"))
+                .AppendMacro("Location", e.Location.LocationName);
 
-        //}
+            await g.SendTemplateAsync(GetTemplateActualPath(EmailTemplate.GuestRegisterSuccess));
+        }
     }
 }
