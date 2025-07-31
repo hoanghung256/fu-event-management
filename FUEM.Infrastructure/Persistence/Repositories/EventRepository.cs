@@ -164,15 +164,22 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
-        
+
         public async Task<Page<Event>> GetAllOrganizedEventsAsync(int pageNumber, int pageSize)
         {
-            int totalItems = await _context.Events
-                .Where(e => e.Status == EventStatus.END)
-                .CountAsync();
+            
+            var query = _context.Events
+                .Include(e => e.Category)
+                .Include(e => e.Location)
+                .Include(e => e.Organizer)
+                .Include(e => e.EventImages)
+                .Where(e => e.Status == EventStatus.END) 
+                .OrderByDescending(e => e.DateOfEvent) 
+                .AsQueryable(); 
 
-            var items = await _context.Events
-                .OrderByDescending(e => e.DateOfEvent)
+            int totalItems = await query.CountAsync(); 
+
+            var items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -185,7 +192,7 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
-        
+
         public async Task<Page<Event>> GetOrganizedEventsByOrganizerIdAsync(string organizerId, int pageNumber, int pageSize)
         {
             int totalItems = await _context.Events
@@ -344,16 +351,18 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
-
+     
         public async Task<Page<Event>> GetEventsByOrganizerIdAsync(int organizerId, int page, int pageSize)
         {
             if(page < 1) page = 1;
             if(pageSize < 1) pageSize = 10;
-            var query =  _context.Events
-                .Where(e => e.OrganizerId ==  organizerId)
-                .Include(e => e.Category)
-                .Include(e => e.Location)
-                .OrderBy(e => e.DateOfEvent);
+            var query = _context.Events
+                           .Where(e => e.OrganizerId == organizerId && e.Status == EventStatus.END) 
+                           .Include(e => e.Category)
+                           .Include(e => e.Location)
+                           .Include(e => e.Organizer)
+                           .Include(e => e.EventImages)
+                           .OrderByDescending(e => e.DateOfEvent);
 
             var totalCount = await query.CountAsync();
             var items = await query.Skip((page - 1) * pageSize)
