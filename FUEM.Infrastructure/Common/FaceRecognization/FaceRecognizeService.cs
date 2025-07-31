@@ -19,6 +19,7 @@ namespace FUEM.Infrastructure.Common.FaceRecognization
             try
             {
                 var modelPath = Path.Combine(AppContext.BaseDirectory, "wwwroot", "models", "arc_face_r50.onnx");
+                Console.WriteLine($"MODEL PATH: {modelPath}");
 
                 if (!System.IO.File.Exists(modelPath))
                     throw new FileNotFoundException($"ONNX model not found at: {modelPath}");
