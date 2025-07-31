@@ -52,7 +52,7 @@ namespace FUEM.Web.Controllers
                 eventItem.HasSubmittedFeedback = await _feedbackService.CheckUserFeedbackForEventAsync(userIdInt, eventItem.Id);
             }
 
-            return View("~/Views/Home/AttendedEvents.cshtml", eventsPage);
+            return View("~/Views/AttendedEvents/Index.cshtml", eventsPage);
         }
 
         [HttpPost]

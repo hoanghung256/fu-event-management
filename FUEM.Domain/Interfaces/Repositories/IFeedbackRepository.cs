@@ -12,5 +12,6 @@ namespace FUEM.Domain.Interfaces.Repositories
         Task AddFeedbackAsync(Feedback feedback);
         Task<Feedback> GetFeedbackByGuestAndEventAsync(int guestId, int eventId); // Thêm để kiểm tra trùng lặp
         Task<bool> HasUserSubmittedFeedbackForEvent(int guestId, int eventId); // Thêm để kiểm tra sự tồn tại
+        Task<IEnumerable<Feedback>> GetFeedbacksByEventIdAsync(int eventId);
     }
 }

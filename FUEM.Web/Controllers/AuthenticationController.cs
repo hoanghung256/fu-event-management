@@ -76,7 +76,7 @@ namespace FUEM.Web.Controllers
                     if (role == Role.Admin)
                     {
                         return RedirectToAction("Dashboard", "Admin");
-                    } 
+                    }
                     else if (role == Role.Club)
                     {
                         return RedirectToAction("Dashboard", "Club");

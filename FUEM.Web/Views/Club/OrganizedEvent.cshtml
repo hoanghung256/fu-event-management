@@ -129,7 +129,7 @@
                             <td>@eventItem.DateOfEvent?.ToString("dd/MM/yyyy")</td>
                             <td>@eventItem.GuestRegisterCount / @eventItem.GuestRegisterLimit</td>
                             <td>
-                                <a href="#" class="element__btn border-yellow">View feedbacks</a>
+                            <a asp-controller="OrganizedEvent" asp-action="ViewFeedback" asp-route-eventId="@eventItem.Id" class="element__btn border-yellow">View feedbacks</a>
                             </td>
                     </tr>
                 }
