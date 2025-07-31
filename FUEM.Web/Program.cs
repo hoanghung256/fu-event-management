@@ -51,8 +51,8 @@ namespace FUEM.Web
             builder.Services.AddScoped<FUEM.Domain.Interfaces.Repositories.IFeedbackRepository, FUEM.Infrastructure.Persistence.Repositories.FeedbackRepository>();
             builder.Services.AddScoped<FUEM.Application.Interfaces.UserUseCases.IFeedback, FUEM.Application.UseCases.UserUseCases.FeedbackService>();
             // Get connection string  
-            //var connectionString = GetConnectionString(builder);
-            var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
+            var connectionString = GetConnectionString(builder);
+            //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
 
             // Register DbContext  
             builder.Services.AddDbContextPool<FUEMDbContext>(options => options.UseSqlServer(connectionString));

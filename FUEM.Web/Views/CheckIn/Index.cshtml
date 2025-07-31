@@ -180,7 +180,7 @@
                 <div class="d-flex flex-column align-items-center">
                     <video id="video" width="100%" autoplay playsinline muted></video>
                     <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-                    <button id="snap" class="btn btn-check-in mb-3 px-4 py-2">Check-In</button>
+                    <button id="snap" class="btn btn-check-in mb-3 px-4 py-2">Verify</button>
                 </div>
             </div>
         </div>
@@ -294,7 +294,6 @@
 
     async function checkIn(eventId) {
         const studentId = parseInt(document.getElementById('formStudentId').value);
-        console.log(studentId);
         const response = await fetch('/CheckIn/ConfirmCheckIn', {
             method: 'POST',
             headers: {

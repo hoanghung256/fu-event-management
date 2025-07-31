@@ -22,6 +22,8 @@ namespace FUEM.Application.UseCases.OrganizerUseCases
 
         public Task<Page<Event>> GetPendingEventForAdmin(int pageNumber, int pageSize) => _eventRepository.GetPendingEventForAdmin(pageNumber, pageSize);
 
+        public Task<Page<Event>> GetPendingEventOfOrganized(int organizerId, int pageNumber, int pageSize) => _eventRepository.GetPendingEventOfOrganizer(organizerId, pageNumber, pageSize);
+
         public async Task<bool> ProcessEventAsync(int eventId, string action)
         {
             Event? e = null;

@@ -25,5 +25,7 @@ namespace FUEM.Domain.Interfaces.Repositories
         Task<bool> UpdateEventAsync(Event e);
         Task<Page<Event>> GetUpcomingEventForAdminAsync(int page, int pageSize);
         Task<List<Event>> GetRegisteredEventsForStudentAsysnc(int studentId, DateTime startDate, DateTime endDate);
+        Task<Page<Event>> GetUpcomingEventForOrganizerAsync(int organizerId, int page, int pageSize);
+        Task<Page<Event>> GetPendingEventOfOrganizer(int organizerId, int page, int pageSize);
     }
 }

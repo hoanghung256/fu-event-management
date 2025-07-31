@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace FUEM.Infrastructure.Persistence.Repositories
 {
+
     public class EventRepository : IEventRepository
     {
         private readonly FUEMDbContext _context;
@@ -290,6 +291,59 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 .Include(e => e.Organizer)
                 .Include(e => e.EventImages)
                 .FirstOrDefaultAsync(e => e.Fullname == eventName);
+
+        public async Task<Page<Event>> GetUpcomingEventForOrganizerAsync(int organizerId, int page, int pageSize)
+        {
+            var query = _context.Events.Include(e => e.Category)
+                                       .Include(e => e.Organizer)
+                                       .Include(e => e.Location)
+                                       .Include(e => e.EventImages)
+                                       .Where(e => e.OrganizerId == organizerId && (e.Status == EventStatus.APPROVED || e.Status == EventStatus.ON_GOING) && e.DateOfEvent <= DateOnly.FromDateTime(DateTime.Now))
+                                       .AsQueryable();
+
+            var total = await query.CountAsync();
+            var items = await query.OrderByDescending(e => e.DateOfEvent)
+                                   .Skip((page - 1) * pageSize)
+                                   .Take(pageSize)
+                                   .ToListAsync();
+
+            return new Page<Event>
+            {
+                Items = items,
+                TotalItems = total,
+                PageNumber = page,
+                PageSize = pageSize
+            };
+        }
+
+        public async Task<Page<Event>> GetPendingEventOfOrganizer(int organizerId, int page, int pageSize)
+        {
+            //int totalItems = await _context.Events.CountAsync(e => e.Status == EventStatus.PENDING);
+            var query = _context.Events
+                .AsNoTracking()
+                .Include(e => e.Location)
+                .Include(e => e.Category)
+                .Include(e => e.Organizer)
+                .Include(e => e.EventImages)
+                .Where(e => e.OrganizerId == organizerId && e.Status == EventStatus.PENDING)
+                .OrderByDescending(e => e.DateOfEvent)
+                .AsQueryable();
+
+            int totalItems = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new Page<Event>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = page,
+                PageSize = pageSize
+            };
+        }
     }
 
 }
