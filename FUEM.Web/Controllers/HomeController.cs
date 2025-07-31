@@ -13,10 +13,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Client.Extensions.Msal;
 using System.Diagnostics.Tracing;
 
-
-//using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
 namespace FUEM.Web.Controllers
 {
     public class HomeController : Controller
