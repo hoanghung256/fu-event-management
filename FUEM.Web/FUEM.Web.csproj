@@ -37,10 +37,10 @@
 		<Content Update="appsettings.Production.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="wwwroot\ArcFaceR50.onnx">
+		<Content Update="wwwroot\models\arc_face_r50.onnx">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="wwwroot\haarcascade_frontalface_default.xml">
+		<Content Update="wwwroot\models\haarcascade_frontalface_default.xml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>

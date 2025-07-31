@@ -16,14 +16,27 @@ namespace FUEM.Infrastructure.Common.FaceRecognization
 
         public FaceRecognizeService()
         {
-            _session = new InferenceSession(Path.Combine(AppContext.BaseDirectory, "Common", "FaceRecognization", "arc_face_r50.onnx"));
-            Console.WriteLine("=== ONNX INPUT ===");
-            foreach (var input in _session.InputMetadata)
-                Console.WriteLine($"Name: {input.Key}");
+            try
+            {
+                var modelPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "models", "arc_face_r50.onnx");
 
-            Console.WriteLine("=== ONNX OUTPUT ===");
-            foreach (var output in _session.OutputMetadata)
-                Console.WriteLine($"Name: {output.Key}");
+                if (!System.IO.File.Exists(modelPath))
+                    throw new FileNotFoundException($"ONNX model not found at: {modelPath}");
+
+                _session = new InferenceSession(modelPath);
+                Console.WriteLine("=== ONNX INPUT ===");
+                foreach (var input in _session.InputMetadata)
+                    Console.WriteLine($"Name: {input.Key}");
+
+                Console.WriteLine("=== ONNX OUTPUT ===");
+                foreach (var output in _session.OutputMetadata)
+                    Console.WriteLine($"Name: {output.Key}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to initialize ONNX model: " + ex.Message);
+                throw;
+            }
         }
 
         public float[] ExtractEmbedding(float[] inputData)

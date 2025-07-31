@@ -16,7 +16,7 @@ namespace FUEM.Infrastructure.Common.FaceRecognization
             Cv2.CvtColor(inputImage, gray, ColorConversionCodes.BGR2GRAY);
 
             // Load cascade face detect
-            var cascade = new CascadeClassifier(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Common", "FaceRecognization", "haarcascade_frontalface_default.xml"));
+            var cascade = new CascadeClassifier(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "models", "haarcascade_frontalface_default.xml"));
             var faces = cascade.DetectMultiScale(gray, 1.1, 3);
 
             if (faces.Length == 0)

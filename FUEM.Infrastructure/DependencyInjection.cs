@@ -38,7 +38,18 @@ namespace FUEM.Infrastructure
 
             // Utils
             builder.Services.AddTransient<FirebaseStorageService>();
-            builder.Services.AddTransient<FaceRecognizeService>();
+            builder.Services.AddSingleton<FaceRecognizeService>(provider =>
+            {
+                try
+                {
+                    return new FaceRecognizeService();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ONNX model failed to load: " + ex.Message);
+                    return null;
+                }
+            });
             builder.Services.AddTransient<FacePreprocessor>();
             builder.Services.AddTransient<MongoDBService>();
             builder.Services.AddTransient<PayOSService>();
