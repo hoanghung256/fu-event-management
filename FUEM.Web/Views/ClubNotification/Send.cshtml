@@ -1,0 +1,129 @@
+﻿@using FUEM.Domain.Common;
+    @model dynamic
+    @{
+        ViewData["Title"] = "Send Notification";
+        Layout = "_ClubLayout";
+    }
+
+    <div class="container-fluid">
+        <div class="breadcrumb__area">
+            <div class="breadcrumb__wrapper mb-35">
+                <div class="breadcrumb__main">
+                    <div class="breadcrumb__inner">
+                        <div class="breadcrumb__icon">
+                            <i class="flaticon-home"></i>
+                        </div>
+                        <div class="breadcrumb__menu">
+                            <nav>
+                                <ul>
+                                    <li><span><a href="@Url.Action("Index", "Club")">Dashboard</a></span></li>
+                                    <li class="active"><span>Sen notification</span></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Send new notification for an event's guests</h4>
+                    </div>
+                    <div class="card-body">
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                        }
+                        @if (TempData["ErrorMessage"] != null)
+                        {
+                            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                        }
+
+                        <form id="sendNotificationForm" class="p-4 border rounded shadow-sm bg-white">
+                            <div class="mb-3">
+                                <label for="eventId" class="form-label">Select Event:</label>
+                                <select class="form-select" id="eventId" name="eventId" required>
+                                    <option value="">-- Select your event --</option>
+                                    @{
+                                        var events = ViewBag.Events;
+                                    }
+                                    @if (events != null)
+                                    {
+                                        foreach (var ev in events)
+                                        {
+                                            <option value="@ev.Id">@ev.Fullname</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Notification's title:</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="messageContent" class="form-label">Content:</label>
+                                <textarea class="form-control" id="messageContent" name="message" rows="5" required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-outline-warning">Send Notification</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            $(document).ready(function () {
+                const sendNotificationForm = $('#sendNotificationForm');
+
+                sendNotificationForm.on('submit', async function(event) {
+                    event.preventDefault(); // Ngăn chặn hành vi submit mặc định của form
+
+                    const eventId = $('#eventId').val();
+                    const title = $('#title').val();
+                    const messageContent = $('#messageContent').val();
+
+                    if (!eventId) {
+                        toastr.error('Vui lòng chọn một sự kiện.');
+                        return;
+                    }
+                    if (!title || !messageContent) {
+                        toastr.error('Tiêu đề và nội dung thông báo không được để trống.');
+                        return;
+                    }
+
+                    try {
+                        // Gửi POST request tới API endpoint của ClubNotificationController
+                    const response = await fetch('SendNotification/ClubNotification', { // Đường dẫn API chính xác
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded' // Dùng cho form data
+                            },
+                            body: new URLSearchParams({
+                                eventId: eventId,
+                                title: title,
+                                message: messageContent
+                            }).toString()
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            toastr.success(result.message);
+                            sendNotificationForm.trigger('reset'); // Reset form sau khi gửi thành công
+                        } else {
+                            toastr.error(result.message || 'Có lỗi xảy ra khi gửi thông báo.');
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi gửi thông báo:', error);
+                        toastr.error('Lỗi kết nối hoặc server. Vui lòng thử lại.');
+                    }
+                });
+            });
+        </script>
+    }
