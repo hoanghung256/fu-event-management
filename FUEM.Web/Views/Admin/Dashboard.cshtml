@@ -40,7 +40,7 @@
                 <div class="breadcrumb__wrapper mb-35">
                     <div class="breadcrumb__inner">
                         <div class="breadcrumb__icon">
-                            <i class="flaticon-home"></i>
+                            <i class="fa-solid fa-house"></i>
                         </div>
                         <div class="breadcrumb__menu">
                             <nav>
@@ -50,7 +50,7 @@
                             </nav>
                         </div>  
                         <!-- Example notification icon -->
-                        <div class="notification">
+                        @*<div class="notification">
                             <a style="color: gray;" class="text-center" id="notifydropdown" href="#">
                                 <i style="width: 40px; font-size: 1.75rem;" class="fa-regular fa-bell"></i>
                             </a>
@@ -62,12 +62,11 @@
                                         </div>
                                     </div>
                                     <ul>
-                                        @* Example: Replace with your actual notifications *@
-                                        @* foreach (var noti in Model.NotificationList) { } *@
+                                        foreach (var noti in Model.NotificationList) { } 
                                     </ul>
                                 </div>
                             </div>
-                        </div>
+                        </div>*@
                     </div>
                 </div>
             </div>
@@ -127,7 +126,7 @@
                             <div class="card__title-inner d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="card__header-icon">
-                                        <i class="flaticon-reminder"></i>
+                                        <i class="fa-solid fa-alarm-clock"></i>
                                     </div>
                                     <div class="card__header-title ml-5">
                                         <h3>Today: @eventItem.Fullname</h3>
@@ -196,7 +195,7 @@
                     <div class="card__header">
                         <div class="card__title-inner">
                             <div class="card__header-icon">
-                                <i class="flaticon-ticket-1"></i>
+                                <i class="fa-solid fa-ticket"></i>
                             </div>
                             <div class="card__header-title">
                                 <h4>Upcoming Event List</h4>
@@ -231,7 +230,7 @@
                                         <tr>
                                             <td><span>#@eventItem.Id</span></td>
                                             <td>
-                                                <img src="@eventItem?.Organizer?.AvatarPath" alt="avatar" width="40" />
+                                                <img class="rounded-circle" src="@eventItem?.Organizer?.AvatarPath" alt="avatar" width="40" />
                                                 <span>@eventItem?.Organizer?.Fullname</span>
                                             </td>
                                             <td>@eventItem?.Fullname</td>
@@ -261,7 +260,7 @@
                     <div class="card__header">
                         <div class="card__title-inner">
                             <div class="card__header-icon">
-                                <i class="flaticon-calendar-3"></i>
+                                <i class="fa-solid fa-calendar-days"></i>
                             </div>
                             <div class="card__header-title">
                                 <h4>Pending Events</h4>
@@ -310,7 +309,7 @@
                     <div class="card__header">
                         <div class="card__title-inner">
                             <div class="card__header-icon">
-                                <i class="flaticon-calendar-3"></i>
+                                <i class="fa-solid fa-calendar-days"></i>
                             </div>
                             <div class="card__header-title">
                                 <h4>Organized Events This Month</h4>

@@ -4051,7 +4051,7 @@ input[type=file] {
 .sidebar__copyright p {
     margin-bottom: 0;
     color: var(--clr-text-primary);
-    margin-top: 15px;
+/*    margin-top: 15px;*/
 }
 
 .copyright__text {

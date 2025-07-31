@@ -16,6 +16,8 @@ using Net.payOS;
 using FUEM.Infrastructure;
 using System.Text.Json.Serialization;
 using FUEM.Web.BackgroundServices;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace FUEM.Web
 {
@@ -24,6 +26,29 @@ namespace FUEM.Web
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            // Cấu hình Authentication
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+            })
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+                {
+                    options.LoginPath = "/Authentication/Login";
+                    options.LogoutPath = "/Authentication/SignOut";
+                    options.AccessDeniedPath = "/Error/403";
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                    options.SlidingExpiration = true;
+                })
+                .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+                {
+                    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                    options.SaveTokens = true;
+                                               
+                    options.Scope.Add("profile");
+                    options.Scope.Add("email");
+                });
             builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
@@ -66,21 +91,21 @@ namespace FUEM.Web
 
             builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
 
-            builder.Services.AddHostedService<CreateGroupChatService>();
+            //builder.Services.AddHostedService<CreateGroupChatService>();
 
             builder.AddRepositories();
 
             builder.AddUseCases();
 
-            builder.Services
-                .AddAuthentication("Cookies")
-                .AddCookie("Cookies", options =>
-                {
-                    options.LoginPath = "/Authentication/Login";
-                    options.AccessDeniedPath = "/Error/403";
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-                    options.SlidingExpiration = true;
-                });
+            //builder.Services
+            //    .AddAuthentication("Cookies")
+            //    .AddCookie("Cookies", options =>
+            //    {
+            //        options.LoginPath = "/Authentication/Login";
+            //        options.AccessDeniedPath = "/Error/403";
+            //        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+            //        options.SlidingExpiration = true;
+            //    });
 
             //builder.Services.AddCors(options =>
             //{

@@ -291,7 +291,7 @@
                 }
 
         .main-content {
-            padding: 2rem;
+            padding: 0px 2rem;
             flex-grow: 1;
             overflow-y: auto;
         }
@@ -345,12 +345,6 @@
                         <a class="asidebar" href="@Url.Action("PendingEvents", "Admin")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-hourglass-end"></i>
                             <span class="nav-text">Pending Events</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="asidebar" href="@Url.Action("File", "Admin")" aria-expanded="false" style="text-decoration: none;">
-                            <i class="fa-solid fa-file-arrow-up"></i>
-                            <span class="nav-text">Review Files</span>
                         </a>
                     </li>
                     <li>
@@ -458,7 +452,7 @@
                 </div>
             </div>
         </div>
-        <div class="main-content mt-5 pt-5">
+        <div class="main-content">
             @RenderBody()
         </div>
     </div>
