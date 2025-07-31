@@ -408,7 +408,7 @@
         /* --- Footer (Copyright) --- */
         .sidebar__copyright {
             text-align: center;
-            padding: 15px 5px; /* Adjust padding for visibility when collapsed */
+            /*padding: 15px 5px;*/
             font-size: 0.75rem; /* Slightly smaller font when collapsed for better fit */
             color: rgba(255, 255, 255, 0.7);
             width: 100%;
@@ -641,6 +641,12 @@
                         <a class="asidebar" href="@Url.Action("Profile", "Club")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-user"></i>
                             <span class="nav-text">Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="asidebar" href="@Url.Action("Index", "Chat")" aria-expanded="false" style="text-decoration: none;">
+                            <i class="fa-solid fa-comments"></i>
+                            <span class="nav-text">Chat</span>
                         </a>
                     </li>
                     <li>

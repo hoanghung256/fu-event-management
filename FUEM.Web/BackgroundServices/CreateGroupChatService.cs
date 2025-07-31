@@ -88,14 +88,17 @@ namespace FUEM.Web.BackgroundServices
                     {
                         var chatGroupExist = await mongoService.ChatGroups.Find(s => s.EventId == eve.Id).FirstOrDefaultAsync(stoppingToken);
 
-                        var filter = Builders<ChatGroup>.Filter.Eq(g => g.Id, chatGroupExist.Id);
+                        if (chatGroupExist != null)
+                        {
+                            var filter = Builders<ChatGroup>.Filter.Eq(g => g.Id, chatGroupExist.Id);
 
-                        var update = Builders<ChatGroup>.Update.Set(g => g.IsHidden, true);
+                            var update = Builders<ChatGroup>.Update.Set(g => g.IsHidden, true);
 
-                        var result = await mongoService.ChatGroups.UpdateOneAsync(filter, update, cancellationToken: stoppingToken);
+                            var result = await mongoService.ChatGroups.UpdateOneAsync(filter, update, cancellationToken: stoppingToken);
 
-                        Console.WriteLine(result.ModifiedCount);
-                        await Task.Delay(TimeSpan.FromSeconds(3), stoppingToken);
+                            Console.WriteLine(result.ModifiedCount);
+                            await Task.Delay(TimeSpan.FromSeconds(3), stoppingToken);
+                        }
                     }
                 }
                 catch (Exception ex)
