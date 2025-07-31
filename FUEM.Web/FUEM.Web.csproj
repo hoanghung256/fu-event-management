@@ -34,7 +34,7 @@
 		<Content Update="appsettings.Development.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="appsettings.Development.Production.json">
+		<Content Update="appsettings.Production.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\ArcFaceR50.onnx">
