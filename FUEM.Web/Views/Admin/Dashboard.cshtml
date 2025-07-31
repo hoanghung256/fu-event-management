@@ -1,14 +1,14 @@
 ﻿@using System.Security.Claims
 @using FUEM.Domain.Enums
 @model AdminDashboardViewModel;
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <style>
     .no-events {
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 200px; /* Adjust based on your layout */
-        background-color: #f5f5f5;
+        min-height: 200px; 
         border: 1px solid #ddd;
         border-radius: 8px;
         text-align: center;
@@ -25,6 +25,127 @@
     .small-btn {
         height: 3rem !important;
     }
+    /* Card wrapper chỉnh gọn */
+    .card__wrapper {
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        padding: 15px;
+        background: #fff;
+    }
+
+    /* Header căn chỉnh gọn */
+    .card__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 12px;
+    }
+
+    .card__title-inner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card__header-title h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* Nút View All đẹp hơn */
+    .card__header-right a {
+        background: #FF6500;
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+
+        .card__header-right a:hover {
+            background: #e55600;
+        }
+
+    /* Nội dung news item */
+    .news__item {
+        border-bottom: 1px dashed #ddd;
+        padding: 10px 0;
+        margin-bottom: 6px;
+    }
+
+        .news__item:last-child {
+            border-bottom: none;
+        }
+
+        .news__item h4 {
+            font-size: 0.95rem;
+            margin: 0 0 4px;
+            font-weight: 600;
+        }
+
+        .news__item div {
+            font-size: 0.82rem;
+            color: #555;
+        }
+
+    /* Status Tag nhỏ gọn */
+    .status__tag {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-weight: 500;
+        display: inline-block;
+    }
+    /* Style riêng cho Check-in & Landing Page */
+    .action-btn {
+        display: inline-block;
+        background: #FF6500;
+        color: #fff !important;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        margin-left: 8px;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+        .action-btn:hover {
+            background: #e55600;
+            transform: translateY(-2px);
+        }
+
+    /* Style cho dropdown trong bảng */
+    .dropdown-action .btn {
+        background: #FF6500;
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 6px;
+    }
+
+        .dropdown-action .btn:hover {
+            background: #e55600;
+        }
+
+    .dropdown-menu a {
+        font-size: 0.85rem;
+        color: #333;
+    }
+
+        .dropdown-menu a:hover {
+            background: #f8f9fa;
+            color: #FF6500;
+        }
+
+
 </style>
 
 @{
@@ -40,7 +161,7 @@
                 <div class="breadcrumb__wrapper mb-35">
                     <div class="breadcrumb__inner">
                         <div class="breadcrumb__icon">
-                            <i class="flaticon-home"></i>
+                            <i class="fa-solid fa-house"></i>
                         </div>
                         <div class="breadcrumb__menu">
                             <nav>
@@ -110,7 +231,7 @@
                         <span class="expovent__count-text">Total Upcoming Events</span>
                     </div>
                     <div class="expovent__count-icon">
-                        <i class="fa fa-calendar"></i>
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
                     </div>
                 </div>
             </div>
@@ -127,7 +248,7 @@
                             <div class="card__title-inner d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="card__header-icon">
-                                        <i class="flaticon-reminder"></i>
+                                        <i class="fa-regular fa-sun"></i>
                                     </div>
                                     <div class="card__header-title ml-5">
                                         <h3>Today: @eventItem.Fullname</h3>
@@ -137,12 +258,9 @@
                                 @if (eventItem.Organizer.Id == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value))
                                 {
                                     <div class="card__header-right">
-                                        <div class="element__btn yellow-bg pl-5 small-btn" style="padding: 0 10px;">
-                                            <a href="@Url.Action("Index", "CheckIn", new { eventId = eventItem.Id })">Check-in Page</a>
-                                        </div>
-                                        <div class="element__btn yellow-bg pl-5 small-btn" style="padding: 0 10px;">
-                                            <a href="@Url.Action("OnGoingEvent", "Admin", new { action = "access", eventId = eventItem.Id })">Landing Page</a>
-                                        </div>
+                                        <a class="action-btn" href="@Url.Action("Index", "CheckIn", new { eventId = eventItem.Id })">Check-in Page</a>
+                                        <a class="action-btn" href="@Url.Action("OnGoingEvent", "Admin", new { action = "access", eventId = eventItem.Id })">Landing Page</a>
+
                                     </div>
                                 }
                             </div>
@@ -196,7 +314,7 @@
                     <div class="card__header">
                         <div class="card__title-inner">
                             <div class="card__header-icon">
-                                <i class="flaticon-ticket-1"></i>
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
                             </div>
                             <div class="card__header-title">
                                 <h4>Upcoming Event List</h4>
@@ -239,11 +357,30 @@
                                             <td>@eventItem?.Category?.CategoryName</td>
                                             <td>@eventItem?.Location?.LocationName</td>
                                             <td>
-                                                @* Example dropdown *@
-                                                <a href="@Url.Action("EditEvent", "Admin", new { eventId = eventItem?.Id })">Edit</a> |
-                                                <a href="#">Detail</a> |
-                                                <a href="@Url.Action("ViewGuestList", "Admin", new { eventId = eventItem?.Id })">Register Guest</a>
+                                                <div class="dropdown dropdown-action">
+                                                    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        Actions
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="@Url.Action("EditEvent", "Admin", new { eventId = eventItem?.Id })">
+                                                                <i class="fa fa-edit me-2"></i>Edit
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="#">
+                                                                <i class="fa fa-info-circle me-2"></i>Detail
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="@Url.Action("ViewGuestList", "Admin", new { eventId = eventItem?.Id })">
+                                                                <i class="fa fa-users me-2"></i>Register Guest
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </td>
+
                                         </tr>
                                     }
                                 </tbody>
@@ -261,14 +398,14 @@
                     <div class="card__header">
                         <div class="card__title-inner">
                             <div class="card__header-icon">
-                                <i class="flaticon-calendar-3"></i>
+                                <i class="fa-solid fa-hourglass-half"></i>
                             </div>
                             <div class="card__header-title">
                                 <h4>Pending Events</h4>
                             </div>
                         </div>
                         <div class="card__header-right">
-                            <a href="@Url.Action("ApprovalEvents", "Admin", new { action = "show" })">View All</a>
+                            <a class="btn-link" href="@Url.Action("PendingEvents", "Admin", new { action = "show" })">View All</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -304,13 +441,12 @@
                 </div>
             </div>
 
-            <!-- Organized Events This Month -->
             <div class="col-xxl-6 col-xl-6 p-2">
                 <div class="card__wrapper">
                     <div class="card__header">
                         <div class="card__title-inner">
                             <div class="card__header-icon">
-                                <i class="flaticon-calendar-3"></i>
+                                <i class="fa-solid fa-check-double"></i>
                             </div>
                             <div class="card__header-title">
                                 <h4>Organized Events This Month</h4>

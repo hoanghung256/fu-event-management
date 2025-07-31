@@ -169,8 +169,20 @@ namespace FUEM.Web.Controllers
         [HttpGet]
         public IActionResult ResetPassword()
         {
-            string? email = HttpContext.Session.GetString("Email");
-            if (string.IsNullOrEmpty(email))
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login");
+        }
+
+        // Helper method để xử lý logic đăng nhập chung
+        private async Task AuthenticateUser(object user)
+        {
+            int userId = 0;
+            Role? role = Role.Student;
+            string displayName = "Guest";
+            string avatarPath = "";
+            string email = "";
+
+            if (user is Student student)
             {
                 TempData[ToastType.ErrorMessage.ToString()] = "You need to enter an email to reset the password.";
                 return RedirectToAction("ForgotPassword");
