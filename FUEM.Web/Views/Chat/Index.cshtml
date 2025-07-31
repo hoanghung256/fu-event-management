@@ -500,11 +500,11 @@
     });
 
     // Send message on Enter key
-    document.getElementById("messageInput").addEventListener("keypress", function (event) {
-        if (event.key === "Enter") {
-            document.getElementById("sendButton").click();
-        }
-    });
+    // document.getElementById("messageInput").addEventListener("keypress", function (event) {
+    //     if (event.key === "Enter") {
+    //         document.getElementById("sendButton").click();
+    //     }
+    // });
 
     fetch('/Chat/GetUserGroups')
         .then(res => res.json())
@@ -537,7 +537,7 @@
                     </div>
                     <div>
                         <div style="font-weight: 600;">${group.name}</div>
-                            <div style="font-size: 0.85rem; opacity: 0.8;color: #e76c1e;">${group.eventName}</div>
+                            <!--<div style="font-size: 0.85rem; opacity: 0.8;color: #e76c1e;">${group.eventName}</div>-->
                     </div>
                 `;
 
