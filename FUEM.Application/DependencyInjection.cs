@@ -2,6 +2,7 @@
 using FUEM.Application.Interfaces.ChatUseCases;
 using FUEM.Application.Interfaces.EventUseCases;
 using FUEM.Application.Interfaces.LocationUseCases;
+using FUEM.Application.Interfaces.NotificationUseCases;
 using FUEM.Application.Interfaces.OrganizerUseCases;
 using FUEM.Application.Interfaces.RegistrationUseCases;
 using FUEM.Application.Interfaces.StudentUseCases;
@@ -10,6 +11,7 @@ using FUEM.Application.UseCases.CategoryUseCases;
 using FUEM.Application.UseCases.ChatUseCases;
 using FUEM.Application.UseCases.EventUseCases;
 using FUEM.Application.UseCases.LocationUseCases;
+using FUEM.Application.UseCases.NotificationUseCases;
 using FUEM.Application.UseCases.OrganizerUseCases;
 using FUEM.Application.UseCases.RegistrationUseCases;
 using FUEM.Application.UseCases.StudentUseCases;
@@ -64,6 +66,11 @@ namespace FUEM.Application
             //Admin
             builder.Services.AddTransient<ICompareEventUseCase, CompareEventUseCase>();
 
+            //AdminNotifications
+            builder.Services.AddTransient<IAdminNotification, AdminNotification>();
+
+            //StudentNotifications
+            builder.Services.AddTransient<IStudentNotification, StudentNotification>();
             builder.Services.AddScoped<IGetAttendedEvents, GetAttendedEvents>();
             builder.Services.AddScoped<IFeedback, FeedbackService>();
 

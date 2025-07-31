@@ -8,5 +8,8 @@ namespace FUEM.Domain.Interfaces.Repositories
 {
     public interface INotificationReceiverRepository
     {
+        Task<List<int>> GetStudentIdsByEventIdAsync(int eventId);
+        Task<List<int>> GetAllStudentIdsAsync(); 
+        Task<List<int>> GetClubPresidentIdsAsync();
     }
 }

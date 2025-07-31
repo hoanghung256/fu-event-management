@@ -1,5 +1,10 @@
 ﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.SignalR
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+	var currentUserIdClaim = HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+	ViewBag.CurrentUserId = currentUserIdClaim?.Value;
+}
 <!DOCTYPE html>
 <html class="no-js" lang="en" style="--clr-theme-1: #ff6f00 !important;">
 <head>
@@ -351,6 +356,12 @@
                             <li><a href="@Url.Action("ManageClubs", "Admin")">Club Accounts</a></li>
                         </ul>
                     </li>
+                    <li>
+                        <a href="@Url.Action("Send", "AdminNotification")" class="asidebar" style="text-decoration: none;">
+                            <i class="fa-solid fa-bell"></i>
+                            Send Notification
+                        </a>
+                    </li>
 
                     <li>
                         <a class="asidebar" href="@Url.Action("SignOut", "Authentication")" aria-expanded="false" style="text-decoration: none;">
@@ -451,6 +462,54 @@
     <script src="@Url.Content("~/theme/js/main.js")"></script>
     @await Html.PartialAsync("_ToastSetUp")
     @await RenderSectionAsync("Scripts", required: false)
+    <!-- SignalR Client JS -->
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lấy userId từ ViewBag (đã được Controller truyền vào)
+            var currentUserId = @Html.Raw(Json.Serialize(ViewBag.CurrentUserId));
+            console.log("Admin Layout - Current User ID:", currentUserId); // Log để debug
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notificationHub") // URL của Hub đã map ở backend
+                .withAutomaticReconnect() // Tự động kết nối lại nếu bị ngắt
+                .build();
+
+            // Đăng ký phương thức để nhận thông báo từ server
+            connection.on("ReceiveNotification", function (sender, message) {
+                console.log(`Thông báo từ ${sender}: ${message}`);
+                toastr.info(message, sender, { timeOut: 10000, positionClass: 'toast-top-right' });
+            });
+
+            // Đăng ký phương thức để nhận tin nhắn chung (nếu có)
+            connection.on("ReceiveMessage", function (user, message) {
+                console.log(`Tin nhắn từ ${user}: ${message}`);
+                toastr.success(message, user, { timeOut: 5000, positionClass: 'toast-top-right' });
+            });
+
+            // Bắt đầu kết nối
+            connection.start()
+                .then(() => {
+                    console.log("Admin Layout - SignalR Connected!"); // Log khi kết nối thành công
+                    if (currentUserId) {
+                        // Tham gia nhóm người dùng cụ thể để nhận thông báo riêng
+                        connection.invoke("JoinGroup", `User_${currentUserId}`)
+                            .then(() => console.log(`Admin Layout - Joined group: User_${currentUserId}`))
+                            .catch(err => console.error(`Admin Layout - Error joining group: ${err.toString()}`));
+                    }
+                })
+                .catch(err => {
+                    console.error("Admin Layout - Error connecting to SignalR:", err.toString());
+                    toastr.error("Không thể kết nối đến dịch vụ thông báo real-time.", "", { positionClass: 'toast-top-right' });
+                });
+
+            // Xử lý khi kết nối bị ngắt (tùy chọn)
+            connection.onclose(function(error) {
+                console.log("Admin Layout - SignalR disconnected:", error);
+            });
+        });
+    </script>
+
 
     <script>
         $(document).ready(function () {
