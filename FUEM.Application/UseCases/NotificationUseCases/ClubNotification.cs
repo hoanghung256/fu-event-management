@@ -16,11 +16,13 @@ namespace FUEM.Application.UseCases.NotificationUseCases
         private readonly INotificationRepository _notificationRepository;
         private readonly IEventRepository _eventRepository;
         private readonly INotificationReceiverRepository _notificationReceiverRepository;
-        public ClubNotification(INotificationRepository notificationRepository, IEventRepository eventRepository, INotificationReceiverRepository notificationReceiverRepository)
+        private readonly IOrganizerRepository _oganizerRepository;
+        public ClubNotification(INotificationRepository notificationRepository, IEventRepository eventRepository, INotificationReceiverRepository notificationReceiverRepository, IOrganizerRepository organizerRepository)
         {
             _notificationRepository = notificationRepository;
             _eventRepository = eventRepository;
             _notificationReceiverRepository = notificationReceiverRepository;
+            _oganizerRepository = organizerRepository;
         }
         public async Task<int> GetClubNotificationCountAsync(int clubId)
         {
@@ -48,11 +50,13 @@ namespace FUEM.Application.UseCases.NotificationUseCases
 
         public async Task<Notification> SendAndSaveNotificationAsync(int senderId, string title, string message, IEnumerable<int> receiverIds, bool isOrganizerReceivers)
         {
+            var sender = await _oganizerRepository.GetOrganizerByIdAsync(senderId);
             var notification = new Notification
             {
                 SenderId = senderId,
                 Title = title,
                 Content = message,
+                Sender = sender,
                 SendingTime = DateTime.UtcNow
             };
             notification = await _notificationRepository.AddNotificationAsync(notification);

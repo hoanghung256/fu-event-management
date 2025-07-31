@@ -910,7 +910,7 @@
 
             // Function to add a notification to the popup list
             window.appendNotificationToPopup = function(noti) {
-                const senderName = noti.sender && noti.sender.fullName ? noti.sender.fullName : "Hệ thống";
+                const senderName = noti.sender && noti.sender.acronym ? noti.sender.acronym : "System";
                 const formattedTime = new Date(noti.sendingTime).toLocaleString('vi-VN');
 
                 const notificationHtml = `
@@ -983,7 +983,7 @@
                 console.log("Club: Attempting to show detail modal for notification:", notification);
                 $('#detailTitle').text(notification.title);
                 $('#detailContent').text(notification.content);
-                $('#detailSender').text(notification.sender && notification.sender.fullName ? notification.sender.fullName : "Hệ thống");
+                $('#detailSender').text(notification.sender && notification.sender.acronym ? notification.sender.acronym : "System");
                 $('#detailTime').text(new Date(notification.sendingTime).toLocaleString('vi-VN'));
 
                 appModalOverlay.show();
@@ -1015,7 +1015,7 @@
                 .build();
 
             // Register method to receive notifications from the server
-            connection.on("ReceiveNotification", function (title, message, notificationId) {
+            connection.on("ReceiveNotification", function (title, message, notificationId, acronym) {
                 toastr.info(`${message}`, `${title}`, { timeOut: 10000, positionClass: 'toast-top-right' });
                 console.log(`Club: Thông báo real-time: ${title} - ${message}, ID: ${notificationId}`);
 
@@ -1024,7 +1024,7 @@
                     title: title,
                     content: message,
                     sendingTime: new Date().toISOString(),
-                    sender: { fullName: "Admin" } // Giả định Admin gửi
+                    sender: { acronym: acronym } 
                 };
 
                 // Add to cached notifications
@@ -1044,7 +1044,7 @@
             });
 
             // Register method to receive general messages (Club)
-            connection.on("ReceiveMessage", function (title, message, notificationId) {
+            connection.on("ReceiveMessage", function (title, message, notificationId, acronym) {
                 // toastr.success(`${message}`, `${title}`, { timeOut: 5000, positionClass: 'toast-top-right' });
                 console.log(`Club: Tin nhắn chung real-time: ${title} - ${message}, ID: ${notificationId}`);
 
@@ -1053,7 +1053,7 @@
                     title: title,
                     content: message,
                     sendingTime: new Date().toISOString(),
-                    sender: { fullName: "Admin" } // Giả định Admin gửi
+                    sender: { acronym: acronym }
                 };
 
                 // Add to cached notifications
