@@ -58,8 +58,8 @@ namespace FUEM.Web
             });
             
             // Get connection string  
-            var connectionString = GetConnectionString(builder);
-            //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
+            //var connectionString = GetConnectionString(builder);
+            var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
 
             // Register DbContext  
             builder.Services.AddDbContextPool<FUEMDbContext>(options => options.UseSqlServer(connectionString));
