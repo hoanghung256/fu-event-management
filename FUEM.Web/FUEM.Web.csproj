@@ -23,8 +23,7 @@
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.1" />
-		<PackageReference Include="OpenCvSharp4" Version="4.11.0.20250507" />
-		<PackageReference Include="OpenCvSharp4.runtime.win" Version="4.11.0.20250507" />
+		<PackageReference Include="OpenCvSharp4.Windows" Version="4.11.0.20250507" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -36,9 +35,6 @@
 		</Content>
 		<Content Update="appsettings.Production.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Update="wwwroot\models\arc_face_r50.onnx">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="wwwroot\models\haarcascade_frontalface_default.xml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>

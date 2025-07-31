@@ -13,17 +13,25 @@ namespace FUEM.Infrastructure.Common.FaceRecognization
     public class FaceRecognizeService
     {
         private readonly InferenceSession _session;
+        private readonly string _modelFileName = "arc_face_r50.onnx";
+        private readonly string _modelDirectory = Path.Combine(AppContext.BaseDirectory, "wwwroot", "models");
+        private readonly string _modelUrl = "https://firebasestorage.googleapis.com/v0/b/fu-event-management.firebasestorage.app/o/arc_face_r50.onnx?alt=media&token=4ab32d3d-8579-4d96-8ae5-cf1a7d6b12a4";
 
         public FaceRecognizeService()
         {
             try
             {
-                var modelPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "models", "arc_face_r50.onnx");
+                var modelPath = Path.Combine(_modelDirectory, _modelFileName);
+                Console.WriteLine($"MODEL PATH: {modelPath}");
 
                 if (!System.IO.File.Exists(modelPath))
-                    throw new FileNotFoundException($"ONNX model not found at: {modelPath}");
+                {
+                    Console.WriteLine("Model file not found. Downloading...");
+                    DownloadModelAsync(modelPath).GetAwaiter().GetResult();
+                }
 
                 _session = new InferenceSession(modelPath);
+
                 Console.WriteLine("=== ONNX INPUT ===");
                 foreach (var input in _session.InputMetadata)
                     Console.WriteLine($"Name: {input.Key}");
@@ -77,6 +85,17 @@ namespace FUEM.Infrastructure.Common.FaceRecognization
             if (mag1 == 0 || mag2 == 0) return 0.0;
 
             return dot / (Math.Sqrt(mag1) * Math.Sqrt(mag2));
+        }
+
+        private async Task DownloadModelAsync(string modelPath)
+        {
+            Directory.CreateDirectory(_modelDirectory);
+
+            using var httpClient = new HttpClient();
+            var data = await httpClient.GetByteArrayAsync(_modelUrl);
+
+            await System.IO.File.WriteAllBytesAsync(modelPath, data);
+            Console.WriteLine("Model downloaded successfully.");
         }
     }
 }
