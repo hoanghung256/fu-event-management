@@ -357,6 +357,43 @@
         background: #f8f9fa !important; 
     }
 
+    #groupDetailSidebar {
+        position: relative;
+        right: 0;
+        width: 320px;
+        min-width: 320px;
+        background: #ffffff;
+        z-index: 2;
+    }
+
+        @@media (max-width: 768px) {
+        #groupDetailSidebar {
+            width: 100%;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            z-index: 999;
+            box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    #mentionList {
+        position: absolute;
+        z-index: 1000;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        /* max-height: 220px; */
+        /* overflow-y: auto; */
+        padding: 4px 0;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .mention-item:hover {
+        background: #f0f0f0;
+    }
+
 </style>
 
 <div class="main-content" style="padding: 0 1rem;">
@@ -372,31 +409,44 @@
             </div>
 
             <div id="chatPanelWrapper" class="chat-panel d-none">
-                <div class="chat-header" id="groupTitle">
-                    <i class="bi bi-people-fill me-2"></i>
-                    Select a group
+                <div class="chat-header" id="groupTitle" style="display: flex; justify-content: space-between;">
+                    <div>
+                        <i class="bi bi-people-fill me-2"></i>
+                        <span id="groupHeaderText">Select a group</span>
+                    </div>
                 </div>
+
                 <input type="hidden" id="currentUserName" value="@currentUserName" />
 
                 <div class="chat-area">
-                    <div id="chatMessages" class="chat-messages"></div>
+                    <div id="chatMessages" class="chat-messages">
+                        <div style="text-align: center; color: #999; padding: 40px 0;">No messages to display.</div>
+                    </div>
 
                     <div id="chatLoading" class="chat-loading">
                         <div class="spinner-sm"></div>
                     </div>
                 </div>
-
+                <div id="mentionList" style="position: absolute; z-index: 1000; background: white; border: 1px solid #ccc; display: none;"></div>
                 <div class="chat-input">
                     <input type="text" id="messageInput" placeholder="Write a message..." />
                     <button id="sendButton">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
+                <!-- Below your chat input -->
+            </div>
+            <div id="groupDetailSidebar" class="chat-sidebar d-none" style="border-left: 1px solid #e4e6ea;">
+                <div class="sidebar-header" id="groupDetailName">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                </div>
+                <div id="groupDetailContent" style="padding: 20px;"></div>
             </div>
         </div>
     </section>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/emoji-js@3.6.0/lib/emoji.min.js"></script>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/chat.js"></script>
 
@@ -408,6 +458,7 @@
     let isFirstLoad = true;
     let lastRenderedDateBottom = null;
     let lastRenderedDateTop = null;
+    let groupMembers = [];
 
     function insertDateDivider(text, before = false) {
         const divider = document.createElement("div");
@@ -547,6 +598,11 @@
 
             if (groups.length > 0) {
                 loadGroupChat(groups[0].name, groups[0].eventName);
+            } else {
+                document.getElementById("chatPanelWrapper").classList.remove("d-none");
+                document.getElementById("messageInput").classList.add("d-none");
+                document.getElementById("sendButton").classList.add("d-none");
+                ul.innerHTML = '<li style="padding: 24px; text-align: center; color: #888;">No chat groups available.</li>';
             }
         });
 
@@ -571,7 +627,6 @@
         lastRenderedDateBottom = null;
         lastRenderedDateTop = null;
 
-        document.getElementById("groupTitle").innerHTML = `<i class="bi bi-people-fill me-2"></i>${groupName}`;
         document.getElementById("chatMessages").innerHTML = "";
 
         document.getElementById("chatPanelWrapper").classList.remove("d-none");
@@ -579,6 +634,79 @@
         await connection.invoke("JoinGroup", groupName, eventName);
 
         await loadMessages();
+
+        document.getElementById("groupTitle").innerHTML = `<div>
+                                                               <i class="bi bi-people-fill me-2"></i>
+                                                               <span id="groupHeaderText">${groupName}</span>
+                                                           </div>
+                                                           <button id="toggleDetailsBtn" title="Group Info" style="background: none; border: none; font-size: 1.2rem;">
+                                                               <i class="bi bi-info-circle"></i>
+                                                           </button>`;
+
+        const res = await fetch(`/Chat/GetGroupDetails?groupName=${currentGroup}&eventName=${currentGroupEvent}`);
+        const data = await res.json();
+
+        groupMembers = data.members;
+
+        document.getElementById("toggleDetailsBtn").addEventListener("click", async () => {
+            const sidebar = document.getElementById("groupDetailSidebar");
+            const content = document.getElementById("groupDetailContent");
+            const name = document.getElementById("groupDetailName");
+
+            if (!sidebar.classList.contains("d-none")) {
+                sidebar.classList.add("d-none");
+                return;
+            }
+
+            sidebar.classList.remove("d-none");
+
+            content.innerHTML = "<p>Loading...</p>";
+
+            try {
+                name.innerHTML = `<i class="bi bi-info-circle-fill me-2"></i>${currentGroup}`;
+                // const res = await fetch(`/Chat/GetGroupDetails?groupName=${currentGroup}&eventName=${currentGroupEvent}`);
+                // const data = await res.json();
+
+                content.innerHTML = `
+                    <!--<h5>${data.name}</h5>-->
+                    <!--<p><strong>Event:</strong> ${data.eventName}</p>-->
+                    <!--<p><strong>Created:</strong> ${new Date(data.createdAt).toLocaleDateString()}</p>-->
+                    <!--<hr/>-->
+                    <p style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5em;">Members: (${data.members.length})</p>
+                    <ul style="padding-left: 0; list-style: none; margin: 0;">
+                        ${data.members.map(m => `
+                            <li style="
+                                display: flex; 
+                                align-items: center; 
+                                gap: 0.75em; 
+                                margin-bottom: 0.6em; 
+                                padding: 0.3em 0.6em; 
+                                border-radius: 8px; 
+                                cursor: default;
+                                transition: background-color 0.3s ease;
+                            "
+                            onmouseover="this.style.backgroundColor='#f0f4f8';" 
+                            onmouseout="this.style.backgroundColor='transparent';"
+                            >
+                                <img src="${m.avatar}" onerror="this.onerror=null; this.src='/image/user/default-avatar.jpg';" alt="${m.name}" 
+                                    style="
+                                        width: 32px; 
+                                        height: 32px; 
+                                        border-radius: 50%; 
+                                        object-fit: cover; 
+                                        box-shadow: 0 0 4px rgba(0,0,0,0.1);
+                                        flex-shrink: 0;
+                                    " 
+                                />
+                                <span style="font-size: 1rem; color: #333;">${m.name}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+            } catch (err) {
+                content.innerHTML = "<p style='color:red;'>Failed to load group info.</p>";
+            }
+        });
     }
 
     async function loadMessages() {
@@ -647,13 +775,124 @@
             await loadMessages();
         }
     });
+    const input = document.getElementById('messageInput');
 
-    document.getElementById("messageInput").addEventListener("keydown", function (event) {
+    const mentionDropdown = document.getElementById('mentionDropdown');
+    let mentionQuery = '';
+    let mentionActive = false;
+
+    const emoji = new EmojiConvertor();
+    emoji.replace_mode = 'unified';
+    emoji.allow_native = true;
+    emoji.img_set = 'facebook';
+    emoji.img_sets.facebook.path = '/emoji-data/facebook-64/';
+
+    input.addEventListener("keydown", function (event) {
         if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
             document.getElementById("sendButton").click();
         }
     });
 
+    input.addEventListener('input', () => {
+      let text = input.value;
+
+      text = emoji.replace_emoticons(text);
+      text = emoji.replace_colons(text);
+      text = emoji.replace_unified(text);
+
+      input.value = text;
+    });
+
+    const mentionList = document.getElementById("mentionList");
+    const inputBox = document.getElementById("messageInput");
+
+    inputBox.addEventListener("input", function (e) {
+        const cursorPosition = inputBox.selectionStart;
+        const text = inputBox.value.substring(0, cursorPosition);
+        const match = text.match(/@@(\w*)$/);
+
+        if (match) {
+            const query = match[1].toLowerCase();
+            const matches = query === ''
+            ? groupMembers.slice(0, 5)
+            : groupMembers.filter(n => n.name.toLowerCase().includes(query)).slice(0, 5);
+
+            if (matches.length > 0) {
+                mentionList.innerHTML = matches.map(n => `
+                    <div class='mention-item' data-name="${n.name}" style="
+                        display: flex;
+                        align-items: center;
+                        padding: 8px 12px;
+                        cursor: pointer;
+                        transition: background 0.2s;
+                    " onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='white'">
+                        <img src="${n.avatar}" onerror="this.onerror=null; this.src='/image/user/default-avatar.jpg';" style="
+                            width: 30px; 
+                            height: 30px; 
+                            border-radius: 50%; 
+                            object-fit: cover; 
+                            margin-right: 10px;
+                            box-shadow: 0 0 3px rgba(0,0,0,0.1);
+                        " />
+                        <span style="font-weight: 500; color: #333;">${n.name}</span>
+                    </div>
+                `).join('');
+                mentionList.style.display = 'block';
+                const rect = inputBox.getBoundingClientRect();
+                const mentionListRect = mentionList.getBoundingClientRect();
+                // console.log(window.scrollY);
+                // console.log(window.scrollX);
+                // console.log(rect.x);
+                // console.log(rect.y); 
+                // console.log(rect.bottom);
+                // console.log(rect.top);
+                // console.log(rect.left);
+                // console.log(rect.right);
+                // console.log(rect.width);
+                // console.log(rect.height);
+                // console.log(mentionListRect.x);
+                // console.log(mentionListRect.y); 
+                // console.log(mentionListRect.bottom);
+                // console.log(mentionListRect.top);
+                // console.log(mentionListRect.left);
+                // console.log(mentionListRect.right);
+                // console.log(mentionListRect.width); 
+                // console.log(mentionListRect.height); 
+                mentionList.style.position = 'absolute';
+                // mentionList.style.left = rect.x / 1.8 + 'px';
+                // mentionList.style.bottom = mentionListRect.height - (matches.length > 3 ? matches.length * 17.5 : matches.length * 8) + 'px';
+                const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+                const bottomInPx = (mentionListRect.height - 20) / (matches.length / 2);
+                const bottomInRem = bottomInPx / rootFontSize;
+                mentionList.style.bottom = bottomInRem + 'rem';
+                mentionList.style.width = rect.width * 0.7 + 'px';
+                // mentionList.style.maxHeight = '200px';
+                // mentionList.style.overflowY = 'auto';
+                mentionList.style.background = '#fff';
+                mentionList.style.border = '1px solid #ccc';
+                mentionList.style.borderRadius = '4px';
+                mentionList.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
+            } else {
+                mentionList.style.display = 'none';
+            }
+        } else {
+            mentionList.style.display = 'none';
+        }
+    });
+
+    mentionList.addEventListener("click", function (e) {
+        const item = e.target.closest(".mention-item");
+        if (item) {
+            const name = item.dataset.name;
+            const cursorPosition = inputBox.selectionStart;
+            const textBefore = inputBox.value.substring(0, cursorPosition).replace(/@@(\w*)$/, `@@${name}`);
+            const textAfter = inputBox.value.substring(cursorPosition);
+
+            inputBox.value = textBefore + textAfter;
+            inputBox.focus();
+            mentionList.style.display = 'none';
+        }
+    });
 
 </script>

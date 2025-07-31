@@ -15,6 +15,8 @@ namespace FUEM.Application.Interfaces.ChatUseCases
 
         Task<List<ChatGroup>> GetAllChatGroupsAsync(int id);
 
+        Task<List<ChatGroupMember>> GetChatGroupMembers(string groupId);
+
         Task<List<ChatGroup>> GetStudentGroupChat(int studentId);
 
         Task<ChatGroup> GetChatGroupByNameAsync(string groupName);
