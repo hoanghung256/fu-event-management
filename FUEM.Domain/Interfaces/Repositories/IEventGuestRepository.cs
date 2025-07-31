@@ -11,6 +11,8 @@ namespace FUEM.Domain.Interfaces.Repositories
     {
         Task<bool> IsAlreadyRegisteredAsync(int eventId, int studentId);
         Task AddAsync(EventGuest guest);
+        Task<EventGuest?> GetGuestByEventIdAsync(int eventId, int studentId);
+        Task<bool> CheckInAsync(int eventId, int studentId);
     }
 
 }

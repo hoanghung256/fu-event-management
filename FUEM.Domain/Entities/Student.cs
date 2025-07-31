@@ -27,4 +27,6 @@ public partial class Student
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
     public virtual ICollection<Organizer> Organizers { get; set; } = new List<Organizer>();
+
+    public virtual ICollection<FaceEmbedding> FaceEmbeddings { get; set; } = new List<FaceEmbedding>();
 }

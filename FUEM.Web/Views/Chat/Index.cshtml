@@ -214,7 +214,7 @@
 				const li = document.createElement('li');
 				li.className = "list-group-item list-group-item-action";
 				li.style.cursor = "pointer";
-				li.textContent = `${group.name} - ${group.eventName}`;
+				li.textContent = `${group.name}`;
 				li.onclick = () => loadGroupChat(group.name, group.eventName);
 				ul.appendChild(li);
 			});

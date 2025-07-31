@@ -3,6 +3,7 @@ using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Application.UseCases.UserUseCases;
 using FUEM.Domain.Entities;
 using FUEM.Domain.Interfaces.Repositories;
+using FUEM.Infrastructure;
 using FUEM.Infrastructure.Common;
 using FUEM.Infrastructure.Persistence;
 using FUEM.Infrastructure.Persistence.Repositories;
@@ -14,6 +15,7 @@ using FUEM.Application.UseCases.EventUseCases;
 using Net.payOS;
 using FUEM.Infrastructure;
 using System.Text.Json.Serialization;
+using FUEM.Web.BackgroundServices;
 
 namespace FUEM.Web
 {
@@ -57,12 +59,14 @@ namespace FUEM.Web
             
             // Get connection string  
             var connectionString = GetConnectionString(builder);
-            //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");   
+            //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
 
             // Register DbContext  
             builder.Services.AddDbContextPool<FUEMDbContext>(options => options.UseSqlServer(connectionString));
 
             builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
+
+            builder.Services.AddHostedService<CreateGroupChatService>();
 
             builder.AddRepositories();
 

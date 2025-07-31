@@ -1,5 +1,9 @@
 ﻿@{
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    // Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2 style="padding: 2rem;">Đây là trang test layout admin</h2>
+<form class="mt-5" asp-controller="Test" asp-action="Test" method="post" enctype="multipart/form-data">
+    <label>Select face image:</label>
+    <input type="file" name="FaceImage" accept="image/*" multiple/>
+    <button type="submit" class="btn btn-primary">Upload & Save</button>
+</form>

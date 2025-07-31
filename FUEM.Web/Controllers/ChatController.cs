@@ -29,7 +29,7 @@ namespace FUEM.Web.Controllers
         public async Task<IActionResult> GetUserGroups()
         {
             int? userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null ? int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value) : null;
-            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value;
+            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role) != null ? User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value : null;
             List<ChatGroup> groups = new List<ChatGroup>();
             if (userId != null && (role == Role.Club.ToString() || role == Role.Admin.ToString()))
             {
