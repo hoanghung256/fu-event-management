@@ -29,7 +29,7 @@
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
 
     <style>
-        /* --- Custom CSS for Notification Popup (Club) --- */
+        /* --- Enhanced Custom CSS for Notification Popup --- */
         .app-notification-bell {
             position: relative;
             display: inline-block;
@@ -39,89 +39,152 @@
             .app-notification-bell i {
                 font-size: 24px;
                 color: #333;
+                transition: color 0.3s ease, transform 0.2s ease;
+            }
+
+            .app-notification-bell:hover i {
+                color: #ff6f00;
+                transform: scale(1.1);
             }
 
             .app-notification-bell .badge {
                 position: absolute;
-                top: -5px;
-                right: -10px;
-                padding: 5px 8px;
+                top: -8px;
+                right: -12px;
+                padding: 4px 7px;
                 border-radius: 50%;
-                background-color: red;
+                background: linear-gradient(135deg, #ff6f00, #ff8f00);
                 color: white;
-                font-size: 12px;
+                font-size: 11px;
+                font-weight: 600;
+                min-width: 18px;
+                height: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 3px 10px rgba(255, 111, 0, 0.4);
+                animation: pulse 2s infinite;
+                border: 2px solid white;
             }
+
+        @@keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 3px 10px rgba(255, 111, 0, 0.4);
+            }
+
+            50% {
+                transform: scale(1.15);
+                box-shadow: 0 5px 15px rgba(255, 111, 0, 0.6);
+            }
+        }
 
         .app-notification-popup {
             position: absolute;
-            top: 100%; /* Position right below the bell icon */
+            top: 100%;
             right: 0;
-            width: 380px; /* Wider for better readability */
+            width: 400px;
             background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            border: 1px solid #e1e8ed;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
             z-index: 1000;
-            display: none; /* Hidden by default */
-            max-height: 450px; /* Max height for scrollable content */
-            overflow: hidden; /* Hide overflow */
+            display: none;
+            max-height: 500px;
+            overflow: hidden;
             transform-origin: top right;
-            animation: fadeInScale 0.2s ease-out;
+            animation: fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @@keyframes fadeInScale {
-            from
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-15px);
+                filter: blur(10px);
+            }
 
-        {
-            opacity: 0;
-            transform: scale(0.9);
-        }
-
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0);
+            }
         }
 
         .app-notification-card {
             display: flex;
             flex-direction: column;
-            height: 100%; /* Ensure it takes full height of popup */
+            height: 100%;
+            overflow-x: hidden;
         }
 
         .app-notification-header {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            background-color: #f8f8f8;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f3f6;
+            background: linear-gradient(135deg, #ff6f00 0%, #ff8f00 100%);
+            color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0; /* Prevent header from shrinking */
+            flex-shrink: 0;
+            border-radius: 16px 16px 0 0;
         }
 
             .app-notification-header h5 {
                 margin: 0;
-                font-size: 1.1rem;
-                color: #333;
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: white;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.1);
             }
 
             .app-notification-header .view-all-link {
                 font-size: 0.9rem;
-                color: #007bff;
+                color: rgba(255, 255, 255, 0.95);
                 text-decoration: none;
+                padding: 8px 16px;
+                border: 1.5px solid rgba(255, 255, 255, 0.4);
+                border-radius: 25px;
+                transition: all 0.3s ease;
+                font-weight: 500;
+                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.1);
             }
 
                 .app-notification-header .view-all-link:hover {
-                    text-decoration: underline;
+                    background: rgba(255, 255, 255, 0.2);
+                    text-decoration: none;
+                    color: white;
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                 }
 
         .app-notification-scroll {
-            flex-grow: 1; /* Allow it to take remaining space */
-            overflow-y: auto; /* Enable scrolling for notification list */
+            flex-grow: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
             padding: 0;
-            min-height: 0; /* Crucial for flex items with overflow */
+            min-height: 0;
+            max-height: 420px;
         }
+
+            .app-notification-scroll::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .app-notification-scroll::-webkit-scrollbar-track {
+                background: #f8f9fa;
+                border-radius: 10px;
+            }
+
+            .app-notification-scroll::-webkit-scrollbar-thumb {
+                background: #60788d;
+                border-radius: 10px;
+            }
+
+                .app-notification-scroll::-webkit-scrollbar-thumb:hover {
+                    background: #60788d;
+                }
+
 
         .app-notification-list {
             list-style: none;
@@ -129,67 +192,107 @@
             margin: 0;
         }
 
-        .app-notification-item {
-            padding: 10px 15px;
-            border-bottom: 1px solid #f0f0f0;
-            transition: background-color 0.2s ease;
-            cursor: pointer;
-            display: block; /* Ensure it behaves like a block for full click area */
-            text-decoration: none; /* Remove underline from link */
-            color: inherit; /* Inherit text color */
-        }
+.app-notification-item {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    background: white;
+}
+
+            .app-notification-item::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background: transparent;
+                transition: all 0.3s ease;
+            }
+
+            .app-notification-item:hover::before {
+                background: linear-gradient(135deg, #ff6f00, #ff8f00);
+            }
 
             .app-notification-item:last-child {
                 border-bottom: none;
+                border-radius: 0 0 16px 16px;
             }
 
             .app-notification-item:hover {
-                background-color: #f5f5f5;
+                background: linear-gradient(135deg, #fff8f0, #fff4e6);
+                transform: translateX(4px);
+                box-shadow: 0 4px 15px rgba(255, 111, 0, 0.08);
             }
 
             .app-notification-item p {
-                margin-bottom: 5px;
+                margin-bottom: 8px;
                 font-size: 0.95rem;
-                color: #444;
-                /* Truncate long content */
+                color: #495057;
                 display: -webkit-box;
-                -webkit-line-clamp: 2; /* Show maximum 2 lines */
+                -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                line-height: 1.5;
             }
 
                 .app-notification-item p.notification-title {
-                    font-weight: bold;
-                    color: #333;
+                    font-weight: 600;
+                    color: #2c3e50;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
+                    font-size: 1.05rem;
+                    margin-bottom: 6px;
                 }
 
         .app-notification-time {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.8rem;
-            color: #777;
+            font-size: 0.82rem;
+            color: #8e9aaf;
+            margin-top: 10px;
         }
 
-            .app-notification-time strong {
-                color: #555;
+            .app-notification-time span {
+                color: #6c757d;
             }
 
-        /* --- Notification Detail Modal (Club) --- */
+            .app-notification-time .status strong {
+                color: #ff8f00;
+                font-size: 0.75rem;
+                border-radius: 12px;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+        /* --- Enhanced Notification Detail Modal --- */
         .app-modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-            backdrop-filter: blur(3px); /* Blur effect */
-            z-index: 1000; /* Below the modal, above other content */
-            display: none; /* Hidden by default */
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            animation: overlayFadeIn 0.3s ease forwards;
+        }
+
+        @@keyframes overlayFadeIn {
+            to {
+                opacity: 1;
+            }
         }
 
         .app-notification-detail-modal {
@@ -198,77 +301,201 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            z-index: 1001; /* Above the overlay */
+            padding: 0;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
             width: 90%;
-            max-width: 500px; /* Max width for readability */
-            max-height: 80vh; /* Max height for scrollability */
-            overflow-y: auto; /* Enable scrolling for long content */
-            display: none; /* Hidden by default */
-            animation: modalFadeIn 0.3s ease-out;
+            max-width: 580px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: none;
+            animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @@keyframes modalFadeIn {
-            from
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%) scale(0.9);
+                filter: blur(10px);
+            }
 
-        {
-            opacity: 0;
-            transform: translate(-50%, -45%) scale(0.95);
-        }
-
-        to {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+                filter: blur(0);
+            }
         }
 
         .app-notification-detail-modal .modal-header {
+            background: linear-gradient(135deg, #ff6f00 0%, #ff8f00 100%);
+            color: white;
+            padding: 28px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
+            border-bottom: none;
+            border-radius: 20px 20px 0 0;
         }
 
             .app-notification-detail-modal .modal-header h4 {
                 margin: 0;
                 font-size: 1.4rem;
-                color: #333;
+                font-weight: 700;
+                color: white;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.1);
             }
 
             .app-notification-detail-modal .modal-header .close-button {
-                background: none;
+                background: rgba(255, 255, 255, 0.2);
                 border: none;
-                font-size: 1.8rem;
+                font-size: 1.4rem;
                 cursor: pointer;
-                color: #666;
-                transition: color 0.2s;
+                color: white;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
             }
 
                 .app-notification-detail-modal .modal-header .close-button:hover {
-                    color: #ff6f00;
+                    background: rgba(255, 255, 255, 0.3);
+                    transform: rotate(90deg) scale(1.1);
                 }
 
-        .app-notification-detail-modal .modal-body p {
-            margin-bottom: 10px;
-            line-height: 1.6;
-            color: #555;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
+        .app-notification-detail-modal .modal-body {
+            padding: 32px;
+            overflow-y: auto;
+            max-height: calc(80vh - 140px);
+            background: #fafbfc;
         }
 
-        .app-notification-detail-modal .modal-body span {
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
-            display: inline-block; /* Đôi khi cần để word-wrap hoạt động trên span */
-            max-width: 100%; /* Đảm bảo span không tràn ra ngoài cha */
+            .app-notification-detail-modal .modal-body p {
+                margin-bottom: 18px;
+                line-height: 1.7;
+                color: #495057;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                white-space: normal;
+                font-size: 1rem;
+            }
+
+            .app-notification-detail-modal .modal-body strong {
+                color: #2c3e50;
+                font-weight: 600;
+            }
+
+            .app-notification-detail-modal .modal-body span {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                white-space: normal;
+                display: inline-block;
+                max-width: 100%;
+            }
+
+        /* Loading and Empty States */
+        .loading-message, .no-notifications-message {
+            text-align: center;
+            color: #8e9aaf;
+            padding: 50px 24px;
+            font-style: italic;
+            font-size: 1rem;
         }
+
+        .loading-message {
+            background: linear-gradient(135deg, #fff8f0, #fff4e6);
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 480px) {
+            .app-notification-popup {
+                width: 360px;
+                right: -10px;
+            }
+
+            .app-notification-detail-modal {
+                width: 95%;
+                margin: 10px;
+            }
+
+            .app-notification-header {
+                padding: 16px 20px;
+            }
+
+            .app-notification-item {
+                padding: 14px 20px;
+            }
+        }
+
+        .notification-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.notification-avatar {
+    flex-shrink: 0;
+}
+
+.notification-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e1e8ed;
+    transition: all 0.3s ease;
+}
+
+.notification-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-title {
+    margin: 0 0 4px 0 !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    color: #2c3e50 !important;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notification-message {
+    margin: 0 0 8px 0 !important;
+    font-size: 14px !important;
+    color: #495057 !important;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notification-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ff6f00;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-left: auto;
+    margin-top: 4px;
+}
+
+.app-notification-item:hover .notification-avatar img {
+    border-color: #ff6f00;
+    transform: scale(1.05);
+}
+
+.app-notification-item hr {
+    display: none;
+}
 
         /* General Layout CSS (kept from your original) */
         body {
@@ -674,7 +901,7 @@
                                 <a href="@Url.Action("Index", "ClubNotification")" class="view-all-link">View All</a>
                             </div>
                             <div class="app-notification-scroll">
-                                <ul id="appNotificationPopupList">
+                                <ul id="appNotificationPopupList" style="padding: 0;">
                                     <!-- Notifications will be loaded here -->
                                     <p class="text-center text-muted p-3" id="appLoadingPopupMessage">Đang tải thông báo...</p>
                                     <p class="text-center text-muted p-3" id="appNoPopupNotificationsMessage" style="display: none;">Bạn chưa có thông báo nào.</p>
@@ -827,7 +1054,7 @@
                 isPopupInitiallyHidden: appNotificationPopup.is(':hidden')
             });
 
-            appNotificationBellLink.on('click', async function(e) {
+            appNotificationBellLink.on('click', async function (e) {
                 console.log("Club Notification bell clicked!");
                 e.preventDefault();
                 e.stopPropagation();
@@ -844,7 +1071,7 @@
             });
 
             // Close popup when clicking outside (excluding the detail modal and its overlay)
-            $(document).on('click', function(e) {
+            $(document).on('click', function (e) {
                 if (!$(e.target).closest('.app-notification-bell').length &&
                     !$(e.target).closest('.app-notification-detail-modal').length &&
                     !$(e.target).closest('.app-modal-overlay').length) {
@@ -875,7 +1102,7 @@
                     if (data && data.length > 0) {
                         // Đảo ngược mảng data trước khi lặp để prepend đúng thứ tự hiển thị (mới nhất lên đầu)
                         data.reverse();
-                        data.forEach(function(noti) {
+                        data.forEach(function (noti) {
                             appendNotificationToPopup(noti);
                         });
                     } else {
@@ -890,27 +1117,38 @@
             }
 
             // Function to add a notification to the popup list
-            window.appendNotificationToPopup = function(noti) {
+            window.appendNotificationToPopup = function (noti) {
                 const senderName = noti.sender && noti.sender.acronym ? noti.sender.acronym : "System";
+                const senderAvt = noti.sender && noti.sender.avatarPath ? noti.sender.avatarPath : "/img/user/default-avatar.jpg";
+                console.log('Hello', noti);
                 const formattedTime = new Date(noti.sendingTime).toLocaleString('vi-VN');
+
+                const avatarHtml = `<img src="${senderAvt}" alt="Avatar" onerror="this.src='/img/user/default-avatar.jpg'">`;
 
                 const notificationHtml = `
                     <li class="app-notification-item" data-id="${noti.id}">
-                        <p class="notification-title">${noti.title}</p>
-                        <p>${noti.content}</p>
-                        <div class="app-notification-time">
-                            <span>${formattedTime}</span>
-                            <span class="status"><strong>${senderName}</strong></span>
+                        <div class="notification-content">
+                            <div class="notification-avatar">
+                                ${avatarHtml}
+                            </div>
+                            <div class="notification-text">
+                                <p class="notification-title">${noti.title}</p>
+                                <p class="notification-message">${noti.content}</p>
+                                <div class="app-notification-time">
+                                    <span>${formattedTime}</span>
+                                    <span class="status"><strong>${senderName}</strong></span>
+                                </div>
+                            </div>
+                            <div class="notification-dot"></div>
                         </div>
-                        <hr/>
                     </li>
                 `;
                 appNotificationPopupList.prepend(notificationHtml);
                 appNoPopupNotificationsMessage.hide();
             };
 
-            // Function to update the notification bell count
-            window.updateNotificationBellCount = function() {
+          // Function to update the notification bell count
+            window.updateNotificationBellCount = function () {
                 $.ajax({
                     url: "/api/club/notifications/count", // API endpoint cho số lượng thông báo của Club
                     method: "GET",
@@ -931,7 +1169,7 @@
             };
 
             // This function will be called by SignalR to increment the bell count
-            window.incrementNotificationBellCount = function() {
+            window.incrementNotificationBellCount = function () {
                 var bellSpan = $('#appNotificationBellCount');
                 var currentCount = parseInt(bellSpan.text()) || 0;
                 bellSpan.text(currentCount + 1).show();
@@ -943,7 +1181,7 @@
             const detailCloseButton = $('#detailCloseButton');
 
             // Event listener for clicking on a notification item in the popup
-            appNotificationPopupList.on('click', '.app-notification-item', function() {
+            appNotificationPopupList.on('click', '.app-notification-item', function () {
                 console.log("Club: Notification item clicked. Data ID:", $(this).data('id'));
                 const notificationId = $(this).data('id');
                 const clickedNotification = cachedNotifications.find(noti => {
@@ -973,13 +1211,13 @@
             }
 
             // Close detail modal when clicking on overlay or close button
-            appModalOverlay.on('click', function() {
+            appModalOverlay.on('click', function () {
                 console.log("Club: Overlay clicked, hiding detail modal.");
                 appNotificationDetailModal.hide();
                 appModalOverlay.hide();
             });
 
-            detailCloseButton.on('click', function() {
+            detailCloseButton.on('click', function () {
                 console.log("Club: Close button clicked, hiding detail modal.");
                 appNotificationDetailModal.hide();
                 appModalOverlay.hide();
@@ -996,7 +1234,7 @@
                 .build();
 
             // Register method to receive notifications from the server
-            connection.on("ReceiveNotification", function (title, message, notificationId, acronym) {
+            connection.on("ReceiveNotification", function (title, message, notificationId, acronym, avatarPath) {
                 toastr.info(`${message}`, `${title}`, { timeOut: 10000, positionClass: 'toast-top-right' });
                 console.log(`Club: Thông báo real-time: ${title} - ${message}, ID: ${notificationId}`);
 
@@ -1005,7 +1243,7 @@
                     title: title,
                     content: message,
                     sendingTime: new Date().toISOString(),
-                    sender: { acronym: acronym } 
+                    sender: { acronym: acronym, avatarPath: avatarPath} 
                 };
 
                 // Add to cached notifications
@@ -1025,7 +1263,7 @@
             });
 
             // Register method to receive general messages (Club)
-            connection.on("ReceiveMessage", function (title, message, notificationId, acronym) {
+            connection.on("ReceiveMessage", function (title, message, notificationId, acronym, avatarPath) {
                 // toastr.success(`${message}`, `${title}`, { timeOut: 5000, positionClass: 'toast-top-right' });
                 console.log(`Club: Tin nhắn chung real-time: ${title} - ${message}, ID: ${notificationId}`);
 
@@ -1034,8 +1272,9 @@
                     title: title,
                     content: message,
                     sendingTime: new Date().toISOString(),
-                    sender: { acronym: acronym }
+                    sender: { acronym: acronym, avatarPath: avatarPath}
                 };
+				console.log("Club: New Noti data:", newNotificationData);
 
                 // Add to cached notifications
                 cachedNotifications.unshift(newNotificationData); // Add to the beginning
@@ -1071,7 +1310,7 @@
                     toastr.error("Không thể kết nối đến dịch vụ thông báo real-time cho Club.", "", { positionClass: 'toast-top-right' });
                 });
 
-            connection.onclose(function(error) {
+            connection.onclose(function (error) {
                 console.log("Club: SignalR disconnected:", error);
             });
         });
