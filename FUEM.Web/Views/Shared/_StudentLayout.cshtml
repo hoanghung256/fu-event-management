@@ -849,6 +849,7 @@
             // Function to add a notification to the popup list
             window.appendNotificationToPopup = function(noti) {
                 const senderName = noti.sender && noti.sender.acronym ? noti.sender.acronym  : "System1";
+                const senderAvt = noti.sender && noti.sender.avatarPath ? noti.sender.avatarPath : "Avatar";
                 console.log('Hello', noti);
                 const formattedTime = new Date(noti.sendingTime).toLocaleString('vi-VN');
 
@@ -859,6 +860,9 @@
                         <div class="app-notification-time">
                             <span>${formattedTime}</span>
                             <span class="status"><strong>${senderName}</strong></span>
+                        </div>
+                        <div>
+                            <p>${senderAvt}</p>
                         </div>
                         <hr/>
                     </li>
@@ -923,7 +927,7 @@
                 console.log("Attempting to show detail modal for notification:", notification);
                 $('#detailTitle').text(notification.title);
                 $('#detailContent').text(notification.content);
-                $('#detailSender').text(notification.sender && notification.sender.acronym ? notification.sender.acronym : "System2");
+                $('#detailSender').text(notification.sender && notification.sender.acronym ? notification.sender.acronym : "System");
                 $('#detailTime').text(new Date(notification.sendingTime).toLocaleString('vi-VN'));
 
                 appModalOverlay.show();
@@ -955,7 +959,7 @@
                 .build();
 
             // Register method to receive notifications from the server
-            connection.on("ReceiveNotification", function (title, message, notificationId, acronym) {
+            connection.on("ReceiveNotification", function (title, message, notificationId, acronym, avatarPath) {
                 toastr.info(`${message}`, `${title}`, { timeOut: 10000, positionClass: 'toast-top-right' });
                 console.log(`Thông báo real-time: ${title} - ${message}, ID: ${notificationId}`);
 
@@ -964,7 +968,7 @@
                     title: title,
                     content: message,
                     sendingTime: new Date().toISOString(),
-                    sender: { acronym: acronym }
+                    sender: { acronym: acronym, avatarPath: avatarPath}
                 };
 
                 // Add to cached notifications
@@ -984,7 +988,7 @@
             });
 
             // Register method to receive general messages
-            connection.on("ReceiveMessage", function (title, message, notificationId, acronym) {
+            connection.on("ReceiveMessage", function (title, message, notificationId, acronym, avatarPath) {
                 // toastr.success(`${message}`, `${title}`, { timeOut: 5000, positionClass: 'toast-top-right' });
                 console.log(`Tin nhắn chung real-time: ${title} - ${message}, ID: ${notificationId}`);
 
@@ -993,7 +997,7 @@
                     title: title,
                     content: message,
                     sendingTime: new Date().toISOString(),
-                    sender: { acronym: acronym }
+                    sender: { acronym: acronym, avatarPath: avatarPath }
                 };
 
                 // Add to cached notifications

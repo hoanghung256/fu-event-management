@@ -81,7 +81,7 @@ namespace FUEM.Web.Controllers
 
             foreach (var id in receiverIds)
             {
-                await _hubContext.Clients.User(id.ToString()).SendAsync("ReceiveNotification", notification.Title, message, notification.Id, notification.Sender.Acronym);
+                await _hubContext.Clients.User(id.ToString()).SendAsync("ReceiveNotification", notification.Title, message, notification.Id, notification.Sender.Acronym, notification.Sender.AvatarPath);
             }
             return Ok(new { message = $"Event has been sent successfully to {receiverIds.Count} receipents." });
         }
