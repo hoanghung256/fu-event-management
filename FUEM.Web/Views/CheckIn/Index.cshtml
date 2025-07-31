@@ -245,6 +245,13 @@
 
         const dataUrl = canvas.toDataURL('image/png');
 
+        // Tính kích thước ảnh base64 tính theo byte
+        const base64Length = dataUrl.length - 'data:image/png;base64,'.length;
+        const padding = (dataUrl.endsWith('==') ? 2 : (dataUrl.endsWith('=') ? 1 : 0));
+        const fileSizeInBytes = (base64Length * 3 / 4) - padding;
+
+        console.log(`Image size (approx): ${fileSizeInBytes} bytes`);
+
         $.ajax({
             url: '/CheckIn/VerifyFace',
             method: 'POST',
