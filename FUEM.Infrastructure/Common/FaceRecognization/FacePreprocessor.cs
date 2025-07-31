@@ -17,6 +17,7 @@ namespace FUEM.Infrastructure.Common.FaceRecognization
 
             // Load cascade face detect
             string path = Path.Combine(AppContext.BaseDirectory, "wwwroot", "models", "haarcascade_frontalface_default.xml");
+            throw new FileNotFoundException($"Haarcascade XML file not found at: {path}");
             Console.WriteLine($"XML PATH: {path}");
             var cascade = new CascadeClassifier(path);
             var faces = cascade.DetectMultiScale(gray, 1.1, 3);
