@@ -1,0 +1,367 @@
+﻿@model IEnumerable<FUEM.Domain.Entities.Feedback>
+
+@{
+    
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else if (User.IsInRole("Club"))
+    {
+        Layout = "~/Views/Shared/_ClubLayout.cshtml";
+    }
+    
+
+    ViewData["Title"] = "Feedback for " + ViewBag.EventName;
+}
+
+<style>
+    /* CSS CƠ BẢN VÀ CHUNG */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f7f6; /* Nền nhẹ nhàng hơn */
+        color: #333;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    /* BREADCRUMB */
+    .breadcrumb__menu {
+        background-color: #e9ecef;
+        padding: 10px 0;
+        margin-bottom: 30px; /* Thêm khoảng cách với phần nội dung chính */
+        border-radius: 5px;
+    }
+
+        .breadcrumb__menu nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+            .breadcrumb__menu nav ul li {
+                font-size: 0.9rem;
+                color: #6c757d;
+            }
+
+                .breadcrumb__menu nav ul li:not(:last-child)::after {
+                    content: '>';
+                    margin: 0 8px;
+                    color: #adb5bd;
+                }
+
+                .breadcrumb__menu nav ul li .acolor {
+                    color: #007bff;
+                    text-decoration: none;
+                }
+
+                    .breadcrumb__menu nav ul li .acolor:hover {
+                        text-decoration: underline;
+                    }
+
+                .breadcrumb__menu nav ul li.active span {
+                    font-weight: bold;
+                    color: #343a40;
+                }
+
+    /* TIÊU ĐỀ TRANG */
+    .feedback-page-heading {
+        font-size: 2.5rem;
+        color: #F37021; /* Sử dụng màu cam của Organized Events */
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        text-transform: uppercase;
+        border-bottom: 3px solid #F37021; /* Gạch chân màu cam */
+        padding-bottom: 0.5rem;
+        margin-bottom: 40px; /* Tăng khoảng cách dưới tiêu đề */
+        text-align: center; /* Căn giữa tiêu đề */
+    }
+
+    /* CONTROLS (Tổng số feedback và nút chuyển đổi) */
+    .feedback-controls-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 15px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+        .feedback-controls-section h4 {
+            margin: 0;
+            color: #343a40;
+            font-size: 1.2rem;
+        }
+
+        .feedback-controls-section .btn {
+            background-color: #6c757d; /* Màu xám cho nút */
+            border-color: #6c757d;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+            .feedback-controls-section .btn:hover {
+                background-color: #5a6268;
+                border-color: #545b62;
+            }
+
+            .feedback-controls-section .btn + .btn {
+                margin-left: 10px;
+            }
+
+    /* THÔNG BÁO KHÔNG CÓ FEEDBACK */
+    .alert-info {
+        background-color: #e0f7fa;
+        color: #007bb0;
+        border-color: #b2ebf2;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    /* DẠNG BẢNG */
+    #feedbackTable .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden; /* Để bo tròn góc hoạt động với table */
+    }
+
+    #feedbackTable .card-header {
+        background-color: #F37021; /* Màu cam cho header bảng */
+        color: white;
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-bottom: none;
+    }
+
+    #feedbackTable .table {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: collapse;
+        background-color: white;
+    }
+
+        #feedbackTable .table th,
+        #feedbackTable .table td {
+            padding: 15px 20px; /* Tăng padding */
+            text-align: left;
+            border-bottom: 1px solid #eee; /* Đường kẻ nhẹ hơn */
+        }
+
+        #feedbackTable .table th {
+            background-color: #f8f9fa; /* Màu nền header bảng */
+            color: #555;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        #feedbackTable .table tbody tr:nth-child(even) {
+            background-color: #fefefe;
+        }
+
+        #feedbackTable .table tbody tr:hover {
+            background-color: #e9f5ff; /* Hiệu ứng hover nhẹ nhàng */
+            transition: background-color 0.2s ease-in-out;
+        }
+
+    /* DẠNG DANH SÁCH (CARD) */
+    #feedbackList {
+        margin-top: 30px;
+    }
+
+        #feedbackList h5 {
+            color: #343a40;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            font-size: 1.4rem;
+        }
+
+        #feedbackList .card {
+            border: 1px solid #e0e0e0; /* Border nhẹ hơn */
+            border-radius: 10px; /* Bo tròn góc nhiều hơn */
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* Đổ bóng mạnh hơn một chút */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+            #feedbackList .card:hover {
+                transform: translateY(-3px); /* Hiệu ứng nâng nhẹ khi hover */
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+        #feedbackList .card-body {
+            padding: 20px; /* Tăng padding */
+        }
+
+        #feedbackList .card-title {
+            color: #F37021; /* Màu cam cho tên người gửi */
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        #feedbackList .card-text {
+            color: #555;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        #feedbackList .text-muted {
+            font-size: 0.85rem;
+            color: #888 !important;
+        }
+
+    /* NÚT QUAY LẠI */
+    .back-to-events-btn {
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 50px;
+    }
+
+        .back-to-events-btn .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            font-size: 1rem;
+            padding: 10px 25px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+            .back-to-events-btn .btn-secondary:hover {
+                background-color: #5a6268;
+                border-color: #545b62;
+                transform: translateY(-2px);
+            }
+</style>
+
+
+<div class="breadcrumb__menu">
+    <nav>
+        <ul>
+            <li><span><a class="acolor" href="@Url.Action("Index", "Home")">Home</a></span></li>
+            <li class="active"><span>Feedback</span></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="container mt-5">
+    <h2 class="feedback-page-heading">Feedback for @ViewBag.EventName</h2>
+
+    <div class="d-flex justify-content-between align-items-center feedback-controls-section">
+        <h4>Tổng số Feedback: @(Model?.Count() ?? 0)</h4>
+        <div>
+            <button class="btn" id="toggleTable">Hiện/Ẩn Dạng Bảng</button>
+            <button class="btn" id="toggleList">Hiện/Ẩn Dạng Danh Sách</button>
+        </div>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            Chưa có feedback nào cho sự kiện này.
+        </div>
+    }
+    else
+    {
+        @* --- Dạng Bảng --- *@
+        <div id="feedbackTable" class="card mb-4">
+            <div class="card-header">
+                Dạng Bảng
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID Người Gửi</th>
+                                <th>Tên Người Gửi</th>
+                                @* <th>Đánh giá</th> *@
+                                <th>Nội dung</th>
+                                @* <th>Thời gian</th> *@
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var feedback in Model.OrderByDescending(f => f.EventId)) @* Sắp xếp theo cách bạn muốn *@
+                            {
+                                <tr>
+                                    <td>@feedback.GuestId</td>
+                                    <td>@(feedback.Guest?.Fullname ?? "Khách (ID: " + feedback.GuestId + ")")</td>
+                                    @* Nếu có Rating: <td>@feedback.Rating/5</td> *@
+                                    <td>@feedback.Content</td>
+                                    @* Nếu có Timestamp: <td>@feedback.Timestamp.ToString("dd/MM/yyyy HH:mm")</td> *@
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @* --- Dạng Danh Sách (Card) --- *@
+        <div id="feedbackList" class="feedback-list">
+            <h5>Dạng Danh Sách</h5>
+            @foreach (var feedback in Model.OrderByDescending(f => f.EventId)) @* Sắp xếp theo cách bạn muốn *@
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Người gửi: @(feedback.Guest?.Fullname ?? "Khách (ID: " + feedback.GuestId + ")")</h5>
+                        @* Nếu có Rating: <h6 class="card-subtitle mb-2 text-muted">Đánh giá: @feedback.Rating/5</h6> *@
+                        <p class="card-text">Nội dung: @feedback.Content</p>
+                        @* Nếu có Timestamp: <small class="text-muted">Gửi lúc: @feedback.Timestamp.ToString("dd/MM/yyyy HH:mm")</small> *@
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="back-to-events-btn">
+        <a asp-controller="OrganizedEvent" asp-action="Index" class="btn btn-secondary">Quay lại danh sách sự kiện</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const feedbackTable = document.getElementById('feedbackTable');
+            const feedbackList = document.getElementById('feedbackList');
+            const toggleTableBtn = document.getElementById('toggleTable');
+            const toggleListBtn = document.getElementById('toggleList');
+
+            // Mặc định hiển thị cả hai, hoặc bạn có thể chọn ẩn một cái lúc đầu
+            feedbackTable.style.display = 'block';
+            feedbackList.style.display = 'block';
+
+            toggleTableBtn.addEventListener('click', function() {
+                if (feedbackTable.style.display === 'none') {
+                    feedbackTable.style.display = 'block';
+                } else {
+                    feedbackTable.style.display = 'none';
+                }
+            });
+
+            toggleListBtn.addEventListener('click', function() {
+                if (feedbackList.style.display === 'none') {
+                    feedbackList.style.display = 'block';
+                } else {
+                    feedbackList.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}
