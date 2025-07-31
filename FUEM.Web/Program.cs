@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using FUEM.Application.UseCases.EventUseCases;
 using Net.payOS;
 using FUEM.Infrastructure;
+using FUEM.Web.BackgroundServices;
 
 namespace FUEM.Web
 {
@@ -55,6 +56,8 @@ namespace FUEM.Web
             builder.Services.AddDbContextPool<FUEMDbContext>(options => options.UseSqlServer(connectionString));
 
             builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
+
+            builder.Services.AddHostedService<CreateGroupChatService>();
 
             builder.AddRepositories();
 
