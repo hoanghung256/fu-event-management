@@ -635,7 +635,7 @@
         /* --- Footer (Copyright) --- */
         .sidebar__copyright {
             text-align: center;
-            padding: 15px 5px; /* Adjust padding for visibility when collapsed */
+            /*padding: 15px 5px;*/
             font-size: 0.75rem; /* Slightly smaller font when collapsed for better fit */
             color: rgba(255, 255, 255, 0.7);
             width: 100%;
@@ -845,19 +845,7 @@
                             <i class="fa-solid fa-calendar-check"></i>
                             <span class="nav-text">Your Events</span>
                         </a>
-                    </li>
-                    <li>
-                        <a class="asidebar" href="@Url.Action("ManageRegistrations", "Club")" aria-expanded="false" style="text-decoration: none;">
-                            <i class="fa-solid fa-file-signature"></i>
-                            <span class="nav-text">Manage Registrations</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="asidebar" href="@Url.Action("SendFile", "Club")" aria-expanded="false" style="text-decoration: none;">
-                            <i class="fa-solid fa-file-arrow-up"></i>
-                            <span class="nav-text">Send File</span>
-                        </a>
-                    </li>
+                    </li> 
                     <li>
                         <a class="asidebar" href="@Url.Action("Send", "ClubNotification")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-bell"></i>
@@ -871,22 +859,15 @@
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar" href="@Url.Action("Send", "ClubNotification")" aria-expanded="false" style="text-decoration: none;">
-                            <i class="fa-solid fa-bell"></i>
-                            <span class="nav-text">Send Notification</span>
+                        <a class="asidebar" href="@Url.Action("Index", "Chat")" aria-expanded="false" style="text-decoration: none;">
+                            <i class="fa-solid fa-comments"></i>
+                            <span class="nav-text">Chat</span>
                         </a>
                     </li>
                     <li>
                         <a class="asidebar" href="@Url.Action("SignOut", "Authentication")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <span class="nav-text">Log out</span>
-                        </a>
-                    </li>
-                    <!-- Thêm link đến trang test nhận thông báo cho club -->
-                    <li>
-                        <a class="asidebar" href="@Url.Action("ReceiverTest", "Home")" aria-expanded="false" style="text-decoration: none;">
-                            <i class="fa-solid fa-inbox"></i>
-                            <span class="nav-text">Test Notifications</span>
                         </a>
                     </li>
                 </ul>
@@ -1136,36 +1117,37 @@
             }
 
             // Function to add a notification to the popup list
-window.appendNotificationToPopup = function (noti) {
-    const senderName = noti.sender && noti.sender.acronym ? noti.sender.acronym : "System";
-    const senderAvt = noti.sender && noti.sender.avatarPath ? noti.sender.avatarPath : "/img/user/default-avatar.jpg";
-    console.log('Hello', noti);
-    const formattedTime = new Date(noti.sendingTime).toLocaleString('vi-VN');
+            window.appendNotificationToPopup = function (noti) {
+                const senderName = noti.sender && noti.sender.acronym ? noti.sender.acronym : "System";
+                const senderAvt = noti.sender && noti.sender.avatarPath ? noti.sender.avatarPath : "/img/user/default-avatar.jpg";
+                console.log('Hello', noti);
+                const formattedTime = new Date(noti.sendingTime).toLocaleString('vi-VN');
 
-    const avatarHtml = `<img src="${senderAvt}" alt="Avatar" onerror="this.src='/img/user/default-avatar.jpg'">`;
+                const avatarHtml = `<img src="${senderAvt}" alt="Avatar" onerror="this.src='/img/user/default-avatar.jpg'">`;
 
-    const notificationHtml = `
-        <li class="app-notification-item" data-id="${noti.id}">
-            <div class="notification-content">
-                <div class="notification-avatar">
-                    ${avatarHtml}
-                </div>
-                <div class="notification-text">
-                    <p class="notification-title">${noti.title}</p>
-                    <p class="notification-message">${noti.content}</p>
-                    <div class="app-notification-time">
-                        <span>${formattedTime}</span>
-                        <span class="status"><strong>${senderName}</strong></span>
-                    </div>
-                </div>
-                <div class="notification-dot"></div>
-            </div>
-        </li>
-    `;
-    appNotificationPopupList.prepend(notificationHtml);
-    appNoPopupNotificationsMessage.hide();
-};
-            // Function to update the notification bell count
+                const notificationHtml = `
+                    <li class="app-notification-item" data-id="${noti.id}">
+                        <div class="notification-content">
+                            <div class="notification-avatar">
+                                ${avatarHtml}
+                            </div>
+                            <div class="notification-text">
+                                <p class="notification-title">${noti.title}</p>
+                                <p class="notification-message">${noti.content}</p>
+                                <div class="app-notification-time">
+                                    <span>${formattedTime}</span>
+                                    <span class="status"><strong>${senderName}</strong></span>
+                                </div>
+                            </div>
+                            <div class="notification-dot"></div>
+                        </div>
+                    </li>
+                `;
+                appNotificationPopupList.prepend(notificationHtml);
+                appNoPopupNotificationsMessage.hide();
+            };
+
+          // Function to update the notification bell count
             window.updateNotificationBellCount = function () {
                 $.ajax({
                     url: "/api/club/notifications/count", // API endpoint cho số lượng thông báo của Club

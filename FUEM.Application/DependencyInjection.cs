@@ -34,6 +34,7 @@ namespace FUEM.Application
             builder.Services.AddTransient<ILogin, Login>();
             builder.Services.AddTransient<ISignUp, SignUp>();
             builder.Services.AddTransient<IForgotPassword, ForgotPassword>();
+            builder.Services.AddTransient<IExternalLogin, ExternalLogin>();
 
             // Event
             builder.Services.AddTransient<ICreateEvent, CreateEvent>();

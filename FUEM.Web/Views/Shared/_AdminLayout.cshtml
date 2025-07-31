@@ -143,8 +143,8 @@
 
         .sidebar__copyright {
             text-align: center;
-            padding-top: 20px;
-            padding-bottom: 10px;
+            /*padding-top: 20px;
+            padding-bottom: 10px;*/
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.7);
             width: 100%;
@@ -348,12 +348,6 @@
                         </a>
                     </li>
                     <li>
-                        <a class="asidebar" href="@Url.Action("File", "Admin")" aria-expanded="false" style="text-decoration: none;">
-                            <i class="fa-solid fa-file-arrow-up"></i>
-                            <span class="nav-text">Review Files</span>
-                        </a>
-                    </li>
-                    <li>
                         <a class="asidebar" href="#userManagementSubmenu" data-bs-toggle="collapse" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-user"></i>
                             <span class="nav-text">User Management</span>
@@ -365,12 +359,17 @@
                         </ul>
                     </li>
                     <li>
+                        <a class="asidebar" href="@Url.Action("Index", "Chat")" aria-expanded="false" style="text-decoration: none;">
+                            <i class="fa-solid fa-comments"></i>
+                            <span class="nav-text">Chat</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="@Url.Action("Send", "AdminNotification")" class="asidebar" style="text-decoration: none;">
                             <i class="fa-solid fa-bell"></i>
                             Send Notification
                         </a>
                     </li>
-
                     <li>
                         <a class="asidebar" href="@Url.Action("SignOut", "Authentication")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-right-from-bracket"></i>

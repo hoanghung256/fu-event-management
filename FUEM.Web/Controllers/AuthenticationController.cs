@@ -4,6 +4,7 @@ using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -16,12 +17,14 @@ namespace FUEM.Web.Controllers
         private readonly ILogin _loginUseCase;
         private readonly ISignUp _signUpUseCase;
         private readonly IForgotPassword _forgotPasswordUseCase;
+        private readonly IExternalLogin _externalLoginUseCase;
 
-        public AuthenticationController(ILogin loginUseCase, ISignUp signUpUseCase, IForgotPassword forgotPassword)
+        public AuthenticationController(ILogin loginUseCase, ISignUp signUpUseCase, IForgotPassword forgotPassword, IExternalLogin externalLoginUseCase)  
         {
             _loginUseCase = loginUseCase;
             _signUpUseCase = signUpUseCase;
             _forgotPasswordUseCase = forgotPassword;
+            _externalLoginUseCase = externalLoginUseCase; 
         }
 
         [HttpGet]
@@ -260,6 +263,106 @@ namespace FUEM.Web.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult GoogleLogin()
+        {
+            var properties = new AuthenticationProperties { RedirectUri = Url.Action(nameof(GoogleLoginCallback)) };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLoginCallback()
+        {
+            var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+            if (!result.Succeeded)
+            {
+                TempData[ToastType.ErrorMessage.ToString()] = "Login with google fail.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            var email = result.Principal.FindFirstValue(ClaimTypes.Email);
+            var fullName = result.Principal.FindFirstValue(ClaimTypes.Name);
+
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData[ToastType.ErrorMessage.ToString()] = "Cannot get email from your google account.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            try
+            {
+                var userObject = await _externalLoginUseCase.HandleGoogleLoginAsync(email, fullName);
+
+                if (userObject != null)
+                {
+                    int userId = 0;
+                    Role? role = Role.Student;
+                    string displayName = fullName;
+                    string userAvatarPath = null;
+
+                    // Kiểm tra và ép kiểu
+                    if (userObject is Student student)
+                    {
+                        userId = student.Id;
+                        displayName = student.Fullname;
+                        userAvatarPath = student.AvatarPath;
+                        role = Role.Student;
+                    }
+                    else if (userObject is Organizer organizer)
+                    {
+                        userId = organizer.Id;
+                        bool isAdmin = organizer.IsAdmin ?? false;
+                        role = isAdmin ? Role.Admin : Role.Club;
+                        displayName = organizer.Acronym;
+                        userAvatarPath = organizer.AvatarPath;
+                    }
+                    else
+                    {
+                        TempData[ToastType.ErrorMessage.ToString()] = "Login fail: Cannot determine account role.";
+                        return RedirectToAction(nameof(Login));
+                    }
+
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                        new Claim(ClaimTypes.Email, email),
+                        new Claim(ClaimTypes.Role, role.ToString()),
+                        new Claim(ClaimTypes.GivenName, displayName),
+                    };
+                    HttpContext.Session.SetString("avatarPath", userAvatarPath ?? "");
+
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var principal = new ClaimsPrincipal(claimsIdentity);
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                    TempData[ToastType.InfoMessage.ToString()] = $"Login successfully with Google!";
+
+                    if (role == Role.Admin)
+                    {
+                        return RedirectToAction("Dashboard", "Admin");
+                    }
+                    else if (role == Role.Club)
+                    {
+                        return RedirectToAction("Dashboard", "Club");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                TempData[ToastType.ErrorMessage.ToString()] = "Login fail with google.";
+                return RedirectToAction(nameof(Login));
+            }
+            catch (Exception ex)
+            {
+                TempData[ToastType.ErrorMessage.ToString()] = $"Error occurs while process login with google: {ex.Message}";
+                return RedirectToAction(nameof(Login));
+            }
         }
     }
 }

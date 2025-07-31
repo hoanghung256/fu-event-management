@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using FUEM.Infrastructure.Common;
 using static FUEM.Infrastructure.Common.PayOSService;
+using FUEM.Infrastructure.Common.MailSender;
+using FUEM.Application.UseCases.RegistrationUseCases;
 
 namespace FUEM.Web.Controllers
 {
@@ -48,10 +50,11 @@ namespace FUEM.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Student")]
         public async Task<ActionResult> Detail(int id)
         {
             var detailEvent = await _getEventForGuestUseCase.GetEventByIdAsync(id);
-            var studentId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var studentId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             TempData["isRegisteredAsGuest"] = await _registerEventUseCase.CheckIfResgisterAsGuest(id, studentId);
             TempData["isRegisteredAsCollaborator"] = await _registerEventUseCase.CheckIfResgisterAsCollaborator(id, studentId);
@@ -65,7 +68,9 @@ namespace FUEM.Web.Controllers
         {
             try
             {
-                var studentId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+                var studentId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                string email = User.FindFirstValue(ClaimTypes.Email);
+                string userName = User.FindFirstValue(ClaimTypes.GivenName);
 
                 if (isGuest)
                 {
@@ -75,6 +80,7 @@ namespace FUEM.Web.Controllers
                         return RedirectToAction("TicketCheckOut", "EventRegistration", new { eventId });
                     }
                     await _registerEventUseCase.RegisterGuestAsync(eventId, studentId);
+                    MailSender.SendGuestRegisterEventSuccessAsync(email, userName, registeringEvent);
                 }
                 else
                 {
@@ -189,6 +195,12 @@ namespace FUEM.Web.Controllers
                     int studentId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
                     await _registerEventUseCase.RegisterGuestAsync(eventId, studentId);
                     TempData[ToastType.SuccessMessage.ToString()] = "Payment successfully";
+
+                    // Send email notification
+                    string email = User.FindFirstValue(ClaimTypes.Email);
+                    string userName = User.FindFirstValue(ClaimTypes.GivenName);
+                    Event registeringEvent = await _getEventUseCase.GetEventById(eventId);
+                    MailSender.SendGuestRegisterEventSuccessAsync(email, userName, registeringEvent);
                 }
             }
             catch (Exception ex)
