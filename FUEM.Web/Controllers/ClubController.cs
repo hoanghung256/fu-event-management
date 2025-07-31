@@ -6,6 +6,7 @@ using FUEM.Infrastructure.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace FUEM.Web.Controllers
 {
@@ -16,14 +17,16 @@ namespace FUEM.Web.Controllers
         private readonly IFollowUseCase _followUseCase;
         private readonly IGetStudent _getStudentUseCase;
         private readonly IEditOrganizer _editOrganizerUseCase;
+        private readonly ICompareEventUseCase _compareEventUseCase;
 
-        public ClubController(IGetOrganizer getOrganizerUseCase, IGetRecentEvents getRecentEventsUseCase, IFollowUseCase followUseCase, IGetStudent getStudentUseCase, IEditOrganizer editOrganizerUseCase)
+        public ClubController(IGetOrganizer getOrganizerUseCase, IGetRecentEvents getRecentEventsUseCase, IFollowUseCase followUseCase, IGetStudent getStudentUseCase, IEditOrganizer editOrganizerUseCase, ICompareEventUseCase compareEventUseCase)
         {
             _getOrganizerUseCase = getOrganizerUseCase;
             _getRecentEventsUseCase = getRecentEventsUseCase;
             _followUseCase = followUseCase;
             _getStudentUseCase = getStudentUseCase;
             _editOrganizerUseCase = editOrganizerUseCase;
+            _compareEventUseCase = compareEventUseCase;
         }
         public IActionResult Index()
         {
@@ -104,6 +107,16 @@ namespace FUEM.Web.Controllers
             //org.CoverPath = await _firebase.GetSignedFileUrlAsync(org.CoverPath);
             ViewBag.RecentEvents = recentEvents;
             return RedirectToAction("Profile", org);
+        }
+
+        [HttpGet("Club/CompareEvents")]
+        public async Task<IActionResult> CompareEvents(int eventId, int? comparedId)
+        {
+            string organizerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var recentOrganizedEvents = await _compareEventUseCase.GetRemainEventAsync(organizerIdStr, eventId, comparedId);
+            ViewBag.RecentOrganizedEvents = recentOrganizedEvents;
+            var eventList = await _compareEventUseCase.CompareEvent(eventId, comparedId);
+            return View(eventList);
         }
     }
 }
