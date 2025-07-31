@@ -30,19 +30,23 @@ namespace FUEM.Application.UseCases.EventUseCases
             if (role.Equals(Role.Admin))
             {
                 createEvent.Status = EventStatus.APPROVED;
-            } else if (role.Equals(Role.Club))
+            } 
+            else if (role.Equals(Role.Club))
             {
                 createEvent.Status = EventStatus.PENDING;
-            } else
+            } 
+            else
             {
                 throw new ArgumentException("You don't have permission to create event!");
             }
-                createEvent.AvatarPath = await _firebase.UploadFileAsync(FileType.Image, avatar, createEvent.AvatarPath);
+            string avatarPath = await _firebase.UploadFileAsync(FileType.Image, avatar, createEvent.AvatarPath);
+            createEvent.AvatarPath = await _firebase.GetSignedFileUrlAsync(avatarPath);
             Event newEvent = await _repository.AddAsync(createEvent);
 
             foreach (EventImage image in additionalImages)
             {
-                image.Path = await _firebase.UploadFileAsync(FileType.Image, image.Stream, image.Path);
+                string path = await _firebase.UploadFileAsync(FileType.Image, image.Stream, image.Path);
+                image.Path = await _firebase.GetSignedFileUrlAsync(path);
                 image.EventId = newEvent.Id;
             }
             await _imageRepository.AddImagesAsync(additionalImages);

@@ -3,6 +3,7 @@ using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Application.UseCases.UserUseCases;
 using FUEM.Domain.Entities;
 using FUEM.Domain.Interfaces.Repositories;
+using FUEM.Infrastructure;
 using FUEM.Infrastructure.Common;
 using FUEM.Infrastructure.Persistence;
 using FUEM.Infrastructure.Persistence.Repositories;
@@ -48,7 +49,7 @@ namespace FUEM.Web
             
             // Get connection string  
             var connectionString = GetConnectionString(builder);
-            //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");   
+            //var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
 
             // Register DbContext  
             builder.Services.AddDbContextPool<FUEMDbContext>(options => options.UseSqlServer(connectionString));

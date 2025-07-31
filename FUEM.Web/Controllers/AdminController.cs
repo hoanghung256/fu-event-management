@@ -12,20 +12,22 @@ namespace FUEM.Web.Controllers
     {
         private readonly IEventRepository _eventRepository;
         private readonly IProcessEvent _processEventUseCase;
-        private readonly ICompareEventUseCase _compareEventUseCase;
+        private readonly IGetEventForGuest _getEvent;
         private readonly IGetOrganizedEvents _getOrganizedEvents;
+        private readonly ICompareEventUseCase _compareEventUseCase;
 
-        public AdminController(IEventRepository eventRepository, IProcessEvent processEventUseCase, ICompareEventUseCase compareEventUseCase, IGetOrganizedEvents getOrganizedEvents)
+        public AdminController(IEventRepository eventRepository, IProcessEvent processEventUseCase, ICompareEventUseCase compareEventUseCase, IGetOrganizedEvents getOrganizedEvents, IGetEventForGuest getEvent)
         {
             _eventRepository = eventRepository;
             _processEventUseCase = processEventUseCase;
             _compareEventUseCase = compareEventUseCase;
             _getOrganizedEvents = getOrganizedEvents;
+            _getEvent = getEvent;
         }
 
         public async Task<IActionResult> PendingEvents(int pageNumber = 1, int pageSize = 5)
         {
-            var eventPage = await _eventRepository.GetPendingEventForAdmin(pageNumber, pageSize);
+            var eventPage = await _processEventUseCase.GetPendingEventForAdmin(pageNumber, pageSize);
 
             return View(eventPage);
         }
@@ -66,6 +68,23 @@ namespace FUEM.Web.Controllers
             return RedirectToAction("PendingEvents");
         }
 
+        [HttpGet("Admin/Dashboard")]
+        public async Task<IActionResult> Dashboard()
+        {
+            Page<Event> pendingEventPage = await _processEventUseCase.GetPendingEventForAdmin(1, 10);
+            Page<Event> upcommingEventPage = await _getEvent.GetUpcomingEventForAdminAsync(1, 10);
+            Page<Event> organizedEventPage = await _getOrganizedEvents.GetOrganizedEventsForAdminAsync(1, 10);
+
+            AdminDashboardViewModel adminDashboardViewModel = new()
+            {
+                PendingEventList = pendingEventPage.Items,
+                UpcommingEventList = upcommingEventPage.Items,
+                OrganizedEventThisMonthList = organizedEventPage.Items,
+            };
+
+            return View(adminDashboardViewModel);
+        }
+        
         [HttpGet("Admin/CompareEvents")]
         public async Task<IActionResult> CompareEvents(int eventId, int? comparedId)
         {

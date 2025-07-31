@@ -84,5 +84,7 @@ namespace FUEM.Infrastructure.Persistence.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public Task<List<Student>> GetAllStudentsForCheckInAsync() => _context.Students.Include(s => s.FaceEmbeddings).ToListAsync();
     }
 }

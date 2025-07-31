@@ -1,5 +1,6 @@
 ﻿using FUEM.Application.Interfaces.OrganizerUseCases;
 using FUEM.Application.Interfaces.StudentUseCases;
+using FUEM.Domain.Common;
 using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using FUEM.Infrastructure.Common;
@@ -17,17 +18,25 @@ namespace FUEM.Web.Controllers
         private readonly IFollowUseCase _followUseCase;
         private readonly IGetStudent _getStudentUseCase;
         private readonly IEditOrganizer _editOrganizerUseCase;
+        private readonly IGetEventForGuest _getEvent;
+        private readonly IProcessEvent _processEventUseCase;
+        private readonly IGetOrganizedEvents _getOrganizedEvents;
         private readonly ICompareEventUseCase _compareEventUseCase;
 
-        public ClubController(IGetOrganizer getOrganizerUseCase, IGetRecentEvents getRecentEventsUseCase, IFollowUseCase followUseCase, IGetStudent getStudentUseCase, IEditOrganizer editOrganizerUseCase, ICompareEventUseCase compareEventUseCase)
+        public ClubController(IGetOrganizer getOrganizerUseCase, IGetRecentEvents getRecentEventsUseCase, IFollowUseCase followUseCase, IGetStudent getStudentUseCase, IEditOrganizer editOrganizerUseCase, ICompareEventUseCase compareEventUseCase, IGetEventForGuest getEvent, IProcessEvent processEventUseCase, IGetOrganizedEvents getOrganizedEvents)
         {
             _getOrganizerUseCase = getOrganizerUseCase;
             _getRecentEventsUseCase = getRecentEventsUseCase;
             _followUseCase = followUseCase;
             _getStudentUseCase = getStudentUseCase;
             _editOrganizerUseCase = editOrganizerUseCase;
+            _getEvent = getEvent;
+            _processEventUseCase = processEventUseCase;
+            _getOrganizedEvents = getOrganizedEvents;
             _compareEventUseCase = compareEventUseCase;
         }
+        
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
@@ -107,6 +116,24 @@ namespace FUEM.Web.Controllers
             //org.CoverPath = await _firebase.GetSignedFileUrlAsync(org.CoverPath);
             ViewBag.RecentEvents = recentEvents;
             return RedirectToAction("Profile", org);
+        }
+
+        [HttpGet("Club/Dashboard")]
+        public async Task<IActionResult> Dashboard()
+        {
+            string organizerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Page<Event> pendingEventPage = await _processEventUseCase.GetPendingEventOfOrganized(int.Parse(organizerIdStr), 1, 10);
+            Page<Event> upcommingEventPage = await _getEvent.GetUpcomingEventForOrganizerAsync(int.Parse(organizerIdStr), 1, 10);
+            Page<Event> organizedEventPage = await _getOrganizedEvents.GetOrganizedEventsForOrganizerAsync(organizerIdStr, 1, 10);
+
+            AdminDashboardViewModel adminDashboardViewModel = new()
+            {
+                PendingEventList = pendingEventPage.Items,
+                UpcommingEventList = upcommingEventPage.Items,
+                OrganizedEventThisMonthList = organizedEventPage.Items,
+            };
+
+            return View(adminDashboardViewModel);
         }
 
         [HttpGet("Club/CompareEvents")]
