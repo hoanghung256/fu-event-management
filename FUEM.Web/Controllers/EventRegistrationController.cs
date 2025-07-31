@@ -48,10 +48,11 @@ namespace FUEM.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Student")]
         public async Task<ActionResult> Detail(int id)
         {
             var detailEvent = await _getEventForGuestUseCase.GetEventByIdAsync(id);
-            var studentId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var studentId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             TempData["isRegisteredAsGuest"] = await _registerEventUseCase.CheckIfResgisterAsGuest(id, studentId);
             TempData["isRegisteredAsCollaborator"] = await _registerEventUseCase.CheckIfResgisterAsCollaborator(id, studentId);
