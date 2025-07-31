@@ -19,11 +19,28 @@
     <link rel="stylesheet" href="@Url.Content("~/theme/css/metisMenu.min.css")" />
     <link rel="stylesheet" href="@Url.Content("~/theme/css/fontawesome-pro.css")" />
     <link rel="stylesheet" href="@Url.Content("~/theme/css/main.css")" />
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
     <style>
+#toast-container > .toast-success {
+    background-color: #51A351;
+}
+
+#toast-container > .toast-error {
+    background-color: #BD362F;
+}
+
+#toast-container > .toast-info {
+    background-color: #2F96B4;
+}
+
+#toast-container > .toast-warning {
+    background-color: #F89406;
+}
+
+
         /* --- Custom CSS for Notification Popup --- */
         .app-notification-bell {
             position: relative;
@@ -545,6 +562,7 @@
             flex-grow: 1; /* Allow content to take remaining height */
             overflow-y: auto; /* Add scrollbar if content overflows */
         }
+
     </style>
 </head>
 
@@ -740,7 +758,8 @@
     <script src="@Url.Content("~/theme/js/magnific-popup.min.js")"></script>
     <script src="@Url.Content("~/theme/js/wow.min.js")"></script>
     <script src="@Url.Content("~/theme/js/main.js")"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     @await Html.PartialAsync("_ToastSetUp")
 
     <!-- FullCalendar JS -->
@@ -755,6 +774,7 @@
 
     <!-- SignalR Client Setup Script (Consolidated) -->
     <script>
+
         $(document).ready(function () {
             // Khởi tạo metisMenu
             $('#menu').metisMenu();
@@ -1039,6 +1059,13 @@
                 console.log("SignalR disconnected:", error);
             });
         });
+
+        toastr.options = {
+           "closeButton": true,
+           "progressBar": true,
+           "positionClass": "toast-top-right",
+           "timeOut": "4000"
+}
     </script>
 </body>
 </html>
