@@ -130,8 +130,8 @@
 
         .sidebar__copyright {
             text-align: center;
-            padding-top: 20px;
-            padding-bottom: 10px;
+            /*padding-top: 20px;
+            padding-bottom: 10px;*/
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.7);
             width: 100%;
@@ -351,7 +351,12 @@
                             <li><a href="@Url.Action("ManageClubs", "Admin")">Club Accounts</a></li>
                         </ul>
                     </li>
-
+                    <li>
+                        <a class="asidebar" href="@Url.Action("Index", "Chat")" aria-expanded="false" style="text-decoration: none;">
+                            <i class="fa-solid fa-comments"></i>
+                            <span class="nav-text">Chat</span>
+                        </a>
+                    </li>
                     <li>
                         <a class="asidebar" href="@Url.Action("SignOut", "Authentication")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-right-from-bracket"></i>

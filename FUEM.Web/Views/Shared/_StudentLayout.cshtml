@@ -141,8 +141,8 @@
         /* --- Footer (Copyright) Alignment Fix --- */
         .sidebar__copyright {
             text-align: center;
-            padding-top: 20px; /* Space above copyright */
-            padding-bottom: 10px;
+            /*padding-top: 20px; 
+            padding-bottom: 10px;*/
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.7);
             width: 100%; /* Ensure it takes full width of sidebar */
@@ -352,6 +352,12 @@
                         <a class="asidebar" href="@Url.Action("Profile", "Student")" aria-expanded="false" style="text-decoration: none;">
                             <i class="fa-solid fa-user"></i>
                             <span class="nav-text">Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="asidebar" href="@Url.Action("Index", "Chat")" aria-expanded="false" style="text-decoration: none;">
+                            <i class="fa-solid fa-comments"></i>
+                            <span class="nav-text">Chat</span>
                         </a>
                     </li>
                     <li>
