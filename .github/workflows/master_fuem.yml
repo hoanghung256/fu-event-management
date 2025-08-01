@@ -37,7 +37,15 @@ jobs:
           $json.PayOS.ChecksumKey = "${{ secrets.PAYOS_CHECKSUM_KEY }}"
           $json.Authentication.Google.ClientId = "${{ secrets.GG_CLIENT_ID }}"
           $json.Authentication.Google.ClientSecret = "${{ secrets.GG_CLIENT_SECRET }}"
+          $json.Mail.Sender = "${{ secrets.GG_CLIENT_SECRET }}"
+          $json.Mail.SenderAppPassword = "${{ secrets.MAIL_SENDER_APP_PASSWORD }}"
           $json | ConvertTo-Json -Depth 10 | Set-Content 'FUEM.Web/appsettings.Production.json'
+
+      - name: Write Firebase Admin SDK JSON to file
+        shell: pwsh
+        run: |
+          $firebaseJson = "${{ secrets.FIREBASE_ADMIN_KEY_JSON }}"
+          Set-Content -Path "FUEM.Infrastructure/fu-event-management-firebase-service-account.Production.json" -Value $firebaseJson
 
       - name: Build with dotnet
         run: dotnet build --configuration Release

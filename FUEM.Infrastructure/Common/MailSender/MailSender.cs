@@ -23,8 +23,8 @@ namespace FUEM.Infrastructure.Common.MailSender
     {
         private readonly string smtpHost = "smtp.gmail.com";
         private readonly int smtpPort = 587;
-        private readonly string fromEmail = "fpteventmanagementsystem@gmail.com";
-        private readonly string password = "cwca unvn nsub lujp";
+        private string fromEmail;
+        private string password;
         //private readonly string fromEmail = "hunghvde180038@fpt.edu.vn";
         //private readonly string password = "tkrs dyhs edzf ukmu"; // for hunghvde180038@fpt.edu.vn
 
@@ -45,7 +45,8 @@ namespace FUEM.Infrastructure.Common.MailSender
 
         public MailSender(IConfiguration configuration)
         {
-
+            fromEmail = configuration["Mail:Sender"];
+            password = configuration["Mail:SenderAppPassword"];
         }
 
         public MailSender(params string[] toEmail)
