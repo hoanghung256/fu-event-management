@@ -1,12 +1,12 @@
 ﻿using FUEM.Application.Interfaces.UserUseCases;
 using FUEM.Domain.Entities;
-using FUEM.Infrastructure.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using FUEM.Domain.Common;
 using System.Collections.Generic;
+using FUEM.Infrastructure.Common.FirebaseService;
 
 namespace FUEM.Web.Controllers
 {

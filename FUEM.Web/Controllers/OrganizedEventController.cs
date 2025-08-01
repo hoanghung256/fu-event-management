@@ -2,7 +2,7 @@
 using FUEM.Domain.Common;
 using FUEM.Domain.Entities;
 using FUEM.Domain.Interfaces.Repositories;
-using FUEM.Infrastructure.Common;
+using FUEM.Infrastructure.Common.FirebaseService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

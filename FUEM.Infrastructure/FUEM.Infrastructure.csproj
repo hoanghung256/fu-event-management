@@ -50,16 +50,10 @@
     <None Update="Common\MailSender\Templates\send-otp.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="fu-event-management-firebase-admin-service-account.Development.json">
+    <None Update="Common\FirebaseService\fu-event-management-firebase-admin-service-account.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="fu-event-management-firebase-admin-service-account.Development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="fu-event-management-firebase-admin-service-account.Production.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="fu-event-management-firebase-admin-service-account.Production.json">
+    <None Update="Common\FirebaseService\fu-event-management-firebase-admin-service-account.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

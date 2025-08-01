@@ -5,7 +5,7 @@ using FUEM.Domain.Common;
 using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
-using FUEM.Infrastructure.Common;
+using FUEM.Infrastructure.Common.FirebaseService;
 using FUEM.Infrastructure.Common.MailSender;
 using FUEM.Infrastructure.Persistence.Repositories;
 using FUEM.Web.Filters;

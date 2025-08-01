@@ -5,7 +5,7 @@ using FUEM.Domain.Enums;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Hosting;
 
-namespace FUEM.Infrastructure.Common
+namespace FUEM.Infrastructure.Common.FirebaseService
 {
     /// <summary>
     /// Firebase is Linux base so it use the "/" for path
@@ -21,7 +21,7 @@ namespace FUEM.Infrastructure.Common
 
         public FirebaseStorageService(IHostEnvironment env)
         {
-            string serviceAccountPath = Path.Combine(AppContext.BaseDirectory, $"fu-event-management-firebase-admin-service-account.{env.EnvironmentName}.json");
+            string serviceAccountPath = Path.Combine(AppContext.BaseDirectory, "Common", "FirebaseService", $"fu-event-management-firebase-admin-service-account.{env.EnvironmentName}.json");
 
             if (FirebaseApp.DefaultInstance == null)
             {

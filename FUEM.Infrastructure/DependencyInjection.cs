@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using FUEM.Infrastructure.Common;
 using FUEM.Domain.Entities;
 using FUEM.Infrastructure.Common.FaceRecognization;
+using FUEM.Infrastructure.Common.FirebaseService;
 
 namespace FUEM.Infrastructure
 {

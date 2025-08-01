@@ -2,7 +2,7 @@
 using FUEM.Domain.Entities;
 using FUEM.Domain.Enums;
 using FUEM.Domain.Interfaces.Repositories;
-using FUEM.Infrastructure.Common;
+using FUEM.Infrastructure.Common.FirebaseService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
