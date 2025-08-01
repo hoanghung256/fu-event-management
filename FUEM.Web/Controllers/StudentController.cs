@@ -22,7 +22,7 @@ namespace FUEM.Web.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Student")]
-        public IActionResult Calendar()
+        public IActionResult StudentCalendar()
         {
             ViewBag.StudentId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return View();
